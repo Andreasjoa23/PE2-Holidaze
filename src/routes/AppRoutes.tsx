@@ -22,7 +22,7 @@ const AppRoutes = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/venues" element={<Venues />} />
         <Route path="/venue/:id" element={<VenueDetails />} />
-        <Route path="/booking/confirmation" element={<BookingConfirmation />} />
+        <Route path="/bookingConfirmation" element={<BookingConfirmation />} />
         <Route path="/manager" element={<Manager />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/venues/new" element={<CreateVenue />} />
