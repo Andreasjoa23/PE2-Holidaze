@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import Layout from "../components/Layout";
 import Home from "../pages/Home";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
@@ -15,18 +16,20 @@ import NotFound from "../pages/NotFound";
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/venues" element={<Venues />} />
-      <Route path="/venue/:id" element={<VenueDetails />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/booking/confirmation" element={<BookingConfirmation />} />
-      <Route path="/manager" element={<Manager />} />
-      <Route path="/manager/profile" element={<Profile />} />
-      <Route path="/manager/venues/new" element={<CreateVenue />} />
-      <Route path="/manager/venues/:id/edit" element={<EditVenue />} />
-      <Route path="/manager/venues/:id/bookings" element={<UpcomingBookings />} />
-      <Route path="*" element={<NotFound />} />
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/venues" element={<Venues />} />
+        <Route path="/venue/:id" element={<VenueDetails />} />
+        <Route path="/booking/confirmation" element={<BookingConfirmation />} />
+        <Route path="/manager" element={<Manager />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/venues/new" element={<CreateVenue />} />
+        <Route path="/manager/venues/:id/edit" element={<EditVenue />} />
+        <Route path="/manager/venues/:id/bookings" element={<UpcomingBookings />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
     </Routes>
   );
 };
