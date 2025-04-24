@@ -1,0 +1,7 @@
+import apiClient from "./apiClient";
+
+export async function getAllVenues() {
+  const response = await apiClient.get("/holidaze/venues");
+  return response.data;
+}
+
