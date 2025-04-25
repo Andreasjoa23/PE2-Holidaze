@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAllVenues } from "../api/venues"; 
+import HeroBanner from "../components/homepage/HeroBanner";
 import Trending from "../components/homepage/Trending";
 
 const Home = () => {
@@ -27,8 +28,11 @@ const Home = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <Trending />
-  );  
+    <>
+      <HeroBanner />
+      <Trending />
+    </>
+  );
 };
 
 export default Home;

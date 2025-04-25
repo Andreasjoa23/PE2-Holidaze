@@ -11,15 +11,23 @@ const Trending = () => {
   const [error, setError] = useState("");
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>({
-    slides: {
-      perView: 3,
-      spacing: 20,
-      origin: "center",
-    },
+  const [sliderRef, instanceRef] = useKeenSlider({
     loop: true,
     slideChanged(slider) {
       setCurrentSlide(slider.track.details.rel);
+    },
+    slides: {
+      origin: "center",
+      perView: 3,
+      spacing: 20,
+    },
+    breakpoints: {
+      "(max-width: 1024px)": {
+        slides: { perView: 2, spacing: 16 },
+      },
+      "(max-width: 640px)": {
+        slides: { perView: 1, spacing: 8 },
+      },
     },
   });
 
@@ -42,14 +50,11 @@ const Trending = () => {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <section className="py-12 px-4 mb-12">
-      <h2 className="text-3xl font-bold text-center text-[#0E1E34] mb-10">Trending stays</h2>
+    <section className="py-12 px-4">
+      <h2 className="text-7xl text-center text-[#0E1E34] mb-20">Trending stays</h2>
       <div className="relative flex items-center justify-center">
-        <button
-          onClick={() => instanceRef.current?.prev()}
-          className="arrow left-arrow"
-        >
-          <ChevronLeft size={48} />
+        <button onClick={() => instanceRef.current?.prev()} className="arrow left-arrow">
+          <ChevronLeft size={40} />
         </button>
 
         <div ref={sliderRef} className="keen-slider w-full max-w-6xl">
@@ -59,23 +64,33 @@ const Trending = () => {
               className={`keen-slider__slide slide-card ${index === currentSlide ? "active" : ""}`}
             >
               <div className="card-container">
-                <img
-                  src={venue.media?.[0]?.url || "fallback.jpg"}
-                  alt={venue.media?.[0]?.alt || venue.name}
-                  className="card-image"
-                />
+                <div className="image-wrapper">
+                  <img
+                    className="venue-img"
+                    src={venue.media?.[0]?.url || "fallback.jpg"}
+                    alt={venue.media?.[0]?.alt || venue.name}
+                  />
+                  <button className="overlay-button">See Property</button>
+                </div>
                 <p className="venue-title">{venue.name}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <button
-          onClick={() => instanceRef.current?.next()}
-          className="arrow right-arrow"
-        >
-          <ChevronRight size={48} />
+        <button onClick={() => instanceRef.current?.next()} className="arrow right-arrow">
+          <ChevronRight size={40} />
         </button>
+      </div>
+
+      <div className="dots-container mt-6">
+        {venues.slice(0, 10).map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => instanceRef.current?.moveToIdx(idx)}
+            className={`dot ${currentSlide === idx ? "active" : ""}`}
+          />
+        ))}
       </div>
     </section>
   );
