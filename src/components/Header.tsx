@@ -1,37 +1,35 @@
 import { Link } from "react-router-dom";
-import holidazeLogo from "../assets/holidazeLogo.png"
+import holidazeLogo from "../assets/holidazeLogo.png";
+import { Search, User } from "lucide-react";
 
 const Navbar = () => {
   return (
-    <header>
-      <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1rem" }}>
-        <div>
-          <Link to="/" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <img src={holidazeLogo} alt="Holidaze Logo" height={30} />
-            <span>holidaze</span>
-          </Link>
-        </div>
+<header className="bg-white shadow-sm w-full">
+<nav className="flex justify-between items-center px-4 sm:px-8 lg:px-12 py-3">
+    <div className="flex items-center gap-2">
+      <img src={holidazeLogo} alt="Holidaze Logo" className="h-10 w-auto" />
+      <Link
+        to="/"
+        className="text-m font-medium text-blue-90"
+      >
+        holidaze
+      </Link>
+    </div>
 
-        <ul style={{ display: "flex", gap: "2rem", listStyle: "none" }}>
-          <li>
-            <Link to="/venues">Booking</Link>
-          </li>
-          <li>
-            <Link to="/login">Log in</Link>
-          </li>
-        </ul>
+    <div className="flex items-center gap-3">
+      <button className="bg-blue-900 text-white p-2 rounded-full hover:bg-blue-800 transition">
+        <Search className="h-6 w-auto" />
+      </button>
+      <Link
+        to="/login"
+        className="bg-blue-900 text-white p-2 rounded-full hover:bg-blue-800 transition"
+      >
+        <User className="h-6 w-auto" />
+      </Link>
+    </div>
+  </nav>
+</header>
 
-        <div>
-          <Link to="/profile">
-            <img
-              src="https://img.icons8.com/ios-filled/50/user.png"
-              alt="Profile"
-              style={{ height: "30px", borderRadius: "50%" }}
-            />
-          </Link>
-        </div>
-      </nav>
-    </header>
   );
 };
 
