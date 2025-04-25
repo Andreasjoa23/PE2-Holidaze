@@ -27,11 +27,6 @@ const Home = () => {
 
   return (
     <div>
-      {/* ✅ TAILWIND TEST BOX */}
-      <div className="bg-blue-500 text-white p-6 rounded-lg text-xl text-center mb-4">
-        🎉 Tailwind is working in Home.tsx!
-      </div>
-  
       <h1>Available Venues</h1>
       <div>
         {venues.map((venue) => (
