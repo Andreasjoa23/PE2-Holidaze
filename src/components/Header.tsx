@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import Cute from "../assets/Cute.jpg"
+import holidazeLogo from "../assets/holidazeLogo.png"
 
 const Navbar = () => {
   return (
@@ -7,7 +7,7 @@ const Navbar = () => {
       <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1rem" }}>
         <div>
           <Link to="/" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <img src={Cute} alt="Holidaze Logo" height={30} />
+            <img src={holidazeLogo} alt="Holidaze Logo" height={30} />
             <span>holidaze</span>
           </Link>
         </div>
