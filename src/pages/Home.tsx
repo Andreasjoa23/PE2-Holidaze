@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { getAllVenues } from "../api/venues"; 
 import HeroBanner from "../components/homepage/HeroBanner";
 import Trending from "../components/homepage/Trending";
+import MembershipBanner from "../components/homepage/MembershipBanner";
+/* import { Search } from "lucide-react"; */
+import SearchBanner from "../components/homepage/SearchBanner";
 
 const Home = () => {
   const [venues, setVenues] = useState<any[]>([]);
@@ -30,6 +33,8 @@ const Home = () => {
   return (
     <>
       <HeroBanner />
+      <MembershipBanner />
+      <SearchBanner />
       <Trending />
     </>
   );
