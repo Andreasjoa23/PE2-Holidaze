@@ -1,35 +1,67 @@
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import holidazeLogo from "../assets/holidazeLogo.png";
 import { Search, User } from "lucide-react";
+import AuthDropdown from "./Auth/AuthDropdown";
+
 
 const Navbar = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-<header className="bg-white shadow-sm w-full">
-<nav className="flex justify-between items-center px-4 sm:px-8 lg:px-12 py-3">
-    <div className="flex items-center gap-2">
-      <img src={holidazeLogo} alt="Holidaze Logo" className="h-10 w-auto" />
-      <Link
-        to="/"
-        className="text-m font-medium text-blue-90"
-      >
-        holidaze
-      </Link>
-    </div>
+    <header className="bg-white shadow-sm w-full">
+      <nav className="flex justify-between items-center px-4 sm:px-8 lg:px-12 py-3 relative">
 
-    <div className="flex items-center gap-3">
-      <button className="bg-blue-900 text-white p-2 rounded-full hover:bg-blue-800 transition">
-        <Search className="h-6 w-auto" />
-      </button>
-      <Link
-        to="/login"
-        className="bg-blue-900 text-white p-2 rounded-full hover:bg-blue-800 transition"
-      >
-        <User className="h-6 w-auto" />
-      </Link>
-    </div>
-  </nav>
-</header>
+        <div className="flex items-center gap-2">
+          <img
+            src={holidazeLogo}
+            alt="Holidaze Logo"
+            className="h-10 w-auto"
+          />
+          <Link to="/" className="text-m font-medium text-blue-900">
+            holidaze
+          </Link>
+        </div>
 
+        <div className="flex items-center gap-3 relative">
+          <button className="bg-blue-900 text-white p-2 rounded-full hover:bg-blue-800 transition">
+            <Search className="h-6 w-auto" />
+          </button>
+
+          <button
+            onClick={() => setIsDropdownOpen((prev) => !prev)}
+            className="bg-blue-900 text-white p-2 rounded-full hover:bg-blue-800 transition"
+          >
+            <User className="h-6 w-auto" />
+          </button>
+
+          {isDropdownOpen && (
+            <div
+              ref={dropdownRef}
+              className="absolute top-12 right-0 z-50 bg-white shadow-lg rounded-md p-4 w-80"
+            >
+            <AuthDropdown />
+
+            </div>
+          )}
+        </div>
+      </nav>
+    </header>
   );
 };
 
