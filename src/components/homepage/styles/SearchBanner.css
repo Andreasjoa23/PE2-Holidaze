@@ -1,0 +1,125 @@
+/* SearchBanner.css */
+
+.search-banner {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  border-radius: 1rem;
+  overflow: hidden;
+  margin: 3rem 0;
+}
+
+.search-banner img {
+  position: absolute;
+  inset: 0;
+  width: 90%;
+  height: 100%;
+  object-fit: cover;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 1rem;
+}
+
+.search-banner-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 1rem;
+}
+
+.search-banner h2 {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.search-form {
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+  border-radius: 9999px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1024px;
+}
+
+@media (min-width: 768px) {
+  .search-form {
+    flex-direction: row;
+  }
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 9999px;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  background: white;
+}
+
+.input-group input {
+  border: none;
+  outline: none;
+  width: 100%;
+}
+
+.input-group .icon {
+  color: #9ca3af;
+  margin-right: 0.5rem;
+}
+
+.guests-input input {
+  width: 4rem;
+  text-align: center;
+}
+
+.search-button {
+  background-color: #0e1e34;
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  transition: background-color 0.3s;
+}
+
+.search-button:hover {
+  background-color: #1d2d50;
+}
+
+.date-picker-popup {
+  position: absolute;
+  top: 100%;
+  margin-top: 0.5rem;
+  background: white;
+  padding: 1rem;
+  border-radius: 1rem;
+  box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.15);
+  z-index: 50;
+}
+
+.date-picker-popup .select-button {
+  width: 100%;
+  background-color: #0e1e34;
+  color: white;
+  font-weight: 600;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  text-align: center;
+  cursor: pointer;
+}
+
+.date-picker-popup .select-button:hover {
+  background-color: #1d2d50;
+}

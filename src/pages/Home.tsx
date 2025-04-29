@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
 import { getAllVenues } from "../api/venues"; 
+import HeroBanner from "../components/homepage/HeroBanner";
+import Trending from "../components/homepage/Trending";
+import MembershipBanner from "../components/homepage/MembershipBanner";
+/* import { Search } from "lucide-react"; */
+import SearchBanner from "../components/homepage/SearchBanner";
 
 const Home = () => {
   const [venues, setVenues] = useState<any[]>([]);
@@ -26,26 +31,13 @@ const Home = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div>
-      <h1>Available Venues</h1>
-      <div>
-        {venues.map((venue) => (
-          <div key={venue.id} style={{ border: "1px solid #ccc", margin: "1rem 0", padding: "1rem" }}>
-            <h2>{venue.name}</h2>
-            <p>{venue.location?.city}</p>
-            <p>{venue.price} NOK / night</p>
-            {venue.media?.[0]?.url && (
-              <img
-                src={venue.media[0].url}
-                alt={venue.media[0].alt || venue.name}
-                style={{ width: "100%", maxWidth: "300px" }}
-              />
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );  
+    <>
+      <HeroBanner />
+      <MembershipBanner />
+      <SearchBanner />
+      <Trending />
+    </>
+  );
 };
 
 export default Home;
