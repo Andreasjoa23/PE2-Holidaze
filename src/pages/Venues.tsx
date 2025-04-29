@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAllVenues } from "../api/venues";
-import VenueCard from "../components/VenueCard";
+import VenueCard from "../components/Venue/VenueCard";
 import { FaSearch, FaWifi, FaParking, FaCoffee, FaDog } from "react-icons/fa";
 
 interface Venue {
@@ -18,18 +18,14 @@ interface Venue {
 
 export default function Venues() {
   const [venues, setVenues] = useState<Venue[]>([]);
-  const [displayVenues, setDisplayVenues] = useState<Venue[]>([]);
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
     async function fetchVenues() {
       try {
-        const response = await getAllVenues();
-        console.log("Fetched venues:", response);
-
-        setVenues(response);           // Lagrer ALLE venues
-        setDisplayVenues(response.slice(0, 9)); // Viser først 9 på skjerm
+        const data = await getAllVenues();
+        setVenues(data.data.slice(0, 9)); // ✅ bruk .data her
       } catch (err) {
         console.error("Failed to fetch venues", err);
         setError("Failed to fetch venues");
@@ -38,12 +34,9 @@ export default function Venues() {
     fetchVenues();
   }, []);
 
-  useEffect(() => {
-    const filtered = venues.filter((venue) =>
-      venue.name.toLowerCase().includes(search.toLowerCase())
-    );
-    setDisplayVenues(filtered);
-  }, [search, venues]);
+  const filteredVenues = venues.filter((venue) =>
+    venue.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
@@ -51,7 +44,6 @@ export default function Venues() {
     <section className="p-8">
       <h1 className="text-3xl font-bold text-primary mb-4">Venues</h1>
 
-      {/* Søkefelt */}
       <div className="relative mb-6">
         <input
           type="text"
@@ -63,7 +55,6 @@ export default function Venues() {
         <FaSearch className="absolute right-4 top-3.5 text-gray-400" />
       </div>
 
-      {/* Filterikoner */}
       <div className="flex justify-center gap-6 mb-8">
         <FaWifi size={24} />
         <FaParking size={24} />
@@ -71,9 +62,8 @@ export default function Venues() {
         <FaDog size={24} />
       </div>
 
-      {/* Kortvisning */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {displayVenues.map((venue) => (
+        {filteredVenues.map((venue) => (
           <VenueCard
             key={venue.id}
             id={venue.id}
@@ -82,6 +72,7 @@ export default function Venues() {
             media={venue.media}
             price={venue.price}
             maxGuests={venue.maxGuests}
+            location={venue.location}
           />
         ))}
       </div>

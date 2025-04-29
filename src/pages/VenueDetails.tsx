@@ -1,5 +1,3 @@
-// src/pages/VenueDetails.tsx
-
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { DateRange } from "react-date-range";
@@ -25,7 +23,8 @@ const VenueDetails = () => {
     const fetchVenue = async () => {
       try {
         const response = await apiClient.get(`/holidaze/venues/${id}`);
-        setVenue(response.data);
+        setVenue(response.data.data);
+        console.log("Fetched venue:", response.data.data);
       } catch (err: any) {
         setError("Failed to load venue details.");
       } finally {
@@ -40,7 +39,6 @@ const VenueDetails = () => {
 
   const handleBooking = () => {
     console.log("Booking from:", dateRange[0].startDate, "to:", dateRange[0].endDate);
-    // Senere kan vi sende bruker til bookingConfirmation eller håndtere booking
   };
 
   if (isLoading) return <p className="text-center mt-10">Loading venue details...</p>;
@@ -49,14 +47,13 @@ const VenueDetails = () => {
 
   return (
     <section className="p-6 md:p-12 max-w-6xl mx-auto">
-      {/* Venue Title */}
       <h1 className="text-4xl md:text-5xl font-bold text-[#0E1E34] mb-8">{venue.name}</h1>
 
       {/* Images */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <img
           src={venue.media?.[0]?.url || "https://via.placeholder.com/600x400"}
-          alt={venue.name}
+          alt={venue.media?.[0]?.alt || venue.name}
           className="col-span-2 w-full h-80 object-cover rounded-2xl shadow-lg"
         />
         <div className="flex flex-col gap-4">
@@ -64,7 +61,7 @@ const VenueDetails = () => {
             <img
               key={index}
               src={img.url || "https://via.placeholder.com/300"}
-              alt={venue.name}
+              alt={img.alt || `Venue image ${index + 2}`}
               className="w-full h-36 object-cover rounded-2xl shadow-md"
             />
           ))}
@@ -87,6 +84,23 @@ const VenueDetails = () => {
             {venue.meta?.breakfast && <FaCoffee title="Breakfast" />}
             {venue.meta?.pets && <FaDog title="Pets allowed" />}
           </div>
+
+          {/* Host Info */}
+          {venue.owner && (
+            <div className="flex items-center gap-3 mt-6">
+              {venue.owner.avatar?.url && (
+                <img
+                  src={venue.owner.avatar.url}
+                  alt={venue.owner.avatar.alt || venue.owner.name}
+                  className="w-12 h-12 rounded-full object-cover border"
+                />
+              )}
+              <div>
+                <p className="text-sm font-semibold text-gray-900">{venue.owner.name}</p>
+                <p className="text-xs text-gray-500">{venue.owner.email}</p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Middle: Calendar */}
