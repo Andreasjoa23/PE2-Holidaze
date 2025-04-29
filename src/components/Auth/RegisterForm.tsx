@@ -1,11 +1,94 @@
+import { useState } from "react";
+import { registerUser } from "../../api/auth";
+
 const RegisterForm = () => {
-    return (
-      <div>
-        <h2 className="text-lg font-semibold mb-2">Register Form</h2>
-        <p className="text-sm text-gray-500">This is a placeholder for registration.</p>
-      </div>
-    );
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    avatarUrl: "",
+  });
+  const [error, setError] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    if (!formData.email.endsWith("@stud.noroff.no")) {
+      setError("Email must be a @stud.noroff.no address.");
+      return;
+    }
+  
+    const payload: any = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      venueManager: false,
+    };
+  
+    if (formData.avatarUrl.trim()) {
+      payload.avatar = {
+        url: formData.avatarUrl,
+        alt: `${formData.name}'s avatar`,
+      };
+    }
+  
+    try {
+      const response = await registerUser(payload);
+      console.log("Registration successful:", response);
+      window.location.reload();
+    } catch (err) {
+      setError("Registration failed. Try again.");
+    }
   };
   
-  export default RegisterForm;
-  
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <input
+        name="name"
+        type="text"
+        placeholder="Name"
+        value={formData.name}
+        onChange={handleChange}
+        className="w-full border px-3 py-2 rounded"
+        required
+      />
+      <input
+        name="email"
+        type="email"
+        placeholder="Email"
+        value={formData.email}
+        onChange={handleChange}
+        className="w-full border px-3 py-2 rounded"
+        required
+      />
+      <input
+        name="password"
+        type="password"
+        placeholder="Password"
+        value={formData.password}
+        onChange={handleChange}
+        className="w-full border px-3 py-2 rounded"
+        required
+      />
+      <input
+        name="avatarUrl"
+        type="url"
+        placeholder="Avatar URL (optional)"
+        value={formData.avatarUrl}
+        onChange={handleChange}
+        className="w-full border px-3 py-2 rounded"
+      />
+      {error && <p className="text-red-500 text-sm">{error}</p>}
+      <button type="submit" className="w-full bg-blue-900 text-white py-2 rounded">
+        Register
+      </button>
+    </form>
+  );
+};
+
+export default RegisterForm;
