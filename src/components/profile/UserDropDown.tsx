@@ -1,71 +1,60 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { logout } from "../../utils/auth";
 
-const user = JSON.parse(localStorage.getItem("user") || "{}");
-const avatarUrl = user?.avatar?.url || "https://via.placeholder.com/40";
-const name = user?.name || "User";
-const isVenueManager = user?.venueManager || false;
-
-const UserDropdown = () => {
+const UserDropdown = ({ onClose }: { onClose: () => void }) => {
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/");
-    window.location.reload(); // optional for refresh
-  };
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
+        onClose();
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [onClose]);
 
   return (
-    <div className="bg-white shadow-lg rounded-md p-4 w-64 z-50">
-      {/* Avatar & Greeting */}
-      <div className="flex flex-col items-center mb-4">
+    <div
+      ref={dropdownRef}
+      className="absolute top-12 right-0 z-50 w-72 bg-white rounded-xl shadow-lg p-4"
+    >
+      <div className="flex flex-col items-center text-center mb-4">
         <img
-          src={avatarUrl}
-          alt={`${name}'s avatar`}
-          className="w-14 h-14 rounded-full object-cover mb-2"
+          src={user.avatar?.url || "https://placehold.co/80"}
+          alt={user.avatar?.alt || user.name}
+          className="w-16 h-16 rounded-full mb-2"
         />
-        <p className="font-semibold text-gray-800">Hello {name}!</p>
-        <button
-          className="text-xs bg-blue-900 text-white mt-2 px-3 py-1 rounded"
-          onClick={() => navigate("/profile")}
+        <h3 className="font-semibold text-gray-800">Hello {user.name}!</h3>
+        <Link
+          to="/profile"
+          className="text-sm text-white bg-blue-900 px-3 py-1 rounded mt-2 hover:bg-blue-800 transition"
         >
           Edit Profile
-        </button>
+        </Link>
       </div>
 
-      {/* Links */}
-      <ul className="space-y-2 text-sm text-gray-700">
-        <li>
-          <button onClick={() => navigate("/profile")} className="w-full text-left hover:text-blue-900">
-            👤 Profile
-          </button>
-        </li>
-        <li>
-          <button onClick={() => navigate("/bookings")} className="w-full text-left hover:text-blue-900">
-            📅 My bookings
-          </button>
-        </li>
-        {isVenueManager && (
-          <>
-            <li>
-              <button onClick={() => navigate("/listings")} className="w-full text-left hover:text-blue-900">
-                🏘️ My listings
-              </button>
-            </li>
-            <li>
-              <button onClick={() => navigate("/create-venue")} className="w-full text-left hover:text-blue-900">
-                🏡 List a property
-              </button>
-            </li>
-          </>
-        )}
-      </ul>
+      <div className="flex flex-col gap-2 text-left text-sm text-gray-700">
+        <Link to="/profile" className="hover:text-blue-800">👤 Profile</Link>
+        <Link to="/bookings" className="hover:text-blue-800">📅 My bookings</Link>
+        <Link to="/listings" className="hover:text-blue-800">🏠 My listings</Link>
+        <Link to="/venues/new" className="hover:text-blue-800">➕ List a property</Link>
+      </div>
 
-      {/* Logout */}
       <button
-        onClick={handleLogout}
-        className="mt-4 w-full bg-gray-200 text-gray-800 px-3 py-2 rounded hover:bg-red-500 hover:text-white transition"
+        onClick={() => {
+          logout();
+          navigate("/");
+        }}
+        className="w-full mt-4 bg-blue-900 text-white py-2 rounded hover:bg-blue-800 transition"
       >
-        ⏏ Log out
+        Log out
       </button>
     </div>
   );

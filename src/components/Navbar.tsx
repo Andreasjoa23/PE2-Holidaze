@@ -1,14 +1,13 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import holidazeLogo from "../assets/holidazeLogo.png";
 import { Search, User } from "lucide-react";
 import AuthDropdown from "./Auth/AuthDropdown";
-import { logout } from "../utils/auth";
+import UserDropdown from "./profile/UserDropDown";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
   const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
 
   useEffect(() => {
@@ -48,28 +47,20 @@ const Navbar = () => {
             <Search className="h-6 w-auto" />
           </button>
 
-          {isLoggedIn ? (
-            <button
-              onClick={() => {
-                logout();
-                navigate("/");
-              }}
-              className="bg-blue-900 text-white px-3 py-1 rounded hover:bg-blue-800 transition text-sm"
-            >
-              Logout
-            </button>
-          ) : (
-            <button
-              onClick={() => setIsDropdownOpen((prev) => !prev)}
-              className="bg-blue-900 text-white p-2 rounded-full hover:bg-blue-800 transition"
-            >
-              <User className="h-6 w-auto" />
-            </button>
-          )}
+          <button
+            onClick={() => setIsDropdownOpen((prev) => !prev)}
+            className="bg-blue-900 text-white p-2 rounded-full hover:bg-blue-800 transition"
+          >
+            <User className="h-6 w-auto" />
+          </button>
 
-          {!isLoggedIn && isDropdownOpen && (
+          {isDropdownOpen && (
             <div ref={dropdownRef} className="absolute top-12 right-0 z-50">
-              <AuthDropdown />
+              {isLoggedIn ? (
+                <UserDropdown onClose={() => setIsDropdownOpen(false)} />
+              ) : (
+                <AuthDropdown />
+              )}
             </div>
           )}
         </div>
