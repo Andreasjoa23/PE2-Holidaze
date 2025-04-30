@@ -1,96 +1,92 @@
-import { useEffect, useState } from "react";
+// src/components/homepage/Trending.tsx
+import React, { useEffect, useState } from "react";
 import { getAllVenues } from "../../api/venues";
-import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
-import "./styles/Trending.css";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
-const Trending = () => {
-  const [venues, setVenues] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [currentSlide, setCurrentSlide] = useState(0);
+interface Venue {
+  id: string;
+  name: string;
+  description: string;
+  media: { url: string }[];
+  price: number;
+}
 
-  const [sliderRef, instanceRef] = useKeenSlider({
-    loop: true,
-    slideChanged(slider) {
-      setCurrentSlide(slider.track.details.rel);
-    },
-    slides: {
-      origin: "center",
-      perView: 3,
-      spacing: 20,
-    },
-    breakpoints: {
-      "(max-width: 1024px)": {
-        slides: { perView: 2, spacing: 16 },
-      },
-      "(max-width: 640px)": {
-        slides: { perView: 1, spacing: 8 },
-      },
-    },
-  });
+const Trending: React.FC = () => {
+  const [venues, setVenues] = useState<Venue[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchVenues = async () => {
+    (async () => {
       try {
-        const response = await getAllVenues();
-        const shuffled = [...response.data].sort(() => 0.5 - Math.random());
-        setVenues(shuffled.slice(0, 10));
+        const res = await getAllVenues();
+        setVenues(res.data.slice(-8)); // Hent siste 8
       } catch (err) {
-        setError("Failed to fetch trending stays.");
+        console.error(err);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
-    };
-    fetchVenues();
+    })();
   }, []);
 
-  if (isLoading) return <p className="text-center">Loading trending stays...</p>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+  if (loading) {
+    return (
+      <p className="py-16 text-center text-[#0E1E34]">
+        Loading trending stays…
+      </p>
+    );
+  }
 
   return (
-    <section className="py-12 px-4">
-      <h2 className="text-7xl text-center text-[#0E1E34] mb-20">Trending stays</h2>
-      <div className="relative flex items-center justify-center">
-        <button onClick={() => instanceRef.current?.prev()} className="arrow left-arrow">
-          <ChevronLeft size={40} />
-        </button>
+    <section className="py-16 px-4 bg-white">
+      <h2 className="text-4xl font-bold text-center text-[#0E1E34] mb-12">
+        Trending Stays
+      </h2>
 
-        <div ref={sliderRef} className="keen-slider w-full max-w-6xl">
-          {venues.map((venue, index) => (
-            <div
-              key={venue.id}
-              className={`keen-slider__slide slide-card ${index === currentSlide ? "active" : ""}`}
-            >
-              <div className="card-container">
-                <div className="image-wrapper">
-                  <img
-                    className="venue-img"
-                    src={venue.media?.[0]?.url || "fallback.jpg"}
-                    alt={venue.media?.[0]?.alt || venue.name}
-                  />
-                  <button className="overlay-button">See Property</button>
-                </div>
-                <p className="venue-title">{venue.name}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+        {venues.map((v) => (
+          <motion.div
+            key={v.id}
+            className="relative overflow-hidden rounded-2xl shadow-lg group"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 120 }}
+          >
+            {/* Card image */}
+            <img
+              src={v.media?.[0]?.url || "https://via.placeholder.com/400"}
+              alt={v.name}
+              className="w-full h-64 object-cover"
+            />
+
+            {/* Fade‐in overlay */}
+            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+              <h3 className="text-white text-xl font-semibold mb-1">
+                {v.name}
+              </h3>
+              <p className="text-gray-200 text-sm line-clamp-2 mb-3">
+                {v.description}
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-white font-bold">${v.price}</span>
+                <Link
+                  to={`/venue/${v.id}`}
+                  className="bg-[#0E1E34] hover:bg-[#1d2d50] text-white text-sm px-3 py-1 rounded-full transition"
+                >
+                  View
+                </Link>
               </div>
             </div>
-          ))}
-        </div>
-
-        <button onClick={() => instanceRef.current?.next()} className="arrow right-arrow">
-          <ChevronRight size={40} />
-        </button>
+          </motion.div>
+        ))}
       </div>
 
-      <div className="dots-container mt-6">
-        {venues.slice(0, 10).map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => instanceRef.current?.moveToIdx(idx)}
-            className={`dot ${currentSlide === idx ? "active" : ""}`}
-          />
-        ))}
+      <div className="text-center mt-12">
+        <Link
+          to="/venues"
+          className="inline-block bg-gradient-to-r from-[#0E1E34] to-[#1d2d50] text-white px-8 py-3 rounded-full font-semibold hover:opacity-90 transition shadow-lg"
+        >
+          View All Stays
+        </Link>
       </div>
     </section>
   );

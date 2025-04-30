@@ -1,12 +1,15 @@
-@import "keen-slider/keen-slider.min.css";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-.react-datepicker__day--in-range,
-.react-datepicker__day--range-start,
-.react-datepicker__day--range-end {
-  background-color: #0e1e34 !important;
-  color: white;
+/* Sikre at wrapper gir plass til popover */
+/* .date-picker-wrapper {
+  position: relative;
+  overflow: visible;
 }
+
+
+.rdrCalendarWrapper {
+  z-index: 100 !important;
+}
+ */
