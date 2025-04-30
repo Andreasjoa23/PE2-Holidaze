@@ -3,16 +3,19 @@ import { Link } from "react-router-dom";
 import holidazeLogo from "../assets/holidazeLogo.png";
 import { Search, User } from "lucide-react";
 import AuthDropdown from "./Auth/AuthDropdown";
-import { logout } from "../utils/auth"; // import it
-
+import UserDropdown from "./profile/UserDropDown";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsDropdownOpen(false);
       }
     };
@@ -22,6 +25,12 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      setIsDropdownOpen(false);
+    }
+  }, [isLoggedIn]);
 
   return (
     <header className="bg-white shadow-sm w-full">
@@ -47,7 +56,11 @@ const Navbar = () => {
 
           {isDropdownOpen && (
             <div ref={dropdownRef} className="absolute top-12 right-0 z-50">
-              <AuthDropdown />
+              {isLoggedIn ? (
+                <UserDropdown onClose={() => setIsDropdownOpen(false)} />
+              ) : (
+                <AuthDropdown />
+              )}
             </div>
           )}
         </div>
