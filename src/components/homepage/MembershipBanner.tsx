@@ -1,9 +1,8 @@
-
 import { LogIn } from "lucide-react"; // Importer ikon, kan bytte hvis ønsket
 
 const MembershipBanner = () => {
   return (
-    <div className="bg-[#0E1E34] rounded-[20px] p-4 flex items-center justify-between max-w-5xl mx-auto my-10">
+    <div className="bg-[#0E1E34] rounded-[20px] p-4 flex items-center justify-between max-w-6xl mx-auto my- -8">
       {/* Venstre side: ikon og tekst */}
       <div className="flex items-center gap-3">
         <div className="bg-white p-2 rounded-full">

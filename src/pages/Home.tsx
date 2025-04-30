@@ -1,43 +1,62 @@
-import { useEffect, useState } from "react";
-import { getAllVenues } from "../api/venues"; 
+// src/pages/Home.tsx
+import React from "react";
+import { motion } from "framer-motion";
+
+import ScrollProgress from "../components/ScrollProgress";
 import HeroBanner from "../components/homepage/HeroBanner";
-import Trending from "../components/homepage/Trending";
 import MembershipBanner from "../components/homepage/MembershipBanner";
-/* import { Search } from "lucide-react"; */
 import SearchBanner from "../components/homepage/SearchBanner";
+import Trending from "../components/homepage/Trending";
 
-const Home = () => {
-  const [venues, setVenues] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    const fetchVenues = async () => {
-      try {
-        const response = await getAllVenues();
-        console.log(response);
-        setVenues(response.data);
-      } catch (err: any) {
-        setError("Failed to load venues.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchVenues();
-  }, []);
-
-  if (isLoading) return <p>Loading venues...</p>;
-  if (error) return <p>{error}</p>;
-
-  return (
-    <>
-      <HeroBanner />
-      <MembershipBanner />
-      <SearchBanner />
-      <Trending />
-    </>
-  );
+const sectionVariant = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0 },
 };
+
+const Home: React.FC = () => (
+  <>
+    <ScrollProgress />
+
+    <motion.div
+      variants={sectionVariant}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.8 }}
+    >
+      <HeroBanner />
+    </motion.div>
+
+    <motion.div
+      variants={sectionVariant}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.8, delay: 0.1 }}
+    >
+      <MembershipBanner />
+    </motion.div>
+
+    <motion.div
+      variants={sectionVariant}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.8, delay: 0.2 }}
+    >
+      <SearchBanner />
+    </motion.div>
+
+    <motion.div
+      variants={sectionVariant}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.8, delay: 0.3 }}
+    >
+      <Trending />
+    </motion.div>
+  </>
+);
 
 export default Home;

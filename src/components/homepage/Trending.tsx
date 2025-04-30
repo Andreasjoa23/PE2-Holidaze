@@ -1,98 +1,56 @@
-import { useEffect, useState } from "react";
+// src/components/homepage/Trending.tsx
+import React, { useEffect, useState } from "react";
+import TrendingSlide from "../TrendingSlide";
 import { getAllVenues } from "../../api/venues";
-import { useKeenSlider } from "keen-slider/react";
-import "keen-slider/keen-slider.min.css";
-import "./styles/Trending.css";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
 
-const Trending = () => {
-  const [venues, setVenues] = useState([]);
+interface Venue {
+  /* ... */
+}
+
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.15 } },
+};
+
+const Trending: React.FC = () => {
+  const [venues, setVenues] = useState<Venue[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  const [sliderRef, instanceRef] = useKeenSlider({
-    loop: true,
-    slideChanged(slider) {
-      setCurrentSlide(slider.track.details.rel);
-    },
-    slides: {
-      origin: "center",
-      perView: 3,
-      spacing: 20,
-    },
-    breakpoints: {
-      "(max-width: 1024px)": {
-        slides: { perView: 2, spacing: 16 },
-      },
-      "(max-width: 640px)": {
-        slides: { perView: 1, spacing: 8 },
-      },
-    },
-  });
 
   useEffect(() => {
-    const fetchVenues = async () => {
+    (async () => {
       try {
-        const response = await getAllVenues();
-        const shuffled = [...response.data].sort(() => 0.5 - Math.random());
-        setVenues(shuffled.slice(0, 10));
-      } catch (err) {
-        setError("Failed to fetch trending stays.");
+        const res = await getAllVenues();
+        setVenues(res.data.slice(-4));
+      } catch {
+        console.error("fetch failed");
       } finally {
         setIsLoading(false);
       }
-    };
-    fetchVenues();
+    })();
   }, []);
 
-  if (isLoading) return <p className="text-center">Loading trending stays...</p>;
-  if (error) return <p className="text-center text-red-500">{error}</p>;
+  if (isLoading) {
+    return <p className="text-center py-20">Loading…</p>;
+  }
 
   return (
-    <section className="py-12 px-4">
-      <h2 className="text-7xl text-center text-[#0E1E34] mb-20">Trending stays</h2>
-      <div className="relative flex items-center justify-center">
-        <button onClick={() => instanceRef.current?.prev()} className="arrow left-arrow">
-          <ChevronLeft size={40} />
-        </button>
-
-        <div ref={sliderRef} className="keen-slider w-full max-w-6xl">
-          {venues.map((venue, index) => (
-            <div
-              key={venue.id}
-              className={`keen-slider__slide slide-card ${index === currentSlide ? "active" : ""}`}
-            >
-              <div className="card-container">
-                <div className="image-wrapper">
-                  <img
-                    className="venue-img"
-                    src={venue.media?.[0]?.url || "fallback.jpg"}
-                    alt={venue.media?.[0]?.alt || venue.name}
-                  />
-                  <button className="overlay-button">See Property</button>
-                </div>
-                <p className="venue-title">{venue.name}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <button onClick={() => instanceRef.current?.next()} className="arrow right-arrow">
-          <ChevronRight size={40} />
-        </button>
-      </div>
-
-      <div className="dots-container mt-6">
-        {venues.slice(0, 10).map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => instanceRef.current?.moveToIdx(idx)}
-            className={`dot ${currentSlide === idx ? "active" : ""}`}
-          />
+    <motion.section
+      className="py-16 bg-gray-50"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      variants={containerVariants}
+    >
+      <h2 className="text-3xl sm:text-4xl font-bold text-center text-[#0E1E34] mb-12">
+        Featured stays
+      </h2>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {venues.map((venue) => (
+          <TrendingSlide key={venue.id} venue={venue} />
         ))}
       </div>
-    </section>
+    </motion.section>
   );
 };
 
