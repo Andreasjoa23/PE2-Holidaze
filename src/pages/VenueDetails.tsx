@@ -172,7 +172,6 @@ const VenueDetails = () => {
           </div>
         </div>
 
-        {/* Right: Booking form */}
         <div>
           <h2 className="text-xl font-bold text-[#0E1E34] mb-4">Select your stay</h2>
           <DateRange
@@ -201,7 +200,6 @@ const VenueDetails = () => {
   );
 };
 
-// Small reusable icon block
 const FeatureIcon = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
   <div className="flex flex-col items-center">
     <div className="bg-[#0E1E34] p-3 rounded-full text-white">{icon}</div>
