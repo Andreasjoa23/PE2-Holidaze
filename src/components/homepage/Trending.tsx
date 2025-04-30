@@ -1,56 +1,94 @@
 // src/components/homepage/Trending.tsx
 import React, { useEffect, useState } from "react";
-import TrendingSlide from "../TrendingSlide";
 import { getAllVenues } from "../../api/venues";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 interface Venue {
-  /* ... */
+  id: string;
+  name: string;
+  description: string;
+  media: { url: string }[];
+  price: number;
 }
-
-const containerVariants = {
-  hidden: {},
-  visible: { transition: { staggerChildren: 0.15 } },
-};
 
 const Trending: React.FC = () => {
   const [venues, setVenues] = useState<Venue[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     (async () => {
       try {
         const res = await getAllVenues();
-        setVenues(res.data.slice(-4));
-      } catch {
-        console.error("fetch failed");
+        setVenues(res.data.slice(-8)); // Hent siste 8
+      } catch (err) {
+        console.error(err);
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     })();
   }, []);
 
-  if (isLoading) {
-    return <p className="text-center py-20">Loading…</p>;
+  if (loading) {
+    return (
+      <p className="py-16 text-center text-[#0E1E34]">
+        Loading trending stays…
+      </p>
+    );
   }
 
   return (
-    <motion.section
-      className="py-16 bg-gray-50"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      variants={containerVariants}
-    >
-      <h2 className="text-3xl sm:text-4xl font-bold text-center text-[#0E1E34] mb-12">
-        Featured stays
+    <section className="py-16 px-4 bg-white">
+      <h2 className="text-4xl font-bold text-center text-[#0E1E34] mb-12">
+        Trending Stays
       </h2>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {venues.map((venue) => (
-          <TrendingSlide key={venue.id} venue={venue} />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+        {venues.map((v) => (
+          <motion.div
+            key={v.id}
+            className="relative overflow-hidden rounded-2xl shadow-lg group"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 120 }}
+          >
+            {/* Card image */}
+            <img
+              src={v.media?.[0]?.url || "https://via.placeholder.com/400"}
+              alt={v.name}
+              className="w-full h-64 object-cover"
+            />
+
+            {/* Fade‐in overlay */}
+            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+              <h3 className="text-white text-xl font-semibold mb-1">
+                {v.name}
+              </h3>
+              <p className="text-gray-200 text-sm line-clamp-2 mb-3">
+                {v.description}
+              </p>
+              <div className="flex items-center justify-between">
+                <span className="text-white font-bold">${v.price}</span>
+                <Link
+                  to={`/venue/${v.id}`}
+                  className="bg-[#0E1E34] hover:bg-[#1d2d50] text-white text-sm px-3 py-1 rounded-full transition"
+                >
+                  View
+                </Link>
+              </div>
+            </div>
+          </motion.div>
         ))}
       </div>
-    </motion.section>
+
+      <div className="text-center mt-12">
+        <Link
+          to="/venues"
+          className="inline-block bg-gradient-to-r from-[#0E1E34] to-[#1d2d50] text-white px-8 py-3 rounded-full font-semibold hover:opacity-90 transition shadow-lg"
+        >
+          View All Stays
+        </Link>
+      </div>
+    </section>
   );
 };
 

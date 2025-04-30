@@ -1,5 +1,15 @@
-@import "keen-slider/keen-slider.min.css";
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Sikre at wrapper gir plass til popover */
+/* .date-picker-wrapper {
+  position: relative;
+  overflow: visible;
+}
+
+
+.rdrCalendarWrapper {
+  z-index: 100 !important;
+}
+ */
