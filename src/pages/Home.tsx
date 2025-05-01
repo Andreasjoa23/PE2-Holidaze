@@ -6,6 +6,7 @@ import ScrollProgress from "../components/ScrollProgress";
 import HeroBanner from "../components/homepage/HeroBanner";
 import MembershipBanner from "../components/homepage/MembershipBanner";
 import SearchBanner from "../components/homepage/SearchBanner";
+import Recommendations from "../components/homepage/Recommendations";
 import Trending from "../components/homepage/Trending";
 
 const sectionVariant = {
@@ -47,6 +48,7 @@ const Home: React.FC = () => (
       <SearchBanner />
     </motion.div>
 
+    {/* Flyttet Recommendations etter Trending */}
     <motion.div
       variants={sectionVariant}
       initial="hidden"
@@ -55,6 +57,16 @@ const Home: React.FC = () => (
       transition={{ duration: 0.8, delay: 0.3 }}
     >
       <Trending />
+    </motion.div>
+
+    <motion.div
+      variants={sectionVariant}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.8, delay: 0.4 }}
+    >
+      <Recommendations />
     </motion.div>
   </>
 );
