@@ -8,6 +8,7 @@ import MembershipBanner from "../components/homepage/MembershipBanner";
 import SearchBanner from "../components/homepage/SearchBanner";
 import Recommendations from "../components/homepage/Recommendations";
 import Trending from "../components/homepage/Trending";
+import Footer from "../components/Footer";
 
 const sectionVariant = {
   hidden: { opacity: 0, y: 30 },
@@ -68,6 +69,7 @@ const Home: React.FC = () => (
     >
       <Recommendations />
     </motion.div>
+    <Footer />
   </>
 );
 
