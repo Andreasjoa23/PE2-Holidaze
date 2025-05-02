@@ -2,7 +2,7 @@
 import React from "react";
 import { Parallax } from "react-scroll-parallax";
 import { motion } from "framer-motion";
-import HeroBannerImg from "../../assets/HeroImg.png";
+import HeroBannerImg from "../../assets/HeroIllustration3d@3x.png";
 
 const HeroBanner: React.FC = () => {
   return (
