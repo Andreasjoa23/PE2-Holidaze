@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { fetchUserBookings, fetchUserListings } from "../api/profile";
 import EditProfile from "../components/profile/EditProfile";
+import CreateVenueForm from "../components/Venue/CreateVenueForm";
 
 const Profile = () => {
-  const navigate = useNavigate();
   const [user, setUser] = useState(() => {
     const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
@@ -14,6 +13,16 @@ const Profile = () => {
   const [listings, setListings] = useState([]);
   const [error, setError] = useState("");
   const [showEditor, setShowEditor] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
+  const loadListings = async () => {
+    try {
+      const listingsData = await fetchUserListings(user.name);
+      setListings(listingsData.data);
+    } catch (err) {
+      console.error("Failed to refresh listings:", err);
+    }
+  };
 
   useEffect(() => {
     if (user?.name) {
@@ -72,10 +81,10 @@ const Profile = () => {
 
       <div className="flex justify-center gap-4 mb-6">
         <button
-          onClick={() => navigate("/venues/new")}
+          onClick={() => setShowCreateForm((prev) => !prev)}
           className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800 transition"
         >
-          Create listing
+          {showCreateForm ? "Cancel" : "Create listing"}
         </button>
         <button
           onClick={() => setShowEditor((prev) => !prev)}
@@ -94,7 +103,18 @@ const Profile = () => {
           <EditProfile onSuccess={handleProfileUpdate} />
         </div>
       )}
-      
+
+      {showCreateForm && (
+        <div className="mb-6">
+          <CreateVenueForm
+            onSuccess={() => {
+              setShowCreateForm(false);
+              loadListings();
+            }}
+          />
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="p-4 bg-white shadow rounded">
           <h3 className="font-semibold mb-2">
