@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { fetchUserBookings, fetchUserListings } from "../api/profile";
 import EditProfile from "../components/profile/EditProfile";
-import CreateVenueForm from "../components/Venue/CreateVenueForm";
+import VenueForm from "../components/Venue/VenueForm";
+import VenueList from "../components/Venue/VenueList";
 
 const Profile = () => {
   const [user, setUser] = useState(() => {
@@ -14,6 +15,8 @@ const Profile = () => {
   const [error, setError] = useState("");
   const [showEditor, setShowEditor] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showVenuesPopup, setShowVenuesPopup] = useState(false);
+  const [editVenue, setEditVenue] = useState(null);
 
   const loadListings = async () => {
     try {
@@ -32,7 +35,6 @@ const Profile = () => {
             fetchUserBookings(user.name),
             fetchUserListings(user.name),
           ]);
-
           setBookings(bookingsData.data);
           setListings(listingsData.data);
         } catch (err) {
@@ -45,7 +47,7 @@ const Profile = () => {
     }
   }, [user?.name]);
 
-  const handleProfileUpdate = (updatedUser: any) => {
+  const handleProfileUpdate = (updatedUser) => {
     localStorage.setItem("user", JSON.stringify(updatedUser));
     setUser(updatedUser);
     setShowEditor(false);
@@ -87,6 +89,12 @@ const Profile = () => {
           {showCreateForm ? "Cancel" : "Create listing"}
         </button>
         <button
+          onClick={() => setShowVenuesPopup(true)}
+          className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800 transition"
+        >
+          Show My Venues
+        </button>
+        <button
           onClick={() => setShowEditor((prev) => !prev)}
           className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800 transition"
         >
@@ -94,9 +102,7 @@ const Profile = () => {
         </button>
       </div>
 
-      {error && (
-        <p className="text-red-500 text-center mb-4">{error}</p>
-      )}
+      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
       {showEditor && (
         <div className="mb-6">
@@ -106,7 +112,8 @@ const Profile = () => {
 
       {showCreateForm && (
         <div className="mb-6">
-          <CreateVenueForm
+          <VenueForm
+            mode="create"
             onSuccess={() => {
               setShowCreateForm(false);
               loadListings();
@@ -115,7 +122,32 @@ const Profile = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {editVenue && (
+        <div className="mb-6">
+          <VenueForm
+            mode="edit"
+            initialData={editVenue}
+            onSuccess={() => {
+              setEditVenue(null);
+              loadListings();
+            }}
+          />
+        </div>
+      )}
+
+      {showVenuesPopup && (
+        <VenueList
+          venues={listings}
+          onEdit={(venue) => {
+            setEditVenue(venue);
+            setShowVenuesPopup(false);
+          }}
+          onClose={() => setShowVenuesPopup(false)}
+          onDeleted={() => loadListings()}
+        />
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
         <div className="p-4 bg-white shadow rounded">
           <h3 className="font-semibold mb-2">
             Bookings (last 30 days): {bookings.length}
