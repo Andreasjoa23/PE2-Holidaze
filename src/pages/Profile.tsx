@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { fetchUserBookings, fetchUserListings } from "../api/profile";
 import EditProfile from "../components/profile/EditProfile";
-import CreateVenueForm from "../components/Venue/CreateVenueForm";
+import VenueForm from "../components/Venue/VenueForm";
+import VenueList from "../components/Venue/VenueList";
 
 const Profile = () => {
   const [user, setUser] = useState(() => {
@@ -9,11 +10,13 @@ const Profile = () => {
     return stored ? JSON.parse(stored) : null;
   });
 
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [listings, setListings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState([]);
+  const [listings, setListings] = useState([]);
   const [error, setError] = useState("");
   const [showEditor, setShowEditor] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showVenuesPopup, setShowVenuesPopup] = useState(false);
+  const [editVenue, setEditVenue] = useState(null);
 
   const loadListings = async () => {
     try {
@@ -32,7 +35,6 @@ const Profile = () => {
             fetchUserBookings(user.name),
             fetchUserListings(user.name),
           ]);
-
           setBookings(bookingsData.data);
           setListings(listingsData.data);
         } catch (err) {
@@ -45,7 +47,7 @@ const Profile = () => {
     }
   }, [user?.name]);
 
-  const handleProfileUpdate = (updatedUser: any) => {
+  const handleProfileUpdate = (updatedUser) => {
     localStorage.setItem("user", JSON.stringify(updatedUser));
     setUser(updatedUser);
     setShowEditor(false);
@@ -87,6 +89,12 @@ const Profile = () => {
           {showCreateForm ? "Cancel" : "Create listing"}
         </button>
         <button
+          onClick={() => setShowVenuesPopup(true)}
+          className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800 transition"
+        >
+          Show My Venues
+        </button>
+        <button
           onClick={() => setShowEditor((prev) => !prev)}
           className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800 transition"
         >
@@ -104,7 +112,8 @@ const Profile = () => {
 
       {showCreateForm && (
         <div className="mb-6">
-          <CreateVenueForm
+          <VenueForm
+            mode="create"
             onSuccess={() => {
               setShowCreateForm(false);
               loadListings();
@@ -113,50 +122,41 @@ const Profile = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {editVenue && (
+        <div className="mb-6">
+          <VenueForm
+            mode="edit"
+            initialData={editVenue}
+            onSuccess={() => {
+              setEditVenue(null);
+              loadListings();
+            }}
+          />
+        </div>
+      )}
+
+      {showVenuesPopup && (
+        <VenueList
+          venues={listings}
+          onEdit={(venue) => {
+            setEditVenue(venue);
+            setShowVenuesPopup(false);
+          }}
+          onClose={() => setShowVenuesPopup(false)}
+          onDeleted={() => loadListings()}
+        />
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
         <div className="p-4 bg-white shadow rounded">
           <h3 className="font-semibold mb-2">
             Bookings (last 30 days): {bookings.length}
           </h3>
-          {bookings.length === 0 ? (
-            <p className="text-sm text-gray-500">No recent bookings.</p>
-          ) : (
-            <ul className="space-y-2">
-              {bookings.map((booking) => (
-                <li key={booking.id} className="text-sm text-gray-700">
-                  • {booking.venue?.name} (from{" "}
-                  {new Date(booking.dateFrom).toLocaleDateString()})
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
-
         <div className="p-4 bg-white shadow rounded">
           <h3 className="font-semibold mb-2">
             Listings: {listings.length}
           </h3>
-          {listings.length === 0 ? (
-            <p className="text-sm text-gray-500">You have no listings yet.</p>
-          ) : (
-            <ul className="space-y-2">
-              {listings.map((venue) => (
-                <li key={venue.id} className="flex items-center gap-3">
-                  <img
-                    src={venue.media?.[0]?.url || "https://placehold.co/60"}
-                    alt={venue.media?.[0]?.alt || venue.name}
-                    className="w-12 h-12 rounded object-cover"
-                  />
-                  <div>
-                    <p className="font-medium">{venue.name}</p>
-                    <p className="text-sm text-gray-500">
-                      {venue.price} NOK / night
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
       </div>
     </div>
