@@ -7,11 +7,7 @@ import HeroBanner from "../components/homepage/HeroBanner";
 import MembershipBanner from "../components/homepage/MembershipBanner";
 import SearchBanner from "../components/homepage/SearchBanner";
 import Trending from "../components/homepage/Trending";
-<<<<<<< HEAD
-import Footer from "../components/Footer";
-=======
 import Recommendations from "../components/homepage/Recommendations";
->>>>>>> dev
 
 const sectionVariant = {
   hidden: { opacity: 0, y: 30 },
@@ -63,20 +59,6 @@ const Home: React.FC = () => {
         <SearchBanner />
       </motion.div>
 
-<<<<<<< HEAD
-    <motion.div
-      variants={sectionVariant}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      transition={{ duration: 0.8, delay: 0.4 }}
-    >
-      <Recommendations />
-    </motion.div>
-    <Footer />
-  </>
-);
-=======
       {/* Trending */}
       <motion.div
         variants={sectionVariant}
@@ -101,6 +83,5 @@ const Home: React.FC = () => {
     </>
   );
 };
->>>>>>> dev
 
 export default Home;
