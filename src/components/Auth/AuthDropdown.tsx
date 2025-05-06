@@ -1,34 +1,80 @@
+// src/components/Auth/AuthDropdown.tsx
 import { useState } from "react";
+import { X, ArrowLeft } from "lucide-react";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 
-const AuthDropdown = () => {
-  const [activeTab, setActiveTab] = useState<"login" | "register">("login");
+type View = "initial" | "login" | "register";
+
+interface AuthDropdownProps {
+  onClose: () => void;
+}
+
+const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
+  const [view, setView] = useState<View>("initial");
 
   return (
-    <div className="bg-white shadow-lg rounded-md w-80 p-4 border border-gray-200">
-      <div className="flex justify-around mb-4">
+    <div className="relative w-80">
+      {/* Back-pil */}
+      {view !== "initial" && (
         <button
-          className={`w-full py-2 font-medium rounded-l ${
-            activeTab === "login" ? "bg-blue-900 text-white" : "bg-gray-100"
-          }`}
-          onClick={() => setActiveTab("login")}
+          onClick={() => setView("initial")}
+          className="absolute top-4 left-4 z-10 text-gray-500 hover:text-gray-700"
         >
-          Log In
+          <ArrowLeft size={26} />
         </button>
-        <button
-          className={`w-full py-2 font-medium rounded-r ${
-            activeTab === "register" ? "bg-blue-900 text-white" : "bg-gray-100"
-          }`}
-          onClick={() => setActiveTab("register")}
-        >
-          Register
-        </button>
-      </div>
+      )}
 
-      <div>
-        {activeTab === "login" && <LoginForm />}
-        {activeTab === "register" && <RegisterForm />}
+      {/* Close-knapp */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 z-10 text-gray-500 hover:text-gray-700"
+      >
+        <X size={26} />
+      </button>
+
+      {/* Dropdown-boks */}
+      <div className="bg-white rounded-xl shadow-lg pt-12 px-6 pb-6 space-y-4">
+        {view === "initial" && (
+          <>
+            <button
+              onClick={() => setView("register")}
+              className="mx-auto w-4/5 bg-[#0E1E34] text-white py-2 rounded-full font-medium hover:bg-[#182944] transition"
+            >
+              Sign up
+            </button>
+            <button
+              onClick={() => setView("login")}
+              className="mx-auto w-4/5 bg-[#0E1E34] text-white py-2 rounded-full font-medium hover:bg-[#182944] transition"
+            >
+              Log in
+            </button>
+
+            <hr className="border-gray-200 my-2" />
+
+            <p className="text-center text-gray-500 text-sm px-2">
+              Join Holidaze today, and unlock exclusive offers
+            </p>
+          </>
+        )}
+
+        {view === "login" && (
+          <>
+            <h2 className="text-center text-lg font-semibold text-[#0E1E34] mb-4">
+              Log in
+            </h2>
+            <LoginForm />
+          </>
+        )}
+
+        {view === "register" && (
+          <>
+            <h2 className="text-center text-lg font-semibold text-[#0E1E34] mb-4">
+              Sign up
+            </h2>
+            <RegisterForm />
+          </>
+        )}
       </div>
     </div>
   );

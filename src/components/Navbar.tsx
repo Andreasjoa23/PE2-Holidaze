@@ -35,21 +35,17 @@ const Navbar = () => {
   return (
     <header className="bg-white shadow-sm w-full">
       <nav className="flex justify-between items-center px-4 sm:px-8 lg:px-12 py-3 relative">
-        <div className="flex items-center gap-2">
-          <img src={holidazeLogo} alt="Holidaze Logo" className="h-10 w-auto" />
-          <Link to="/" className="text-m font-medium text-blue-900">
+        <div className="flex items-center gap-1">
+          <img src={holidazeLogo} alt="Holidaze Logo" className="h-7 w-auto" />
+          <Link to="/" className="text-base font-small text-[#0E1E34]">
             holidaze
           </Link>
         </div>
 
         <div className="flex items-center gap-3 relative">
-          <button className="bg-blue-900 text-white p-2 rounded-full hover:bg-blue-800 transition">
-            <Search className="h-6 w-auto" />
-          </button>
-
           <button
             onClick={() => setIsDropdownOpen((prev) => !prev)}
-            className="bg-blue-900 text-white p-2 rounded-full hover:bg-blue-800 transition"
+            className="bg-[#0E1E34] text-white p-2 rounded-full hover:bg-[#182944] transition"
           >
             <User className="h-6 w-auto" />
           </button>
@@ -59,7 +55,7 @@ const Navbar = () => {
               {isLoggedIn ? (
                 <UserDropdown onClose={() => setIsDropdownOpen(false)} />
               ) : (
-                <AuthDropdown />
+                <AuthDropdown onClose={() => setIsDropdownOpen(false)} />
               )}
             </div>
           )}

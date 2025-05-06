@@ -19,8 +19,7 @@ const recommendations: Recommendation[] = [
     avatar: "https://randomuser.me/api/portraits/women/44.jpg",
     location: "Oslo, Norway",
     rating: 5,
-    comment:
-      "Holidaze gjorde ferien vår helt perfekt! Fantastiske boliger og super service.",
+    comment: "Easy booking. Highly recommended!",
   },
   {
     id: 2,
@@ -28,7 +27,8 @@ const recommendations: Recommendation[] = [
     avatar: "https://randomuser.me/api/portraits/men/52.jpg",
     location: "Bergen, Norway",
     rating: 4,
-    comment: "Enkel booking og flott sted å bo. Anbefales på det varmeste!",
+    comment:
+      "Holidaze made our vacation absolutely perfect! Amazing accommodations and top-notch service",
   },
   {
     id: 3,
@@ -37,7 +37,7 @@ const recommendations: Recommendation[] = [
     location: "Trondheim, Norway",
     rating: 5,
     comment:
-      "Brukervennlig plattform, og vi fant akkurat det vi ønsket. Vanskelig å ikke elske!",
+      "User-friendly platform, and we found exactly what we wanted. Hard not to love",
   },
 ];
 

@@ -1,20 +1,12 @@
-// src/pages/Venues.tsx
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getAllVenues } from "../api/venues";
 import VenueCard from "../components/Venue/VenueCard";
 import { DateRange } from "react-date-range";
-import {
-  FaSearch,
-  FaCalendarAlt,
-  FaUser,
-  FaWifi,
-  FaParking,
-  FaCoffee,
-  FaDog,
-} from "react-icons/fa";
+import { FaSearch, FaCalendarAlt, FaUser } from "react-icons/fa";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
+import Illustration from "../assets/VenueIllustration3.png";
 
 interface Venue {
   id: string;
@@ -31,7 +23,7 @@ export default function Venues() {
   const [error, setError] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Hentes fra URL eller default
+  // Initial values
   const initDestination = searchParams.get("destination") || "";
   const initGuests = parseInt(searchParams.get("guests") || "1", 10);
   const initStart = searchParams.get("start")
@@ -41,7 +33,6 @@ export default function Venues() {
     ? new Date(searchParams.get("end")!)
     : new Date();
 
-  // Lokale state for form
   const [destination, setDestination] = useState(initDestination);
   const [guests, setGuests] = useState(initGuests);
   const [date, setDate] = useState([
@@ -55,14 +46,13 @@ export default function Venues() {
       try {
         const res = await getAllVenues();
         setVenues(res.data);
-      } catch (err) {
-        console.error(err);
+      } catch {
         setError("Failed to fetch venues");
       }
     })();
   }, []);
 
-  // Oppdater URL når Search trykkes
+  // Update URL on search
   const handleSearch = () => {
     const [range] = date;
     setSearchParams({
@@ -73,71 +63,111 @@ export default function Venues() {
     });
   };
 
-  // Filtrering basert på destination og guests
+  // Filter venues
   const filteredVenues = venues.filter((v) => {
-    const cd = destination.toLowerCase();
-    const matchName = v.name.toLowerCase().includes(cd);
-    const matchCity = v.location.city?.toLowerCase().includes(cd);
-    const matchCountry = v.location.country?.toLowerCase().includes(cd);
-    const fitsGuests = v.maxGuests >= guests;
-    return (matchName || matchCity || matchCountry) && fitsGuests;
+    const q = destination.toLowerCase();
+    const match =
+      v.name.toLowerCase().includes(q) ||
+      v.location.city?.toLowerCase().includes(q) ||
+      v.location.country?.toLowerCase().includes(q);
+    return match && v.maxGuests >= guests;
   });
 
-  if (error) return <div className="text-center text-red-500">{error}</div>;
+  if (error) {
+    return <div className="text-center text-red-500 py-8">{error}</div>;
+  }
 
   return (
-    <section className="p-6 space-y-8">
-      {/* Search form */}
-      <div className="max-w-4xl mx-auto bg-white p-6 rounded-2xl shadow-lg space-y-4">
-        <div className="text-center text-2xl font-bold text-[#0E1E34]">
-          Refine Your Search
+    <section className="pt-20 space-y-12 pb-12 bg-white px-4 md:px-8 lg:px-20">
+      {/* Hero Intro */}
+      <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8">
+        <div className="flex-1 text-center md:text-left">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-[#0E1E34] leading-tight mb-4">
+            Find Your Perfect Getaway
+          </h1>
+          <p className="text-sm md:text-base lg:text-lg text-gray-700 leading-relaxed">
+            Browse exclusive stays handpicked by our community to make your next
+            vacation truly unforgettable.
+          </p>
         </div>
-        <div className="flex flex-col md:flex-row gap-4">
-          {/* Destinasjon */}
-          <div className="flex-1 flex items-center border rounded-full px-4 py-2">
-            <FaSearch className="text-gray-400 mr-2" />
-            <input
-              type="text"
-              className="w-full outline-none"
-              placeholder="Where to go?"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-            />
-          </div>
+        <div className="flex-1 flex justify-center">
+          <img
+            src={Illustration}
+            alt="Travel illustration"
+            className="w-64 md:w-80 lg:w-96"
+          />
+        </div>
+      </div>
 
-          {/* Dato */}
-          <div
-            className="flex-1 flex items-center border rounded-full px-4 py-2 cursor-pointer"
-            onClick={() => setShowCalendar(true)}
-          >
-            <FaCalendarAlt className="text-gray-400 mr-2" />
-            <span>
-              {`${date[0].startDate.toLocaleDateString()} – ${date[0].endDate.toLocaleDateString()}`}
+      {/* Refine Your Search Card */}
+      <div className="max-w-4xl mx-auto bg-white rounded-3xl p-6 md:p-8 shadow-sm hover:shadow-lg transition-shadow">
+        <h2 className="text-xl md:text-2xl font-bold text-[#0E1E34] mb-6 text-center">
+          Refine Your Search
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Destination */}
+          <label className="flex flex-col">
+            <span className="text-sm font-medium text-gray-600 mb-1">
+              Destination
             </span>
-          </div>
+            <div className="flex items-center border border-gray-200 rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-[#0E1E34]">
+              <FaSearch className="text-gray-400 mr-2" />
+              <input
+                type="text"
+                className="outline-none w-full text-sm md:text-base"
+                placeholder="Where to go?"
+                value={destination}
+                onChange={(e) => setDestination(e.target.value)}
+              />
+            </div>
+          </label>
 
-          {/* Gjester */}
-          <div className="flex-1 flex items-center border rounded-full px-4 py-2">
-            <FaUser className="text-gray-400 mr-2" />
-            <input
-              type="number"
-              min={1}
-              className="w-16 outline-none"
-              value={guests}
-              onChange={(e) => setGuests(Number(e.target.value))}
-            />
-          </div>
+          {/* Dates */}
+          <label className="flex flex-col">
+            <span className="text-sm font-medium text-gray-600 mb-1">
+              Dates
+            </span>
+            <div
+              className="flex items-center border border-gray-200 rounded-full px-4 py-2 cursor-pointer focus-within:ring-2 focus-within:ring-[#0E1E34]"
+              onClick={() => setShowCalendar(true)}
+            >
+              <FaCalendarAlt className="text-gray-400 mr-2" />
+              <span className="text-sm md:text-base">
+                {`${date[0].startDate.toLocaleDateString()} – ${date[0].endDate.toLocaleDateString()}`}
+              </span>
+            </div>
+          </label>
 
-          {/* Search-knapp */}
+          {/* Guests */}
+          <label className="flex flex-col">
+            <span className="text-sm font-medium text-gray-600 mb-1">
+              Guests
+            </span>
+            <div className="flex items-center border border-gray-200 rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-[#0E1E34]">
+              <FaUser className="text-gray-400 mr-2" />
+              <input
+                type="number"
+                min={1}
+                className="outline-none w-16 text-sm md:text-base"
+                value={guests}
+                onChange={(e) => setGuests(Number(e.target.value))}
+              />
+            </div>
+          </label>
+        </div>
+
+        {/* Search Button */}
+        <div className="mt-6 text-center">
           <button
             onClick={handleSearch}
-            className="bg-[#0E1E34] text-white px-6 py-2 rounded-full whitespace-nowrap"
+            className="bg-[#0E1E34] text-white font-semibold px-8 py-3 rounded-full text-sm md:text-base hover:bg-[#182944] transition"
           >
             Search
           </button>
         </div>
 
-        {/* Kalender-modal */}
+        {/* Calendar Modal */}
         {showCalendar && (
           <div
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
@@ -158,7 +188,7 @@ export default function Venues() {
               <div className="p-4 text-right bg-gray-100">
                 <button
                   onClick={() => setShowCalendar(false)}
-                  className="bg-[#0E1E34] text-white px-6 py-2 rounded-full"
+                  className="bg-[#0E1E34] text-white px-6 py-2 rounded-full hover:bg-[#182944] transition"
                 >
                   Done
                 </button>
@@ -168,17 +198,12 @@ export default function Venues() {
         )}
       </div>
 
-      {/* Resultater */}
-      <div>
-        <h1 className="text-3xl font-bold text-[#0E1E34] mb-4 text-center">
+      {/* Results */}
+      <div className="space-y-6">
+        <h2 className="text-center text-3xl font-bold text-[#0E1E34]">
           {filteredVenues.length} stays found
-        </h1>
-        <div className="flex justify-center gap-6 mb-6">
-          <FaWifi size={24} />
-          <FaParking size={24} />
-          <FaCoffee size={24} />
-          <FaDog size={24} />
-        </div>
+        </h2>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
           {filteredVenues.map((v) => (
             <VenueCard
@@ -193,6 +218,7 @@ export default function Venues() {
             />
           ))}
         </div>
+
         {filteredVenues.length === 0 && (
           <p className="text-center text-gray-500 mt-8">
             No venues match your criteria.
