@@ -14,7 +14,9 @@ export async function updateProfile(data: {
 }
 
 export async function fetchUserBookings(username: string) {
-  const response = await apiClient.get(`/holidaze/profiles/${username}/bookings`);
+  const response = await apiClient.get(
+    `/holidaze/profiles/${username}/bookings`
+  );
   return response.data;
 }
 
@@ -24,6 +26,8 @@ export async function fetchUserListings(username: string) {
 }
 
 export async function fetchUserFavorites(username: string) {
-  const response = await apiClient.get(`/holidaze/profiles/${username}/favorites`);
+  const response = await apiClient.get(
+    `/holidaze/profiles/${username}/favorites`
+  );
   return response.data;
 }

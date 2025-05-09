@@ -9,7 +9,7 @@ const RegisterForm: React.FC = () => {
     email: "",
     password: "",
     avatarUrl: "",
-    venueManager: false, // added
+    venueManager: false,
   });
   const [error, setError] = useState("");
 
@@ -25,27 +25,33 @@ const RegisterForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.email.endsWith("@stud.noroff.no")) {
+    if (!formData.email.toLowerCase().endsWith("@stud.noroff.no")) {
       setError("Email must be a @stud.noroff.no address.");
       return;
     }
+
+    const safeName = formData.name.trim().toLowerCase().replace(/\s+/g, "_"); // eksempel: "andreas_abrahamsen"
+
     const payload: any = {
-      name: formData.name,
-      email: formData.email,
+      name: safeName,
+      email: formData.email.toLowerCase(),
       password: formData.password,
-      venueManager: formData.venueManager, // pass checkbox value
+      venueManager: formData.venueManager,
     };
+
     if (formData.avatarUrl.trim()) {
       payload.avatar = {
         url: formData.avatarUrl,
         alt: `${formData.name}'s avatar`,
       };
     }
+
     try {
+      console.log("Register payload:", payload);
       await registerUser(payload);
       window.location.reload();
     } catch {
-      setError("Registration failed. Try again.");
+      setError("Registration failed. Try a different name or email.");
     }
   };
 
@@ -87,7 +93,6 @@ const RegisterForm: React.FC = () => {
         className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0E1E34]"
       />
 
-      {/* Venue Manager Checkbox */}
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
@@ -99,6 +104,7 @@ const RegisterForm: React.FC = () => {
       </label>
 
       {error && <p className="text-red-500 text-sm">{error}</p>}
+
       <button
         type="submit"
         className="w-full bg-[#0E1E34] text-white py-3 rounded-full font-medium hover:bg-[#182944] transition"

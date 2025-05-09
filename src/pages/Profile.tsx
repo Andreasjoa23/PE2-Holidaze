@@ -1,56 +1,60 @@
-import { useEffect, useState } from "react";
-import { fetchUserBookings, fetchUserListings } from "../api/profile";
+import React, { useEffect, useState } from "react";
+import BookingsDropdown from "../components/profile/BookingsDropdown";
+import ListingsDropdown from "../components/profile/ListingsDropdown";
+import FavoritesDropdown from "../components/profile/FavoritesDropdown";
 import EditProfile from "../components/profile/EditProfile";
 import VenueForm from "../components/Venue/VenueForm";
-import VenueList from "../components/Venue/VenueList";
+import Insights from "../components/profile/Insights";
+import { fetchUserBookings, fetchUserListings } from "../api/profile";
+import { deleteVenue } from "../api/venues";
+import { AnimatePresence } from "framer-motion";
 
-const Profile = () => {
-  const [user, setUser] = useState(() => {
+const Profile: React.FC = () => {
+  const [user, setUser] = useState<any>(() => {
     const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
   });
 
-  const [bookings, setBookings] = useState([]);
-  const [listings, setListings] = useState([]);
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [listings, setListings] = useState<any[]>([]);
+  const [favorites] = useState<any[]>([]);
   const [error, setError] = useState("");
+
   const [showEditor, setShowEditor] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [showVenuesPopup, setShowVenuesPopup] = useState(false);
-  const [editVenue, setEditVenue] = useState(null);
-
-  const loadListings = async () => {
-    try {
-      const listingsData = await fetchUserListings(user.name);
-      setListings(listingsData.data);
-    } catch (err) {
-      console.error("Failed to refresh listings:", err);
-    }
-  };
 
   useEffect(() => {
-    if (user?.name) {
-      const loadData = async () => {
-        try {
-          const [bookingsData, listingsData] = await Promise.all([
-            fetchUserBookings(user.name),
-            fetchUserListings(user.name),
-          ]);
-          setBookings(bookingsData.data);
-          setListings(listingsData.data);
-        } catch (err) {
-          console.error("Failed to fetch profile data:", err);
-          setError("Failed to load profile data.");
-        }
-      };
-
-      loadData();
-    }
+    if (!user?.name) return;
+    const load = async () => {
+      try {
+        const [bk, ls] = await Promise.all([
+          fetchUserBookings(user.name),
+          fetchUserListings(user.name),
+        ]);
+        setBookings(bk.data);
+        setListings(ls.data);
+      } catch (e) {
+        console.error(e);
+        setError("Failed to load your data.");
+      }
+    };
+    load();
   }, [user?.name]);
 
-  const handleProfileUpdate = (updatedUser) => {
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    setUser(updatedUser);
+  const handleProfileUpdate = (updated: any) => {
+    localStorage.setItem("user", JSON.stringify(updated));
+    setUser(updated);
     setShowEditor(false);
+  };
+
+  const handleVenueDeleted = async (id: string) => {
+    try {
+      await deleteVenue(id);
+      const updated = await fetchUserListings(user.name);
+      setListings(updated.data);
+    } catch (err) {
+      console.error("Failed to delete venue:", err);
+    }
   };
 
   if (!user) {
@@ -62,102 +66,100 @@ const Profile = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
-      <div className="relative mb-6">
+    <div className="max-w-7xl mx-auto p-4 space-y-6">
+      {/* Banner */}
+      <div className="relative mb-4">
         <img
           src={user.banner?.url || "https://placehold.co/600x200"}
           alt={user.banner?.alt || "Banner"}
-          className="w-full h-40 object-cover rounded"
-        />
-        <img
-          src={user.avatar?.url || "https://placehold.co/80"}
-          alt={user.avatar?.alt || user.name}
-          className="w-20 h-20 rounded-full border-4 border-white absolute -bottom-10 left-4 bg-white"
+          className="w-full h-48 md:h-56 object-cover rounded-2xl"
         />
       </div>
 
-      <div className="text-center mb-4">
-        <h2 className="text-xl font-semibold">{user.name}</h2>
-        <p className="text-sm text-gray-500">Unknown location</p>
-      </div>
-
-      <div className="flex justify-center gap-4 mb-6">
-        <button
-          onClick={() => setShowCreateForm((prev) => !prev)}
-          className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800 transition"
-        >
-          {showCreateForm ? "Cancel" : "Create listing"}
-        </button>
-        <button
-          onClick={() => setShowVenuesPopup(true)}
-          className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800 transition"
-        >
-          Show My Venues
-        </button>
-        <button
-          onClick={() => setShowEditor((prev) => !prev)}
-          className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800 transition"
-        >
-          {showEditor ? "Close Editor" : "Edit Profile"}
-        </button>
-      </div>
-
-      {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-
-      {showEditor && (
-        <div className="mb-6">
-          <EditProfile onSuccess={handleProfileUpdate} />
+      {/* Avatar + Name + Buttons */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 px-2">
+        <div className="flex items-center gap-4">
+          <img
+            src={user.avatar?.url || "https://placehold.co/80"}
+            alt={user.avatar?.alt || user.name}
+            className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-white object-cover shadow"
+          />
+          <div>
+            <h2 className="text-xl font-bold text-[#0E1E34]">{user.name}</h2>
+            <p className="text-sm text-gray-500">
+              {user.location || "Unknown location"}
+            </p>
+          </div>
         </div>
-      )}
 
-      {showCreateForm && (
-        <div className="mb-6">
+        <div className="flex flex-col md:flex-row gap-3 mt-2 md:mt-0">
+          <button
+            onClick={() => {
+              setShowCreateForm(true);
+              setShowEditor(false);
+            }}
+            className="bg-[#0E1E34] text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-[#182944] transition"
+          >
+            Create listing
+          </button>
+          <button
+            onClick={() => {
+              setShowEditor(true);
+              setShowCreateForm(false);
+            }}
+            className="bg-[#0E1E34] text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-[#182944] transition"
+          >
+            Edit Profile
+          </button>
+        </div>
+      </div>
+
+      {/* Error */}
+      {error && <p className="text-red-500 text-center">{error}</p>}
+
+      {/* MODALS */}
+      <AnimatePresence>
+        {showEditor && (
+          <EditProfile
+            onSuccess={handleProfileUpdate}
+            onClose={() => setShowEditor(false)}
+          />
+        )}
+
+        {showCreateForm && (
           <VenueForm
             mode="create"
-            onSuccess={() => {
+            onSuccess={async () => {
               setShowCreateForm(false);
-              loadListings();
+              const refreshed = await fetchUserListings(user.name);
+              setListings(refreshed.data);
+            }}
+            onClose={() => setShowCreateForm(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Dropdowns + Insights */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+        <div className="flex flex-col space-y-4">
+          <BookingsDropdown bookings={bookings} />
+          <ListingsDropdown
+            listings={listings}
+            onDelete={handleVenueDeleted}
+            onUpdate={async () => {
+              const refreshed = await fetchUserListings(user.name);
+              setListings(refreshed.data);
             }}
           />
+          <FavoritesDropdown favorites={favorites} />
         </div>
-      )}
 
-      {editVenue && (
-        <div className="mb-6">
-          <VenueForm
-            mode="edit"
-            initialData={editVenue}
-            onSuccess={() => {
-              setEditVenue(null);
-              loadListings();
-            }}
-          />
-        </div>
-      )}
-
-      {showVenuesPopup && (
-        <VenueList
-          venues={listings}
-          onEdit={(venue) => {
-            setEditVenue(venue);
-            setShowVenuesPopup(false);
-          }}
-          onClose={() => setShowVenuesPopup(false)}
-          onDeleted={() => loadListings()}
+        <Insights
+          bookingsCount={bookings.length}
+          viewsCount={300}
+          income={4920}
+          nextBooking="17th April 2025"
         />
-      )}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-        <div className="p-4 bg-white shadow rounded">
-          <h3 className="font-semibold mb-2">
-            Bookings (last 30 days): {bookings.length}
-          </h3>
-        </div>
-        <div className="p-4 bg-white shadow rounded">
-          <h3 className="font-semibold mb-2">
-            Listings: {listings.length}
-          </h3>
-        </div>
       </div>
     </div>
   );

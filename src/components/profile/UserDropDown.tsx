@@ -1,4 +1,3 @@
-// src/components/profile/UserDropdown.tsx
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -83,6 +82,15 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
         <>
           {/* Menu items */}
           <nav className="flex flex-col gap-2 text-gray-700">
+            <button
+              onClick={() => {
+                navigate("/profile");
+                onClose();
+              }}
+              className="flex items-center gap-2 text-base py-2 hover:text-[#0E1E34] transition"
+            >
+              <UserIcon size={18} /> Profile
+            </button>
             <button
               onClick={() => {
                 navigate("/bookings");

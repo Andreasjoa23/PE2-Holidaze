@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaBed, FaUserFriends } from "react-icons/fa";
+import { FaBed, FaUserFriends, FaHeart, FaRegHeart } from "react-icons/fa";
+import { isFavorite, toggleFavoriteVenue } from "./favoritesHelpers";
 
 interface VenueCardProps {
   id: string;
@@ -10,6 +11,7 @@ interface VenueCardProps {
   price: number;
   maxGuests: number;
   location?: { city?: string; country?: string };
+  onFavoriteToggle?: () => void; // optional callback for syncing
 }
 
 const VenueCard: React.FC<VenueCardProps> = ({
@@ -19,8 +21,11 @@ const VenueCard: React.FC<VenueCardProps> = ({
   media,
   price,
   maxGuests,
+  onFavoriteToggle,
 }) => {
   const navigate = useNavigate();
+  const [isFav, setIsFav] = useState(false);
+
   const imageUrl =
     media && media.length > 0
       ? media[0].url
@@ -28,26 +33,35 @@ const VenueCard: React.FC<VenueCardProps> = ({
 
   const handleClick = () => navigate(`/venue/${id}`);
 
+  useEffect(() => {
+    setIsFav(isFavorite(id));
+  }, [id]);
+
+  const handleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = toggleFavoriteVenue(id);
+    setIsFav(updated.includes(id));
+    if (onFavoriteToggle) onFavoriteToggle(); // Notify parent (optional)
+  };
+
   return (
     <div
       onClick={handleClick}
-      className="
-        cursor-pointer
-        bg-white
-        rounded-2xl
-        overflow-hidden
-        shadow-md
-        transition
-        transform
-        hover:scale-102
-        hover:shadow-lg
-        flex
-        flex-col
-      "
+      className="cursor-pointer bg-white rounded-2xl overflow-hidden shadow-md transition transform hover:scale-102 hover:shadow-lg flex flex-col relative"
     >
-      {/* Image */}
+      {/* Image + favorite icon */}
       <div className="relative h-48 w-full overflow-hidden">
         <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
+        <div
+          onClick={handleFavorite}
+          className="absolute top-3 right-3 bg-white rounded-full p-2 shadow hover:scale-105 transition"
+        >
+          {isFav ? (
+            <FaHeart className="text-red-500" />
+          ) : (
+            <FaRegHeart className="text-gray-400" />
+          )}
+        </div>
       </div>
 
       {/* Content */}
@@ -79,18 +93,7 @@ const VenueCard: React.FC<VenueCardProps> = ({
                 e.stopPropagation();
                 handleClick();
               }}
-              className="
-                bg-[#0E1E34]
-                text-white
-                font-semibold
-                px-8
-                py-3
-                rounded-full
-                text-base
-                shadow-md
-                hover:shadow-lg
-                transition
-              "
+              className="bg-[#0E1E34] text-white font-semibold px-8 py-3 rounded-full text-base shadow-md hover:shadow-lg transition"
             >
               View Property
             </button>
