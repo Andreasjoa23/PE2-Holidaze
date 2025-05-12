@@ -1,7 +1,16 @@
+import { useState, useEffect } from "react";
 import AppRoutes from "./routes/AppRoutes";
+import Loader from "./components/Loader";
 
 function App() {
-  return <AppRoutes />;
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 2000); // Justér tiden etter behov
+    return () => clearTimeout(timer);
+  }, []);
+
+  return <>{loading ? <Loader /> : <AppRoutes />}</>;
 }
 
 export default App;
