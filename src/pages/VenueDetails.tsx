@@ -50,6 +50,14 @@ type Venue = {
   };
   media: Media[];
   bookings: Booking[];
+  owner?: {
+    name: string;
+    email: string;
+    avatar?: {
+      url: string;
+      alt?: string;
+    };
+  };
 };
 
 const VenueDetails = () => {
@@ -60,7 +68,6 @@ const VenueDetails = () => {
   const [error, setError] = useState("");
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isFav, setIsFav] = useState(false);
-
   const [dateRange, setDateRange] = useState<Range[]>([
     {
       startDate: new Date(),
@@ -68,14 +75,13 @@ const VenueDetails = () => {
       key: "selection",
     },
   ]);
-
   const [guests, setGuests] = useState(1);
 
   useEffect(() => {
     const fetchVenue = async () => {
       try {
         const response = await apiClient.get<{ data: Venue }>(
-          `/holidaze/venues/${id}?_bookings=true`
+          `/holidaze/venues/${id}?_bookings=true&_owner=true`
         );
         setVenue(response.data.data);
       } catch {
@@ -93,17 +99,15 @@ const VenueDetails = () => {
 
   const handleBooking = async () => {
     const { startDate, endDate } = dateRange[0];
-  
     const bookingData = {
       dateFrom: startDate!.toISOString(),
       dateTo: endDate!.toISOString(),
       guests: guests,
       venueId: id!,
     };
-  
+
     try {
       await createBooking(bookingData);
-  
       setTimeout(() => {
         navigate("/bookingConfirmation", {
           state: {
@@ -120,12 +124,10 @@ const VenueDetails = () => {
       alert("Failed to book. Please try again.");
     }
   };
-  
 
   const getDisabledDates = () => {
     if (!venue?.bookings) return [];
     const disabled: Date[] = [];
-
     venue.bookings.forEach((booking) => {
       const start = new Date(booking.dateFrom);
       const end = new Date(booking.dateTo);
@@ -133,7 +135,6 @@ const VenueDetails = () => {
         disabled.push(new Date(d));
       }
     });
-
     return disabled;
   };
 
@@ -144,8 +145,10 @@ const VenueDetails = () => {
 
   if (isLoading)
     return <p className="text-center mt-10">Loading venue details...</p>;
-  if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
-  if (!venue) return <p className="text-center mt-10">Venue not found.</p>;
+  if (error)
+    return <p className="text-center text-red-500 mt-10">{error}</p>;
+  if (!venue)
+    return <p className="text-center mt-10">Venue not found.</p>;
 
   return (
     <section className="p-4 md:p-12 max-w-7xl mx-auto">
@@ -201,11 +204,25 @@ const VenueDetails = () => {
             </div>
           </div>
 
-          <div className="border-b border-gray-300"></div>
-
-          <div className="h-20 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 text-sm">
-            Host info coming soon...
-          </div>
+          {venue.owner ? (
+            <div className="flex items-center gap-4 bg-gray-100 p-4 rounded-xl shadow">
+              <img
+                src={venue.owner.avatar?.url || "https://placehold.co/80"}
+                alt={venue.owner.avatar?.alt || venue.owner.name}
+                className="w-12 h-12 rounded-full object-cover border-2 border-white"
+              />
+              <div>
+                <p className="font-semibold text-[#0E1E34]">
+                  {venue.owner.name}
+                </p>
+                <p className="text-sm text-gray-500">{venue.owner.email}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="h-20 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 text-sm">
+              Host info not available.
+            </div>
+          )}
 
           <div>
             <h2 className="text-xl font-bold text-[#0E1E34] mb-2">Description</h2>
@@ -222,6 +239,7 @@ const VenueDetails = () => {
           </div>
         </div>
 
+        {/* Booking Panel */}
         <div>
           <h2 className="text-xl font-bold text-[#0E1E34] mb-4">Select your stay</h2>
           <DateRange
@@ -233,8 +251,9 @@ const VenueDetails = () => {
             disabledDates={getDisabledDates()}
             className="shadow-xl rounded-xl overflow-hidden"
           />
+
           <div className="flex justify-between items-center mt-6">
-            <div className="mt-4">
+            <div className="mt-4 w-1/2">
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Number of Guests
               </label>
@@ -249,18 +268,20 @@ const VenueDetails = () => {
               <small className="text-gray-500">Max allowed: {venue.maxGuests}</small>
             </div>
 
-            <button
-              onClick={handleBooking}
-              className="bg-[#0E1E34] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1d2d50] transition"
-            >
-              Book Now
-            </button>
-            <button
-              className="text-[#0E1E34] text-xl hover:scale-110 transition"
-              onClick={handleToggleFavorite}
-            >
-              {isFav ? <FaHeart className="text-red-500" /> : <FaRegHeart className="text-gray-400" />}
-            </button>
+            <div className="flex flex-col items-end space-y-2 ml-4">
+              <button
+                onClick={handleBooking}
+                className="bg-[#0E1E34] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1d2d50] transition"
+              >
+                Book Now
+              </button>
+              <button
+                className="text-[#0E1E34] text-xl hover:scale-110 transition"
+                onClick={handleToggleFavorite}
+              >
+                {isFav ? <FaHeart className="text-red-500" /> : <FaRegHeart className="text-gray-400" />}
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -22,7 +22,6 @@ const BookingConfirmation = () => {
     <div className="min-h-screen bg-white flex flex-col justify-center items-center p-8">
       <div className="w-full max-w-5xl flex flex-col md:flex-row justify-between items-center bg-white shadow-lg rounded-2xl p-8 space-y-8 md:space-y-0 md:space-x-8">
         
-        {/* Illustration + Message */}
         <div className="flex flex-col items-center md:items-start">
           <img
             src="/images/booking-success.png"
@@ -33,7 +32,6 @@ const BookingConfirmation = () => {
           <p className="text-lg text-gray-600">Your trip has been booked ✔️</p>
         </div>
 
-        {/* Booking Details Card */}
         <div className="bg-gray-50 rounded-2xl shadow-md p-6 w-full max-w-sm text-center md:text-left">
           <img
             src={venueImage}
