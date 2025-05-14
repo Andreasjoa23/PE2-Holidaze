@@ -23,7 +23,6 @@ export default function Venues() {
   const [error, setError] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Initial values
   const initDestination = searchParams.get("destination") || "";
   const initGuests = parseInt(searchParams.get("guests") || "1", 10);
   const initStart = searchParams.get("start")
@@ -40,7 +39,6 @@ export default function Venues() {
   ]);
   const [showCalendar, setShowCalendar] = useState(false);
 
-  // Fetch venues
   useEffect(() => {
     (async () => {
       try {
@@ -52,7 +50,6 @@ export default function Venues() {
     })();
   }, []);
 
-  // Update URL on search
   const handleSearch = () => {
     const [range] = date;
     setSearchParams({
@@ -63,7 +60,6 @@ export default function Venues() {
     });
   };
 
-  // Filter venues
   const filteredVenues = venues.filter((v) => {
     const q = destination.toLowerCase();
     const match =
@@ -99,14 +95,13 @@ export default function Venues() {
         </div>
       </div>
 
-      {/* Refine Your Search Card */}
       <div className="max-w-4xl mx-auto bg-white rounded-3xl p-6 md:p-8 shadow-sm hover:shadow-lg transition-shadow">
         <h2 className="text-xl md:text-2xl font-bold text-[#0E1E34] mb-6 text-center">
           Refine Your Search
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Destination */}
+
           <label className="flex flex-col">
             <span className="text-sm font-medium text-gray-600 mb-1">
               Destination
@@ -123,7 +118,6 @@ export default function Venues() {
             </div>
           </label>
 
-          {/* Dates */}
           <label className="flex flex-col">
             <span className="text-sm font-medium text-gray-600 mb-1">
               Dates
@@ -139,7 +133,6 @@ export default function Venues() {
             </div>
           </label>
 
-          {/* Guests */}
           <label className="flex flex-col">
             <span className="text-sm font-medium text-gray-600 mb-1">
               Guests
@@ -157,7 +150,6 @@ export default function Venues() {
           </label>
         </div>
 
-        {/* Search Button */}
         <div className="mt-6 text-center">
           <button
             onClick={handleSearch}
@@ -167,7 +159,6 @@ export default function Venues() {
           </button>
         </div>
 
-        {/* Calendar Modal */}
         {showCalendar && (
           <div
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
@@ -198,7 +189,6 @@ export default function Venues() {
         )}
       </div>
 
-      {/* Results */}
       <div className="space-y-6">
         <h2 className="text-center text-3xl font-bold text-[#0E1E34]">
           {filteredVenues.length} stays found

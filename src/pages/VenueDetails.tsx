@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { DateRange, Range } from "react-date-range";
 import {
   FaWifi,
@@ -54,6 +54,7 @@ type Venue = {
 
 const VenueDetails = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [venue, setVenue] = useState<Venue | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -69,7 +70,6 @@ const VenueDetails = () => {
   ]);
 
   const [guests, setGuests] = useState(1);
-
 
   useEffect(() => {
     const fetchVenue = async () => {
@@ -101,17 +101,27 @@ const VenueDetails = () => {
       venueId: id!,
     };
   
-    console.log("Sending booking data:", bookingData);
-  
     try {
       await createBooking(bookingData);
-      alert("Booking successful!");
+  
+      setTimeout(() => {
+        navigate("/bookingConfirmation", {
+          state: {
+            venueImage: venue?.media?.[0]?.url,
+            venueName: venue?.name,
+            guests: guests,
+            dateFrom: startDate?.toISOString(),
+            dateTo: endDate?.toISOString(),
+          },
+        });
+      }, 1000);
     } catch (err) {
       console.error("Booking failed:", err);
       alert("Failed to book. Please try again.");
     }
   };
   
+
   const getDisabledDates = () => {
     if (!venue?.bookings) return [];
     const disabled: Date[] = [];
@@ -151,17 +161,15 @@ const VenueDetails = () => {
           className="w-full h-60 md:h-80 object-cover rounded-2xl shadow-lg cursor-pointer col-span-2"
         />
         <div className="flex md:flex-col gap-4">
-          {venue.media
-            ?.slice(1, 3)
-            .map((img, i) => (
-              <img
-                key={i}
-                onClick={() => setIsLightboxOpen(true)}
-                src={img.url || "https://via.placeholder.com/300"}
-                alt={venue.name}
-                className="w-1/2 md:w-full h-24 md:h-36 object-cover rounded-2xl shadow-md cursor-pointer"
-              />
-            ))}
+          {venue.media?.slice(1, 3).map((img, i) => (
+            <img
+              key={i}
+              onClick={() => setIsLightboxOpen(true)}
+              src={img.url || "https://via.placeholder.com/300"}
+              alt={venue.name}
+              className="w-1/2 md:w-full h-24 md:h-36 object-cover rounded-2xl shadow-md cursor-pointer"
+            />
+          ))}
           <button
             className="flex items-center justify-center px-4 py-2 bg-[#0E1E34] text-white text-sm rounded-full shadow md:hidden"
             onClick={() => setIsLightboxOpen(true)}
@@ -200,9 +208,7 @@ const VenueDetails = () => {
           </div>
 
           <div>
-            <h2 className="text-xl font-bold text-[#0E1E34] mb-2">
-              Description
-            </h2>
+            <h2 className="text-xl font-bold text-[#0E1E34] mb-2">Description</h2>
             <p className="text-gray-700 text-sm leading-relaxed">
               {venue.description}
             </p>
@@ -210,22 +216,14 @@ const VenueDetails = () => {
 
           <div className="flex gap-4 flex-wrap">
             {venue.meta?.wifi && <FeatureIcon icon={<FaWifi />} label="Wifi" />}
-            {venue.meta?.parking && (
-              <FeatureIcon icon={<FaParking />} label="Parking" />
-            )}
-            {venue.meta?.breakfast && (
-              <FeatureIcon icon={<FaCoffee />} label="Breakfast" />
-            )}
-            {venue.meta?.pets && (
-              <FeatureIcon icon={<FaDog />} label="Pet Friendly" />
-            )}
+            {venue.meta?.parking && <FeatureIcon icon={<FaParking />} label="Parking" />}
+            {venue.meta?.breakfast && <FeatureIcon icon={<FaCoffee />} label="Breakfast" />}
+            {venue.meta?.pets && <FeatureIcon icon={<FaDog />} label="Pet Friendly" />}
           </div>
         </div>
 
         <div>
-          <h2 className="text-xl font-bold text-[#0E1E34] mb-4">
-            Select your stay
-          </h2>
+          <h2 className="text-xl font-bold text-[#0E1E34] mb-4">Select your stay</h2>
           <DateRange
             ranges={dateRange}
             onChange={(item) => setDateRange([item.selection])}
@@ -236,22 +234,20 @@ const VenueDetails = () => {
             className="shadow-xl rounded-xl overflow-hidden"
           />
           <div className="flex justify-between items-center mt-6">
-          <div className="mt-4">
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    Number of Guests
-  </label>
-  <input
-    type="number"
-    min={1}
-    max={venue.maxGuests}
-    value={guests}
-    onChange={(e) => setGuests(Number(e.target.value))}
-    className="w-full border px-4 py-2 rounded-md shadow-sm focus:ring-[#0E1E34] focus:border-[#0E1E34]"
-  />
-  <small className="text-gray-500">
-    Max allowed: {venue.maxGuests}
-  </small>
-</div>
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Number of Guests
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={venue.maxGuests}
+                value={guests}
+                onChange={(e) => setGuests(Number(e.target.value))}
+                className="w-full border px-4 py-2 rounded-md shadow-sm focus:ring-[#0E1E34] focus:border-[#0E1E34]"
+              />
+              <small className="text-gray-500">Max allowed: {venue.maxGuests}</small>
+            </div>
 
             <button
               onClick={handleBooking}
@@ -263,11 +259,7 @@ const VenueDetails = () => {
               className="text-[#0E1E34] text-xl hover:scale-110 transition"
               onClick={handleToggleFavorite}
             >
-              {isFav ? (
-                <FaHeart className="text-red-500" />
-              ) : (
-                <FaRegHeart className="text-gray-400" />
-              )}
+              {isFav ? <FaHeart className="text-red-500" /> : <FaRegHeart className="text-gray-400" />}
             </button>
           </div>
         </div>
@@ -276,13 +268,7 @@ const VenueDetails = () => {
   );
 };
 
-const FeatureIcon = ({
-  icon,
-  label,
-}: {
-  icon: React.ReactNode;
-  label: string;
-}) => (
+const FeatureIcon = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
   <div className="flex flex-col items-center">
     <div className="bg-[#0E1E34] p-3 rounded-full text-white">{icon}</div>
     <p className="text-xs mt-1 text-[#0E1E34]">{label}</p>
