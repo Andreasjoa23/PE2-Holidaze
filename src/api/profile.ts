@@ -15,7 +15,7 @@ export async function updateProfile(data: {
 
 export async function fetchUserBookings(username: string) {
   const response = await apiClient.get(
-    `/holidaze/profiles/${username}/bookings`
+    `/holidaze/profiles/${username}/bookings?_venue=true`
   );
   return response.data;
 }

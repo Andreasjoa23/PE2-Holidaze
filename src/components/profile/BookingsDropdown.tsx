@@ -2,8 +2,19 @@ import React, { useState } from "react";
 import { Calendar, ChevronDown, ChevronUp } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
+interface Booking {
+  id: string;
+  venue?: {
+    name?: string;
+    media?: { url: string }[];
+    price?: number;
+  };
+  dateFrom: string;
+  dateTo: string;
+}
+
 interface BookingsDropdownProps {
-  bookings: any[];
+  bookings: Booking[];
 }
 
 const BookingsDropdown: React.FC<BookingsDropdownProps> = ({ bookings }) => {
@@ -12,7 +23,7 @@ const BookingsDropdown: React.FC<BookingsDropdownProps> = ({ bookings }) => {
   return (
     <div className="w-full max-w-md bg-white rounded-xl shadow p-4">
       <button
-        onClick={() => setIsOpen((o) => !o)}
+        onClick={() => setIsOpen((prev) => !prev)}
         className="w-full flex justify-between items-center text-[#0E1E34] font-semibold"
       >
         <span className="flex items-center space-x-2">
@@ -37,16 +48,31 @@ const BookingsDropdown: React.FC<BookingsDropdownProps> = ({ bookings }) => {
             className="mt-3"
           >
             {bookings.length > 0 ? (
-              bookings.map((b) => (
-                <p
-                  key={b.id}
-                  className="py-2 text-gray-700 border-b last:border-b-0"
-                >
-                  {b.venue.name}
-                </p>
-              ))
+              bookings
+                .filter((b) => b.venue)
+                .map((b) => (
+                  <div
+                    key={b.id}
+                    className="p-3 border-b last:border-b-0 text-sm"
+                  >
+                    <p className="font-semibold">
+                      {b.venue?.name || "Unnamed venue"}
+                    </p>
+                    <p className="text-gray-600">
+                      From {new Date(b.dateFrom).toLocaleDateString()} to{" "}
+                      {new Date(b.dateTo).toLocaleDateString()}
+                    </p>
+                    {b.venue?.price && (
+                      <p className="text-gray-500">
+                        Price: {b.venue.price} / night
+                      </p>
+                    )}
+                  </div>
+                ))
             ) : (
-              <p className="text-center text-gray-500">You have no bookings.</p>
+              <p className="text-center text-gray-500">
+                You have no bookings.
+              </p>
             )}
           </motion.div>
         )}
