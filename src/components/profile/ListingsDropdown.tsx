@@ -129,7 +129,6 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
         )}
       </AnimatePresence>
 
-      {/* Delete Modal */}
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
@@ -137,7 +136,6 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
         venueName={selectedVenue?.name}
       />
 
-      {/* Edit Modal */}
       <EditVenueModal
         isOpen={showEditModal && !!selectedVenue}
         onClose={() => {
