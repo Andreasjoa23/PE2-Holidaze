@@ -13,6 +13,7 @@ import {
   FaRegHeart,
 } from "react-icons/fa";
 import apiClient from "../api/apiClient";
+import { createBooking } from "../api/bookings";
 import Lightbox from "yet-another-react-lightbox";
 import {
   isFavorite,
@@ -67,6 +68,9 @@ const VenueDetails = () => {
     },
   ]);
 
+  const [guests, setGuests] = useState(1);
+
+
   useEffect(() => {
     const fetchVenue = async () => {
       try {
@@ -87,11 +91,27 @@ const VenueDetails = () => {
     }
   }, [id]);
 
-  const handleBooking = () => {
+  const handleBooking = async () => {
     const { startDate, endDate } = dateRange[0];
-    console.log("Booking from:", startDate, "to:", endDate);
+  
+    const bookingData = {
+      dateFrom: startDate!.toISOString(),
+      dateTo: endDate!.toISOString(),
+      guests: guests,
+      venueId: id!,
+    };
+  
+    console.log("Sending booking data:", bookingData);
+  
+    try {
+      await createBooking(bookingData);
+      alert("Booking successful!");
+    } catch (err) {
+      console.error("Booking failed:", err);
+      alert("Failed to book. Please try again.");
+    }
   };
-
+  
   const getDisabledDates = () => {
     if (!venue?.bookings) return [];
     const disabled: Date[] = [];
@@ -123,7 +143,6 @@ const VenueDetails = () => {
         {venue.name}
       </h1>
 
-      {/* Image Gallery */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-10">
         <img
           onClick={() => setIsLightboxOpen(true)}
@@ -161,7 +180,6 @@ const VenueDetails = () => {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Left: Venue info */}
         <div className="space-y-6">
           <div className="space-y-2 text-[#0E1E34]">
             <p className="font-semibold">
@@ -204,7 +222,6 @@ const VenueDetails = () => {
           </div>
         </div>
 
-        {/* Right: Booking and favorite */}
         <div>
           <h2 className="text-xl font-bold text-[#0E1E34] mb-4">
             Select your stay
@@ -219,6 +236,23 @@ const VenueDetails = () => {
             className="shadow-xl rounded-xl overflow-hidden"
           />
           <div className="flex justify-between items-center mt-6">
+          <div className="mt-4">
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Number of Guests
+  </label>
+  <input
+    type="number"
+    min={1}
+    max={venue.maxGuests}
+    value={guests}
+    onChange={(e) => setGuests(Number(e.target.value))}
+    className="w-full border px-4 py-2 rounded-md shadow-sm focus:ring-[#0E1E34] focus:border-[#0E1E34]"
+  />
+  <small className="text-gray-500">
+    Max allowed: {venue.maxGuests}
+  </small>
+</div>
+
             <button
               onClick={handleBooking}
               className="bg-[#0E1E34] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1d2d50] transition"
