@@ -24,7 +24,7 @@ const BookingConfirmation = () => {
         
         <div className="flex flex-col items-center md:items-start">
           <img
-            src="/images/booking-success.png"
+            src="/src\assets\BookingConfirmed.png"
             alt="Booking confirmed illustration"
             className="w-64 mb-6"
           />
@@ -41,11 +41,12 @@ const BookingConfirmation = () => {
           <h2 className="text-lg font-semibold text-[#0E1E34] mb-1">{venueName}</h2>
           <p className="text-sm text-gray-700 mb-1">{formattedStart} - {formattedEnd}</p>
           <p className="text-sm text-gray-700 mb-4">{guests} guests</p>
-          <Link to="/my-bookings">
+          <Link to="/profile?open=bookings">
             <button className="bg-[#0E1E34] text-white px-4 py-2 rounded-full text-sm hover:bg-[#1d2d50] transition">
               Go to my bookings
             </button>
           </Link>
+
         </div>
       </div>
     </div>

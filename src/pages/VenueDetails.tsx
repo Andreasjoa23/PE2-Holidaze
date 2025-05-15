@@ -239,7 +239,6 @@ const VenueDetails = () => {
           </div>
         </div>
 
-        {/* Booking Panel */}
         <div>
           <h2 className="text-xl font-bold text-[#0E1E34] mb-4">Select your stay</h2>
           <DateRange
