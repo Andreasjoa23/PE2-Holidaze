@@ -16,6 +16,7 @@ interface Booking {
 
 interface BookingsDropdownProps {
   bookings: Booking[];
+  defaultOpen?: boolean;
 }
 
 const formatDate = (iso: string) => {
@@ -27,8 +28,11 @@ const formatDate = (iso: string) => {
   });
 };
 
-const BookingsDropdown: React.FC<BookingsDropdownProps> = ({ bookings }) => {
-  const [isOpen, setIsOpen] = useState(false);
+const BookingsDropdown: React.FC<BookingsDropdownProps> = ({
+  bookings,
+  defaultOpen = false,
+}) => {
+  const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
     <div className="w-full max-w-md bg-white rounded-xl shadow p-4 relative z-10">

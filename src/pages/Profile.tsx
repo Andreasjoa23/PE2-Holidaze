@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import BookingsDropdown from "../components/profile/BookingsDropdown";
 import ListingsDropdown from "../components/profile/ListingsDropdown";
 import FavoritesDropdown from "../components/profile/FavoritesDropdown";
@@ -10,6 +11,9 @@ import { deleteVenue } from "../api/venues";
 import { AnimatePresence } from "framer-motion";
 
 const Profile: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const openBookings = searchParams.get("open") === "bookings"; // ✅ Check query param
+
   const [user, setUser] = useState<any>(() => {
     const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
@@ -125,7 +129,6 @@ const Profile: React.FC = () => {
             onClose={() => setShowEditor(false)}
           />
         )}
-
         {showCreateForm && (
           <VenueForm
             mode="create"
@@ -142,7 +145,7 @@ const Profile: React.FC = () => {
       {/* Dropdowns + Insights */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         <div className="flex flex-col space-y-4">
-          <BookingsDropdown bookings={bookings} />
+          <BookingsDropdown bookings={bookings} defaultOpen={openBookings} />
           <ListingsDropdown
             listings={listings}
             onDelete={handleVenueDeleted}
