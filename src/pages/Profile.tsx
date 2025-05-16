@@ -67,7 +67,7 @@ const Profile: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-6">
-      {/* Banner */}
+
       <div className="relative mb-4">
         <img
           src={user.banner?.url || "https://placehold.co/600x200"}
@@ -76,7 +76,6 @@ const Profile: React.FC = () => {
         />
       </div>
 
-      {/* Avatar + Name + Buttons */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 px-2">
         <div className="flex items-center gap-4">
           <img
@@ -114,10 +113,8 @@ const Profile: React.FC = () => {
         </div>
       </div>
 
-      {/* Error */}
       {error && <p className="text-red-500 text-center">{error}</p>}
 
-      {/* MODALS */}
       <AnimatePresence>
         {showEditor && (
           <EditProfile

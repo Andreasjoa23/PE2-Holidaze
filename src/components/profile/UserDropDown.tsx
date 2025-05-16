@@ -12,7 +12,11 @@ import { logout } from "../../utils/auth";
 import EditProfile from "./EditProfile";
 import VenueForm from "../Venue/VenueForm";
 import ListingsView from "../profile/ListingsDropdown";
-import apiClient from "../../api/apiClient";
+import BookingsDropdown from "../profile/BookingsDropdown";
+import {
+  fetchUserBookings,
+  fetchUserListings,
+} from "../../api/profile";
 
 interface UserDropdownProps {
   onClose: () => void;
@@ -27,18 +31,14 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
     return stored ? JSON.parse(stored) : null;
   });
 
-  const [view, setView] = useState<
-    "main" | "editProfile" | "createVenue" | "listings"
-  >("main");
+  const [view, setView] = useState<"main" | "editProfile" | "createVenue" | "listings">("main");
   const [listings, setListings] = useState<any[]>([]);
-  const [editVenue, setEditVenue] = useState<any | null>(null);
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [setEditVenue] = useState<any | null>(null);
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(e.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         onClose();
       }
     };
@@ -48,18 +48,26 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
 
   const fetchListings = async () => {
     try {
-      const response = await apiClient.get(
-        `/holidaze/profiles/${user.name}/venues`
-      );
-      setListings(response.data.data);
+      const listingsData = await fetchUserListings(user.name);
+      setListings(listingsData.data);
     } catch (err) {
       console.error("Failed to fetch listings", err);
+    }
+  };
+
+  const fetchBookingsData = async () => {
+    try {
+      const bookingsData = await fetchUserBookings(user.name);
+      setBookings(bookingsData.data);
+    } catch (err) {
+      console.error("Failed to fetch bookings", err);
     }
   };
 
   useEffect(() => {
     if (user?.name) {
       fetchListings();
+      fetchBookingsData();
     }
   }, [user]);
 
@@ -109,18 +117,12 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
             </h3>
           </div>
 
-          <nav className="flex flex-col gap-2 text-gray-700">
+          <nav className="flex flex-col gap-2 text-gray-700 mb-4">
             <button
               onClick={() => navigate("/profile")}
               className="flex items-center gap-2 text-base py-2 hover:text-[#0E1E34] transition"
             >
               <UserIcon size={18} /> Profile
-            </button>
-            <button
-              onClick={() => navigate("/bookings")}
-              className="flex items-center gap-2 text-base py-2 hover:text-[#0E1E34] transition"
-            >
-              <Calendar size={18} /> My bookings
             </button>
             <button
               onClick={() => setView("listings")}
@@ -135,6 +137,9 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
               <Plus size={18} /> List a property
             </button>
           </nav>
+
+          {/* ✅ Inline Bookings Display */}
+          <BookingsDropdown bookings={bookings} />
 
           <hr className="border-t border-gray-200 my-4" />
 
