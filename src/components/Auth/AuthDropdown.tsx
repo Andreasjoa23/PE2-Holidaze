@@ -1,4 +1,3 @@
-// src/components/Auth/AuthDropdown.tsx
 import { useState } from "react";
 import { X, ArrowLeft } from "lucide-react";
 import LoginForm from "./LoginForm";
@@ -15,7 +14,6 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
 
   return (
     <div className="relative w-80">
-      {/* Back-pil */}
       {view !== "initial" && (
         <button
           onClick={() => setView("initial")}
@@ -25,7 +23,6 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
         </button>
       )}
 
-      {/* Close-knapp */}
       <button
         onClick={onClose}
         className="absolute top-4 right-4 z-10 text-gray-500 hover:text-gray-700"
@@ -33,7 +30,6 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
         <X size={26} />
       </button>
 
-      {/* Dropdown-boks */}
       <div className="bg-white rounded-xl shadow-lg pt-12 px-6 pb-6 space-y-4">
         {view === "initial" && (
           <>
