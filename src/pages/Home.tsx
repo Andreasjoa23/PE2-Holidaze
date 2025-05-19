@@ -1,7 +1,5 @@
-// src/pages/Home.tsx
 import React from "react";
 import { motion } from "framer-motion";
-
 import ScrollProgress from "../components/ScrollProgress";
 import HeroBanner from "../components/homepage/HeroBanner";
 import MembershipBanner from "../components/homepage/MembershipBanner";
@@ -15,14 +13,12 @@ const sectionVariant = {
 };
 
 const Home: React.FC = () => {
-  // Sjekk om brukeren er logget inn
   const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
 
   return (
     <>
       <ScrollProgress />
 
-      {/* Kun vis Hero-banner om ikke logget inn */}
       {!isLoggedIn && (
         <motion.div
           variants={sectionVariant}
@@ -35,7 +31,6 @@ const Home: React.FC = () => {
         </motion.div>
       )}
 
-      {/* Kun vis medlemskapet-banner om ikke logget inn */}
       {!isLoggedIn && (
         <motion.div
           variants={sectionVariant}
@@ -48,7 +43,6 @@ const Home: React.FC = () => {
         </motion.div>
       )}
 
-      {/* SearchBanner vises alltid */}
       <motion.div
         variants={sectionVariant}
         initial="hidden"
@@ -59,7 +53,6 @@ const Home: React.FC = () => {
         <SearchBanner />
       </motion.div>
 
-      {/* Trending */}
       <motion.div
         variants={sectionVariant}
         initial="hidden"
@@ -70,7 +63,6 @@ const Home: React.FC = () => {
         <Trending />
       </motion.div>
 
-      {/* Recommendations */}
       <motion.div
         variants={sectionVariant}
         initial="hidden"

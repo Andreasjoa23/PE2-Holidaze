@@ -1,4 +1,3 @@
-// src/components/homepage/SearchBanner.tsx
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
@@ -24,7 +23,6 @@ const SearchBanner: React.FC = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const [months, setMonths] = useState(isMobile ? 1 : 2);
 
-  // Responsivt: oppdater isMobile & months
   useEffect(() => {
     const onResize = () => {
       const mobile = window.innerWidth < 640;
@@ -35,7 +33,6 @@ const SearchBanner: React.FC = () => {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // ESC lukker kalender
   useEffect(() => {
     const onKey = (e: KeyboardEvent) =>
       e.key === "Escape" && setShowCalendar(false);
@@ -53,7 +50,6 @@ const SearchBanner: React.FC = () => {
     );
   };
 
-  // Selve kalender‐innholdet (uten portal)
   const calendarContent = (
     <div className="bg-white rounded-xl shadow-lg p-4 w-full max-w-md">
       <div className="flex justify-end mb-2">
@@ -94,18 +90,14 @@ const SearchBanner: React.FC = () => {
         backgroundPosition: "center",
       }}
     >
-      {/* Demp bakgrunnen under inputs */}
-      <div className="absolute inset-0 bg-black/30 rounded-2xl pointer-events-none" />
 
+      <div className="absolute inset-0 bg-black/30 rounded-2xl pointer-events-none" />
       <div className="relative z-10 max-w-6xl mx-auto flex flex-col items-center px-4">
-        {/* Tittel */}
         <h2 className="text-white text-4xl md:text-5xl font-bold text-center mb-8">
           Where to next?
         </h2>
 
-        {/* Search Card */}
         <div className="bg-white rounded-3xl shadow-lg w-full max-w-4xl flex flex-col md:flex-row gap-4 p-6 md:p-8">
-          {/* Destination */}
           <div className="flex items-center flex-1 border border-gray-200 rounded-full px-4 py-3">
             <FaSearch className="text-gray-400 mr-3 flex-shrink-0" />
             <input
@@ -117,7 +109,6 @@ const SearchBanner: React.FC = () => {
             />
           </div>
 
-          {/* Date Picker */}
           <div
             ref={dateInputRef}
             className="relative flex items-center flex-1 border border-gray-200 rounded-full px-4 py-3 cursor-pointer"
@@ -127,7 +118,7 @@ const SearchBanner: React.FC = () => {
             <span className="text-gray-700 text-base">
               {`${date[0].startDate.toLocaleDateString()} – ${date[0].endDate.toLocaleDateString()}`}
             </span>
-            {/* Inline dropdown på desktop */}
+
             {showCalendar && !isMobile && (
               <div
                 onClick={(e) => e.stopPropagation()}
@@ -139,7 +130,6 @@ const SearchBanner: React.FC = () => {
             )}
           </div>
 
-          {/* Guests */}
           <div className="flex items-center flex-1 border border-gray-200 rounded-full px-4 py-3">
             <FaUser className="text-gray-400 mr-3 flex-shrink-0" />
             <input
@@ -151,7 +141,6 @@ const SearchBanner: React.FC = () => {
             />
           </div>
 
-          {/* Search Button */}
           <button
             onClick={handleSearch}
             className="bg-[var(--holidaze-blue)] text-white px-8 py-3 rounded-full font-medium text-base hover:bg-[#1d2d50] transition"
@@ -162,7 +151,6 @@ const SearchBanner: React.FC = () => {
         </div>
       </div>
 
-      {/* Fullskjerms‐modal på mobil */}
       {showCalendar &&
         isMobile &&
         createPortal(

@@ -1,4 +1,3 @@
-// src/pages/Profile.tsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BookingsDropdown from "../components/profile/BookingsDropdown";
@@ -160,7 +159,7 @@ const Profile: React.FC = () => {
             mode="create"
             onSuccess={() => {
               setShowCreateForm(false);
-              navigate("/venues"); // ✅ Naviger automatisk til venues-siden
+              navigate("/venues");
             }}
             onClose={() => setShowCreateForm(false)}
           />

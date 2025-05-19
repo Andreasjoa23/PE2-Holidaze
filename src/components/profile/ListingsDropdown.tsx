@@ -54,8 +54,6 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedVenue, setSelectedVenue] = useState<Listing | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showBookingsModal, setShowBookingsModal] = useState(false);
 
   const handleDeleteClick = (venue: Listing) => {
     setSelectedVenue(venue);
@@ -63,21 +61,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   };
 
   const handleEditClick = (venue: Listing) => {
-    setSelectedVenue(venue);
-    setShowEditModal(true);
-  };
-
-  const handleShowBookings = (venue: Listing) => {
-    setSelectedVenue(venue);
-    setShowBookingsModal(true);
-  };
-
-  const confirmDelete = () => {
-    if (selectedVenue) {
-      onDelete(selectedVenue.id);
-    }
-    setShowDeleteModal(false);
-    setSelectedVenue(null);
+    if (onEdit) onEdit(venue);
   };
 
   return (
@@ -98,59 +82,38 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
       </button>
 
       <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="mt-4 space-y-4"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25 }}
-          >
-            {listings.length > 0 ? (
-              listings.map((venue) => (
-                <div
-                  key={venue.id}
-                  className="bg-white rounded-xl shadow border p-3 flex items-center gap-4"
-                >
-                  <img
-                    src={
-                      venue.media[0]?.url || "https://via.placeholder.com/100"
-                    }
-                    alt={venue.name}
-                    className="w-24 h-24 rounded-lg object-cover"
-                  />
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-base font-semibold text-[#0E1E34] truncate pr-2">
-                        {venue.name}
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => handleDeleteClick(venue)}>
-                          <Trash2 className="w-4 h-4 text-red-600 hover:text-red-800" />
-                        </button>
-                        <button onClick={() => handleEditClick(venue)}>
-                          <Pencil className="w-4 h-4 text-gray-500 hover:text-gray-800" />
-                        </button>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600 truncate">
-                      {venue.description}
-                    </p>
-                    <div className="text-xs text-gray-500 mt-1 flex gap-4">
-                      <span>{Math.floor(venue.maxGuests / 2)} beds</span>
-                      <span>{venue.maxGuests} people</span>
-                      <span className="ml-auto">{venue.price} /night</span>
-                    </div>
-
-                    {venue.bookings && venue.bookings.length > 0 && (
-                      <button
-                        onClick={() => handleShowBookings(venue)}
-                        className="mt-2 inline-block bg-green-600 hover:bg-green-700 text-white text-xs font-medium px-3 py-1 rounded-full transition"
-                      >
-                        {venue.bookings.length} booking
-                        {venue.bookings.length > 1 ? "s" : ""}
-                      </button>
-                    )}
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.25 }}
+        >
+          {sortedListings.length > 0 ? (
+            sortedListings.map((venue) => (
+              <div
+                key={venue.id}
+                className="bg-white rounded-xl shadow border p-3 flex flex-col"
+              >
+                <img
+                  src={venue.media[0]?.url || "https://via.placeholder.com/100"}
+                  alt={venue.name}
+                  className="w-full h-32 rounded-lg object-cover mb-3"
+                />
+                <div className="flex justify-between items-start">
+                  <h3 className="text-base font-semibold text-[#0E1E34] line-clamp-1">
+                    {venue.name}
+                  </h3>
+                  <div className="flex items-center gap-2">
+                    <button onClick={() => {
+                      setSelectedVenue(venue);
+                      setShowDeleteModal(true);
+                    }}>
+                      <Trash2 className="w-4 h-4 text-red-600 hover:text-red-800" />
+                    </button>
+                    <button onClick={() => handleEditClick(venue)}>
+                      <Pencil className="w-4 h-4 text-gray-500 hover:text-gray-800" />
+                    </button>
                   </div>
                 </div>
               ))
@@ -167,85 +130,6 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
         onConfirm={confirmDelete}
         venueName={selectedVenue?.name}
       />
-
-      <EditVenueModal
-        isOpen={showEditModal && !!selectedVenue}
-        onClose={() => {
-          setShowEditModal(false);
-          setSelectedVenue(null);
-        }}
-        initialData={selectedVenue}
-        onSuccess={() => {
-          setShowEditModal(false);
-          setSelectedVenue(null);
-          onUpdate();
-        }}
-      />
-
-      {/* Bookings Modal */}
-      <AnimatePresence>
-        {showBookingsModal && selectedVenue?.bookings && (
-          <motion.div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowBookingsModal(false)}
-          >
-            <div
-              className="bg-white rounded-xl p-6 w-full max-w-md mx-auto relative"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-xl font-semibold mb-4 text-[#0E1E34]">
-                Upcoming Bookings for {selectedVenue.name}
-              </h3>
-              <ul className="space-y-4 max-h-96 overflow-y-auto pr-1">
-                {selectedVenue.bookings.map((booking) => (
-                  <li
-                    key={booking.id}
-                    className="bg-blue-50 border border-blue-100 p-4 rounded-xl shadow-sm flex items-start gap-4"
-                  >
-                    <img
-                      src={
-                        booking.customer?.avatar?.url ||
-                        "https://placehold.co/48x48?text=👤"
-                      }
-                      alt={
-                        booking.customer?.avatar?.alt ||
-                        booking.customer?.name ||
-                        "Guest"
-                      }
-                      className="w-12 h-12 rounded-full object-cover border border-white shadow"
-                    />
-                    <div className="flex-1">
-                      <p className="text-sm text-[#0E1E34] mb-1">
-                        <strong>📅 From:</strong>{" "}
-                        {new Date(booking.dateFrom).toLocaleDateString()}{" "}
-                        <strong>to</strong>{" "}
-                        {new Date(booking.dateTo).toLocaleDateString()}
-                      </p>
-                      <p className="text-sm text-gray-700">
-                        <strong>👥 Guests:</strong> {booking.guests}
-                      </p>
-                      {booking.customer?.name && (
-                        <p className="text-sm text-gray-600">
-                          <strong>👤 Booked by:</strong> {booking.customer.name}
-                        </p>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <button
-                className="absolute top-2 right-3 text-gray-400 hover:text-gray-700 text-lg"
-                onClick={() => setShowBookingsModal(false)}
-              >
-                &times;
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
