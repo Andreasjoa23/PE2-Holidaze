@@ -16,6 +16,7 @@ interface Venue {
   price: number;
   maxGuests: number;
   location: { city?: string; country?: string };
+  created: string;
 }
 
 export default function Venues() {
@@ -42,9 +43,19 @@ export default function Venues() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await getAllVenues();
-        setVenues(res.data);
-      } catch {
+        const response = await getAllVenues();
+        const data: Venue[] = response.data;
+
+        console.log("Fetched venues:", data);
+
+        const sorted = data.sort(
+          (a, b) =>
+            new Date(b.created).getTime() - new Date(a.created).getTime()
+        );
+
+        setVenues(sorted);
+      } catch (err) {
+        console.error("Error fetching venues:", err);
         setError("Failed to fetch venues");
       }
     })();
@@ -61,6 +72,8 @@ export default function Venues() {
   };
 
   const filteredVenues = venues.filter((v) => {
+    if (!destination) return v.maxGuests >= guests;
+
     const q = destination.toLowerCase();
     const match =
       v.name.toLowerCase().includes(q) ||
@@ -75,7 +88,6 @@ export default function Venues() {
 
   return (
     <section className="pt-20 space-y-12 pb-12 bg-white px-4 md:px-8 lg:px-20">
-      {/* Hero Intro */}
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8">
         <div className="flex-1 text-center md:text-left">
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-[#0E1E34] leading-tight mb-4">
@@ -101,7 +113,6 @@ export default function Venues() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
           <label className="flex flex-col">
             <span className="text-sm font-medium text-gray-600 mb-1">
               Destination

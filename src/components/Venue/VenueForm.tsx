@@ -112,15 +112,18 @@ const VenueForm = ({
 
     try {
       if (mode === "create") {
-        await createVenue(payload);
+        const response = await createVenue(payload);
+        console.log("Venue created:", response);
       } else if (mode === "edit" && initialData?.id) {
-        await updateVenue(initialData.id, payload);
+        const response = await updateVenue(initialData.id, payload);
+        console.log("Venue updated:", response);
       }
       setSuccess(
         `Venue ${mode === "create" ? "created" : "updated"} successfully!`
       );
       onSuccess();
     } catch (err) {
+      console.error("Venue creation failed:", err); // 👈 Dette hjelper også
       console.error(err);
       setError(`Failed to ${mode} venue. Please check your inputs.`);
     }
