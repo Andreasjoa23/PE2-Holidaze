@@ -10,7 +10,6 @@ export async function createVenue(data: any) {
   return response.data;
 }
 
-
 export async function updateVenue(id: string, data: any) {
   const response = await apiClient.put(`/holidaze/venues/${id}`, data);
   return response.data;
@@ -18,5 +17,10 @@ export async function updateVenue(id: string, data: any) {
 
 export async function deleteVenue(venueId: string) {
   const response = await apiClient.delete(`/holidaze/venues/${venueId}`);
+  return response.data;
+}
+
+export async function getVenueById(id: string) {
+  const response = await apiClient.get(`/holidaze/venues/${id}?_bookings=true`);
   return response.data;
 }

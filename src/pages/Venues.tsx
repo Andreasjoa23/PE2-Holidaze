@@ -40,25 +40,20 @@ export default function Venues() {
   ]);
   const [showCalendar, setShowCalendar] = useState(false);
 
+  const loadVenues = async () => {
+    try {
+      const { data }: { data: Venue[] } = await getAllVenues();
+      const sorted = data.sort(
+        (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
+      );
+      setVenues(sorted);
+    } catch {
+      setError("Failed to fetch venues");
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try {
-        const response = await getAllVenues();
-        const data: Venue[] = response.data;
-
-        console.log("Fetched venues:", data);
-
-        const sorted = data.sort(
-          (a, b) =>
-            new Date(b.created).getTime() - new Date(a.created).getTime()
-        );
-
-        setVenues(sorted);
-      } catch (err) {
-        console.error("Error fetching venues:", err);
-        setError("Failed to fetch venues");
-      }
-    })();
+    loadVenues();
   }, []);
 
   const handleSearch = () => {
