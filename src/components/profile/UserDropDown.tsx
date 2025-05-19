@@ -13,10 +13,8 @@ import EditProfile from "./EditProfile";
 import VenueForm from "../Venue/VenueForm";
 import ListingsView from "../profile/ListingsDropdown";
 import BookingsDropdown from "../profile/BookingsDropdown";
-import {
-  fetchUserBookings,
-  fetchUserListings,
-} from "../../api/profile";
+import { fetchUserBookings, fetchUserListings } from "../../api/profile";
+import apiClient from "../../api/apiClient";
 
 interface UserDropdownProps {
   onClose: () => void;
@@ -31,10 +29,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
     return stored ? JSON.parse(stored) : null;
   });
 
-  const [view, setView] = useState<"main" | "editProfile" | "createVenue" | "listings">("main");
+  const [view, setView] = useState<"main" | "editProfile" | "createVenue" | "listings" | "bookings">("main");
   const [listings, setListings] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
-  const [setEditVenue] = useState<any | null>(null);
+  const [editVenue, setEditVenue] = useState<any | null>(null);
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -131,15 +129,21 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
               <Home size={18} /> My listings
             </button>
             <button
-              onClick={() => setView("createVenue")}
+              onClick={() => setView("bookings")}
+              className="flex items-center gap-2 text-base py-2 hover:text-[#0E1E34] transition"
+            >
+              <Calendar size={18} /> My bookings
+            </button>
+            <button
+              onClick={() => {
+                setEditVenue(null);
+                setView("createVenue");
+              }}
               className="flex items-center gap-2 text-base py-2 hover:text-[#0E1E34] transition"
             >
               <Plus size={18} /> List a property
             </button>
           </nav>
-
-          {/* ✅ Inline Bookings Display */}
-          <BookingsDropdown bookings={bookings} />
 
           <hr className="border-t border-gray-200 my-4" />
 
@@ -165,9 +169,16 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
 
       {view === "createVenue" && (
         <VenueForm
-          mode="create"
-          onClose={() => setView("main")}
-          onSuccess={refetchListings}
+          mode={editVenue ? "edit" : "create"}
+          initialData={editVenue}
+          onClose={() => {
+            setEditVenue(null);
+            setView("main");
+          }}
+          onSuccess={() => {
+            setEditVenue(null);
+            refetchListings();
+          }}
         />
       )}
 
@@ -181,6 +192,13 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
             setView("createVenue");
           }}
           onUpdate={refetchListings}
+        />
+      )}
+
+      {view === "bookings" && (
+        <BookingsDropdown
+          bookings={bookings || []}
+          onBack={() => setView("main")}
         />
       )}
     </div>
