@@ -29,11 +29,11 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
           <img src={logoHolidaze} alt="Holidaze logo" className="h-40 w-auto" />
         </div>
 
-        <div className="flex flex-wrap justify-center gap-20 text-3xl font-extrabold">
-          <Link to="/profile" className="hover:underline">Profile</Link>
-          <Link to="/contact" className="hover:underline">Contact us</Link>
-          <Link to="/faq" className="hover:underline">FAQ</Link>
-        </div>
+      <div className="flex flex-wrap justify-center gap-20 text-3xl font-extrabold">
+        <Link to="/profile" className="hover:underline">Profile</Link>
+        <a href="mailto:support@holidaze.com" className="hover:underline">Contact us</a>
+        <Link to="/faq" className="hover:underline">FAQ</Link>
+      </div>
 
         <div className="flex-shrink-0">
           <button
