@@ -20,9 +20,11 @@ export async function fetchUserBookings(username: string) {
   return response.data;
 }
 
-export async function fetchUserListings(username: string) {
-  const response = await apiClient.get(`/holidaze/profiles/${username}/venues`);
-  return response.data;
+export async function fetchUserListings(name: string) {
+  const response = await apiClient.get(
+    `/holidaze/profiles/${name}/venues?_bookings=true`
+  );
+  return response.data.data; // ✅ Returnerer bare arrayen direkte
 }
 
 export async function fetchUserFavorites(username: string) {

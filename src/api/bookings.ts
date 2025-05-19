@@ -8,3 +8,7 @@ export const createBooking = (data: {
 }) => {
   return apiClient.post("/holidaze/bookings", data);
 };
+
+export const deleteBooking = (id: string) => {
+  return apiClient.delete(`/holidaze/bookings/${id}`);
+};

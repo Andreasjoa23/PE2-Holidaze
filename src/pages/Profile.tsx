@@ -1,4 +1,6 @@
+// src/pages/Profile.tsx
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import BookingsDropdown from "../components/profile/BookingsDropdown";
 import ListingsDropdown from "../components/profile/ListingsDropdown";
 import FavoritesDropdown from "../components/profile/FavoritesDropdown";
@@ -10,6 +12,8 @@ import { deleteVenue } from "../api/venues";
 import { AnimatePresence } from "framer-motion";
 
 const Profile: React.FC = () => {
+  const navigate = useNavigate();
+
   const [user, setUser] = useState<any>(() => {
     const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
@@ -25,6 +29,7 @@ const Profile: React.FC = () => {
 
   useEffect(() => {
     if (!user?.name) return;
+
     const load = async () => {
       try {
         const [bk, ls] = await Promise.all([
@@ -32,12 +37,13 @@ const Profile: React.FC = () => {
           fetchUserListings(user.name),
         ]);
         setBookings(bk.data);
-        setListings(ls.data);
+        setListings(ls);
       } catch (e) {
         console.error(e);
         setError("Failed to load your data.");
       }
     };
+
     load();
   }, [user?.name]);
 
@@ -51,11 +57,38 @@ const Profile: React.FC = () => {
     try {
       await deleteVenue(id);
       const updated = await fetchUserListings(user.name);
-      setListings(updated.data);
+      setListings(updated);
     } catch (err) {
       console.error("Failed to delete venue:", err);
     }
   };
+
+  const viewsCount = listings.reduce(
+    (sum, venue) => sum + (venue.views || 0),
+    0
+  );
+
+  const income = bookings.reduce((sum, b) => {
+    const price = b.venue?.price || 0;
+    const nights =
+      (new Date(b.dateTo).getTime() - new Date(b.dateFrom).getTime()) /
+      (1000 * 60 * 60 * 24);
+    return sum + price * nights;
+  }, 0);
+
+  const futureBookings = bookings
+    .filter((b) => new Date(b.dateFrom) > new Date())
+    .sort(
+      (a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime()
+    );
+
+  const nextBooking = futureBookings[0]
+    ? new Date(futureBookings[0].dateFrom).toLocaleDateString(undefined, {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      })
+    : "None";
 
   if (!user) {
     return (
@@ -67,7 +100,6 @@ const Profile: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4 space-y-6">
-
       <div className="relative mb-4">
         <img
           src={user.banner?.url || "https://placehold.co/600x200"}
@@ -126,26 +158,30 @@ const Profile: React.FC = () => {
         {showCreateForm && (
           <VenueForm
             mode="create"
-            onSuccess={async () => {
+            onSuccess={() => {
               setShowCreateForm(false);
-              const refreshed = await fetchUserListings(user.name);
-              setListings(refreshed.data);
+              navigate("/venues");
             }}
             onClose={() => setShowCreateForm(false)}
           />
         )}
       </AnimatePresence>
 
-      {/* Dropdowns + Insights */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         <div className="flex flex-col space-y-4">
-          <BookingsDropdown bookings={bookings} />
+          <BookingsDropdown
+            bookings={bookings}
+            onCancel={async () => {
+              const refreshed = await fetchUserBookings(user.name);
+              setBookings(refreshed.data);
+            }}
+          />
           <ListingsDropdown
             listings={listings}
             onDelete={handleVenueDeleted}
             onUpdate={async () => {
               const refreshed = await fetchUserListings(user.name);
-              setListings(refreshed.data);
+              setListings(refreshed);
             }}
           />
           <FavoritesDropdown favorites={favorites} />
@@ -153,9 +189,9 @@ const Profile: React.FC = () => {
 
         <Insights
           bookingsCount={bookings.length}
-          viewsCount={300}
-          income={4920}
-          nextBooking="17th April 2025"
+          viewsCount={viewsCount}
+          income={income}
+          nextBooking={nextBooking}
         />
       </div>
     </div>

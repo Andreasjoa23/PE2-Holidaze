@@ -3,6 +3,21 @@ import { Trash2, Pencil, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import DeleteConfirmationModal from "../../utils/DeleteConfirmation";
 
+interface Booking {
+  id: string;
+  dateFrom: string;
+  dateTo: string;
+  guests: number;
+  customer?: {
+    name?: string;
+    email?: string;
+    avatar?: {
+      url: string;
+      alt?: string;
+    };
+  };
+}
+
 interface Listing {
   id: string;
   name: string;
@@ -21,6 +36,7 @@ interface Listing {
     breakfast: boolean;
     pets: boolean;
   };
+  bookings?: Booking[];
 }
 
 interface ListingsDropdownProps {

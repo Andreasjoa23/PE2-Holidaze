@@ -16,6 +16,7 @@ interface Venue {
   price: number;
   maxGuests: number;
   location: { city?: string; country?: string };
+  created: string;
 }
 
 export default function Venues() {
@@ -39,15 +40,20 @@ export default function Venues() {
   ]);
   const [showCalendar, setShowCalendar] = useState(false);
 
+  const loadVenues = async () => {
+    try {
+      const { data }: { data: Venue[] } = await getAllVenues();
+      const sorted = data.sort(
+        (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
+      );
+      setVenues(sorted);
+    } catch {
+      setError("Failed to fetch venues");
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await getAllVenues();
-        setVenues(res.data);
-      } catch {
-        setError("Failed to fetch venues");
-      }
-    })();
+    loadVenues();
   }, []);
 
   const handleSearch = () => {
@@ -61,6 +67,8 @@ export default function Venues() {
   };
 
   const filteredVenues = venues.filter((v) => {
+    if (!destination) return v.maxGuests >= guests;
+
     const q = destination.toLowerCase();
     const match =
       v.name.toLowerCase().includes(q) ||
@@ -100,7 +108,6 @@ export default function Venues() {
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
           <label className="flex flex-col">
             <span className="text-sm font-medium text-gray-600 mb-1">
               Destination
