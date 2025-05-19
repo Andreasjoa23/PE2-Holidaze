@@ -1,5 +1,12 @@
-import React, { useState } from "react";
-import { Home, ChevronDown, ChevronUp, Trash2, Pencil } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  Home,
+  ChevronDown,
+  ChevronUp,
+  Trash2,
+  Pencil,
+  BellRing,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import EditVenueModal from "./EditVenueModal";
@@ -56,6 +63,19 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showBookingsModal, setShowBookingsModal] = useState(false);
+  const [hasNewBookings, setHasNewBookings] = useState(false);
+
+  useEffect(() => {
+    const anyWithBookings = listings.some(
+      (venue) => venue.bookings && venue.bookings.length > 0
+    );
+    setHasNewBookings(anyWithBookings);
+  }, [listings]);
+
+  const handleToggle = () => {
+    setIsOpen((prev) => !prev);
+    if (!isOpen) setHasNewBookings(false);
+  };
 
   const handleDeleteClick = (venue: Listing) => {
     setSelectedVenue(venue);
@@ -83,13 +103,20 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   return (
     <div className="w-full max-w-md bg-white rounded-xl shadow p-4 relative z-10">
       <button
-        onClick={() => setIsOpen((o) => !o)}
-        className="w-full flex justify-between items-center text-[#0E1E34] font-semibold"
+        onClick={handleToggle}
+        className="w-full flex justify-between items-center text-[#0E1E34] font-semibold relative"
       >
         <span className="flex items-center space-x-2">
           <Home className="w-6 h-6" />
           <span className="text-lg">My listings ({listings.length})</span>
         </span>
+
+        {!isOpen && hasNewBookings && (
+          <div className="absolute top-0 right-0 transform translate-x-2 -translate-y-2">
+            <BellRing className="text-red-500 w-4 h-4 animate-bounce" />
+          </div>
+        )}
+
         {isOpen ? (
           <ChevronUp className="w-6 h-6 text-gray-500" />
         ) : (
@@ -181,71 +208,6 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
           onUpdate();
         }}
       />
-
-      {/* Bookings Modal */}
-      <AnimatePresence>
-        {showBookingsModal && selectedVenue?.bookings && (
-          <motion.div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex justify-center items-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowBookingsModal(false)}
-          >
-            <div
-              className="bg-white rounded-xl p-6 w-full max-w-md mx-auto relative"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-xl font-semibold mb-4 text-[#0E1E34]">
-                Upcoming Bookings for {selectedVenue.name}
-              </h3>
-              <ul className="space-y-4 max-h-96 overflow-y-auto pr-1">
-                {selectedVenue.bookings.map((booking) => (
-                  <li
-                    key={booking.id}
-                    className="bg-blue-50 border border-blue-100 p-4 rounded-xl shadow-sm flex items-start gap-4"
-                  >
-                    <img
-                      src={
-                        booking.customer?.avatar?.url ||
-                        "https://placehold.co/48x48?text=👤"
-                      }
-                      alt={
-                        booking.customer?.avatar?.alt ||
-                        booking.customer?.name ||
-                        "Guest"
-                      }
-                      className="w-12 h-12 rounded-full object-cover border border-white shadow"
-                    />
-                    <div className="flex-1">
-                      <p className="text-sm text-[#0E1E34] mb-1">
-                        <strong>📅 From:</strong>{" "}
-                        {new Date(booking.dateFrom).toLocaleDateString()}{" "}
-                        <strong>to</strong>{" "}
-                        {new Date(booking.dateTo).toLocaleDateString()}
-                      </p>
-                      <p className="text-sm text-gray-700">
-                        <strong>👥 Guests:</strong> {booking.guests}
-                      </p>
-                      {booking.customer?.name && (
-                        <p className="text-sm text-gray-600">
-                          <strong>👤 Booked by:</strong> {booking.customer.name}
-                        </p>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-              <button
-                className="absolute top-2 right-3 text-gray-400 hover:text-gray-700 text-lg"
-                onClick={() => setShowBookingsModal(false)}
-              >
-                &times;
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };
