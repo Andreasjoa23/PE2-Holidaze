@@ -1,5 +1,12 @@
-import React, { useState } from "react";
-import { Home, ChevronDown, ChevronUp, Trash2, Pencil } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  Home,
+  ChevronDown,
+  ChevronUp,
+  Trash2,
+  Pencil,
+  BellRing,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import EditVenueModal from "./EditVenueModal";
@@ -54,6 +61,21 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedVenue, setSelectedVenue] = useState<Listing | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showBookingsModal, setShowBookingsModal] = useState(false);
+  const [hasNewBookings, setHasNewBookings] = useState(false);
+
+  useEffect(() => {
+    const anyWithBookings = listings.some(
+      (venue) => venue.bookings && venue.bookings.length > 0
+    );
+    setHasNewBookings(anyWithBookings);
+  }, [listings]);
+
+  const handleToggle = () => {
+    setIsOpen((prev) => !prev);
+    if (!isOpen) setHasNewBookings(false);
+  };
 
   const handleDeleteClick = (venue: Listing) => {
     setSelectedVenue(venue);
@@ -67,13 +89,20 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   return (
     <div className="w-full max-w-md bg-white rounded-xl shadow p-4 relative z-10">
       <button
-        onClick={() => setIsOpen((o) => !o)}
-        className="w-full flex justify-between items-center text-[#0E1E34] font-semibold"
+        onClick={handleToggle}
+        className="w-full flex justify-between items-center text-[#0E1E34] font-semibold relative"
       >
         <span className="flex items-center space-x-2">
           <Home className="w-6 h-6" />
           <span className="text-lg">My listings ({listings.length})</span>
         </span>
+
+        {!isOpen && hasNewBookings && (
+          <div className="absolute top-0 right-0 transform translate-x-2 -translate-y-2">
+            <BellRing className="text-red-500 w-4 h-4 animate-bounce" />
+          </div>
+        )}
+
         {isOpen ? (
           <ChevronUp className="w-6 h-6 text-gray-500" />
         ) : (
@@ -129,6 +158,20 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
         onClose={() => setShowDeleteModal(false)}
         onConfirm={confirmDelete}
         venueName={selectedVenue?.name}
+      />
+
+      <EditVenueModal
+        isOpen={showEditModal && !!selectedVenue}
+        onClose={() => {
+          setShowEditModal(false);
+          setSelectedVenue(null);
+        }}
+        initialData={selectedVenue}
+        onSuccess={() => {
+          setShowEditModal(false);
+          setSelectedVenue(null);
+          onUpdate();
+        }}
       />
     </div>
   );
