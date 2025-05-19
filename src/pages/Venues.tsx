@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getAllVenues } from "../api/venues";
 import VenueCard from "../components/Venue/VenueCard";
@@ -75,7 +75,6 @@ export default function Venues() {
 
   return (
     <section className="pt-20 space-y-12 pb-12 bg-white px-4 md:px-8 lg:px-20">
-      {/* Hero Intro */}
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8">
         <div className="flex-1 text-center md:text-left">
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-[#0E1E34] leading-tight mb-4">
