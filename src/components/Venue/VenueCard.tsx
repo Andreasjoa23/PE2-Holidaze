@@ -11,7 +11,7 @@ interface VenueCardProps {
   price: number;
   maxGuests: number;
   location?: { city?: string; country?: string };
-  onFavoriteToggle?: () => void; // optional callback for syncing
+  onFavoriteToggle?: () => void;
 }
 
 const VenueCard: React.FC<VenueCardProps> = ({
@@ -41,7 +41,7 @@ const VenueCard: React.FC<VenueCardProps> = ({
     e.stopPropagation();
     const updated = toggleFavoriteVenue(id);
     setIsFav(updated.includes(id));
-    if (onFavoriteToggle) onFavoriteToggle(); // Notify parent (optional)
+    if (onFavoriteToggle) onFavoriteToggle();
   };
 
   return (
