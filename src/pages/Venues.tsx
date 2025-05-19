@@ -17,6 +17,7 @@ interface Venue {
   maxGuests: number;
   location: { city?: string; country?: string };
   created: string;
+  bookings?: any[];
 }
 
 export default function Venues() {
@@ -43,10 +44,12 @@ export default function Venues() {
   const loadVenues = async () => {
     try {
       const { data }: { data: Venue[] } = await getAllVenues();
-      const sorted = data.sort(
-        (a, b) => new Date(b.created).getTime() - new Date(a.created).getTime()
-      );
-      setVenues(sorted);
+
+      const sorted = data
+        .filter((v) => Array.isArray(v.bookings))
+        .sort((a, b) => (b.bookings?.length ?? 0) - (a.bookings?.length ?? 0));
+
+      setVenues(sorted.slice(0, 100));
     } catch {
       setError("Failed to fetch venues");
     }
@@ -72,8 +75,8 @@ export default function Venues() {
     const q = destination.toLowerCase();
     const match =
       v.name.toLowerCase().includes(q) ||
-      v.location.city?.toLowerCase().includes(q) ||
-      v.location.country?.toLowerCase().includes(q);
+      v.location?.city?.toLowerCase().includes(q) ||
+      v.location?.country?.toLowerCase().includes(q);
     return match && v.maxGuests >= guests;
   });
 
@@ -211,6 +214,7 @@ export default function Venues() {
               price={v.price}
               maxGuests={v.maxGuests}
               location={v.location}
+              bookings={v.bookings}
             />
           ))}
         </div>

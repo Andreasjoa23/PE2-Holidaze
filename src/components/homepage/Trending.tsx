@@ -15,18 +15,25 @@ const Trending: React.FC = () => {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await getAllVenues();
-        setVenues(res.data.slice(-8));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+useEffect(() => {
+  (async () => {
+    try {
+      const res = await getAllVenues();
+
+      const sortedByPopularity = res.data
+        .filter((v) => Array.isArray(v.bookings))
+        .sort((a, b) => b.bookings.length - a.bookings.length);
+
+      setVenues(sortedByPopularity.slice(0, 8));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  })();
+}, []);
+
+
 
   if (loading) {
     return (

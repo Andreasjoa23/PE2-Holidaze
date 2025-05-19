@@ -1,7 +1,14 @@
 import apiClient from "./apiClient";
 
 export async function getAllVenues() {
-  const response = await apiClient.get("/holidaze/venues");
+  const response = await apiClient.get("/holidaze/venues", {
+    params: {
+      sort: "created",
+      sortOrder: "desc",
+      _owner: true,
+      _bookings: true,
+    },
+  });
   return response.data;
 }
 
