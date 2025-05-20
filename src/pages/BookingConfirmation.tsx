@@ -67,7 +67,6 @@ const BookingConfirmation = () => {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="w-full max-w-6xl flex flex-col md:flex-row items-center justify-between gap-12"
       >
-        {/* Left: Illustration + Heading */}
         <div className="flex-1 text-center md:text-left">
           <motion.img
             src="/src/assets/BookingConfirmed.png"
@@ -92,7 +91,6 @@ const BookingConfirmation = () => {
           </p>
         </div>
 
-        {/* Right: Booking Info */}
         <div className="flex-1 max-w-md w-full">
           <img
             src={venueImage}

@@ -11,7 +11,7 @@ import {
 import { logout } from "../../utils/auth";
 import EditProfile from "./EditProfile";
 import VenueForm from "../Venue/VenueForm";
-import ListingsView from "../profile/ListingsDropdown";
+import ListingsDropdown from "../profile/ListingsDropdown";
 import BookingsDropdown from "../profile/BookingsDropdown";
 import { fetchUserBookings, fetchUserListings } from "../../api/profile";
 import apiClient from "../../api/apiClient";
@@ -29,10 +29,13 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
     return stored ? JSON.parse(stored) : null;
   });
 
-  const [view, setView] = useState<"main" | "editProfile" | "createVenue" | "listings" | "bookings">("main");
+  const [view, setView] = useState<
+    "main" | "editProfile" | "createVenue" | "listings" | "bookings"
+  >("main");
   const [listings, setListings] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
   const [editVenue, setEditVenue] = useState<any | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
@@ -47,9 +50,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   const fetchListings = async () => {
     try {
       const listingsData = await fetchUserListings(user.name);
-      setListings(listingsData.data);
+      setListings(listingsData);
     } catch (err) {
       console.error("Failed to fetch listings", err);
+      setError("Failed to load listings.");
     }
   };
 
@@ -59,6 +63,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
       setBookings(bookingsData.data);
     } catch (err) {
       console.error("Failed to fetch bookings", err);
+      setError("Failed to load bookings.");
     }
   };
 
@@ -67,7 +72,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
       fetchListings();
       fetchBookingsData();
     }
-  }, [user]);
+  }, [user?.name]);
 
   const handleProfileUpdate = (updatedUser: any) => {
     localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -78,14 +83,16 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   const handleDelete = async (id: string) => {
     try {
       await apiClient.delete(`/holidaze/venues/${id}`);
-      fetchListings();
+      const refreshed = await fetchUserListings(user.name);
+      setListings(refreshed);
     } catch (err) {
       console.error("Delete failed", err);
     }
   };
 
-  const refetchListings = () => {
-    fetchListings();
+  const refetchListings = async () => {
+    const refreshed = await fetchUserListings(user.name);
+    setListings(refreshed);
     setView("listings");
   };
 
@@ -157,6 +164,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
           >
             <LogOut size={18} /> Log out
           </button>
+
+          {error && (
+            <p className="text-red-500 text-sm text-center mt-3">{error}</p>
+          )}
         </>
       )}
 
@@ -175,16 +186,13 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
             setEditVenue(null);
             setView("main");
           }}
-          onSuccess={() => {
-            setEditVenue(null);
-            refetchListings();
-          }}
+          onSuccess={refetchListings}
         />
       )}
 
       {view === "listings" && (
-        <ListingsView
-          listings={listings || []}
+        <ListingsDropdown
+          listings={listings}
           onBack={() => setView("main")}
           onDelete={handleDelete}
           onEdit={(venue) => {
@@ -197,7 +205,11 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
 
       {view === "bookings" && (
         <BookingsDropdown
-          bookings={bookings || []}
+          bookings={bookings}
+          onCancel={async () => {
+            const refreshed = await fetchUserBookings(user.name);
+            setBookings(refreshed.data);
+          }}
           onBack={() => setView("main")}
         />
       )}
