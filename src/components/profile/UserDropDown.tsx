@@ -8,13 +8,13 @@ import {
   User as UserIcon,
   X,
 } from "lucide-react";
+import apiClient from "../../api/apiClient";
 import { logout } from "../../utils/auth";
 import EditProfile from "./EditProfile";
 import VenueForm from "../Venue/VenueForm";
-import ListingsDropdown from "../profile/ListingsDropdown";
-import BookingsDropdown from "../profile/BookingsDropdown";
+import HeaderBookings from "../header/Bookings";
+import HeaderListings from "../header/Listings";
 import { fetchUserBookings, fetchUserListings } from "../../api/profile";
-import apiClient from "../../api/apiClient";
 
 interface UserDropdownProps {
   onClose: () => void;
@@ -32,11 +32,13 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   const [view, setView] = useState<
     "main" | "editProfile" | "createVenue" | "listings" | "bookings"
   >("main");
+
   const [listings, setListings] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
   const [editVenue, setEditVenue] = useState<any | null>(null);
   const [error, setError] = useState("");
 
+  // Close dropdown on outside click
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -46,6 +48,14 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
     document.addEventListener("mousedown", handleOutsideClick);
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [onClose]);
+
+  // Fetch data
+  useEffect(() => {
+    if (user?.name) {
+      fetchListings();
+      fetchBookings();
+    }
+  }, [user?.name]);
 
   const fetchListings = async () => {
     try {
@@ -57,7 +67,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
     }
   };
 
-  const fetchBookingsData = async () => {
+  const fetchBookings = async () => {
     try {
       const bookingsData = await fetchUserBookings(user.name);
       setBookings(bookingsData.data);
@@ -66,13 +76,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
       setError("Failed to load bookings.");
     }
   };
-
-  useEffect(() => {
-    if (user?.name) {
-      fetchListings();
-      fetchBookingsData();
-    }
-  }, [user?.name]);
 
   const handleProfileUpdate = (updatedUser: any) => {
     localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -83,17 +86,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   const handleDelete = async (id: string) => {
     try {
       await apiClient.delete(`/holidaze/venues/${id}`);
-      const refreshed = await fetchUserListings(user.name);
-      setListings(refreshed);
+      await fetchListings();
     } catch (err) {
       console.error("Delete failed", err);
     }
-  };
-
-  const refetchListings = async () => {
-    const refreshed = await fetchUserListings(user.name);
-    setListings(refreshed);
-    setView("listings");
   };
 
   return (
@@ -109,6 +105,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
         <X size={20} />
       </button>
 
+      {/* Main menu */}
       {view === "main" && (
         <>
           <div className="flex flex-col items-center text-center mb-4">
@@ -171,6 +168,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
         </>
       )}
 
+      {/* Edit profile form */}
       {view === "editProfile" && (
         <EditProfile
           onSuccess={handleProfileUpdate}
@@ -178,6 +176,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
         />
       )}
 
+      {/* Create/edit venue form */}
       {view === "createVenue" && (
         <VenueForm
           mode={editVenue ? "edit" : "create"}
@@ -186,12 +185,17 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
             setEditVenue(null);
             setView("main");
           }}
-          onSuccess={refetchListings}
+          onSuccess={() => {
+            setEditVenue(null);
+            fetchListings();
+            setView("main");
+          }}
         />
       )}
 
+      {/* Listings in modal view */}
       {view === "listings" && (
-        <ListingsDropdown
+        <HeaderListings
           listings={listings}
           onBack={() => setView("main")}
           onDelete={handleDelete}
@@ -199,18 +203,15 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
             setEditVenue(venue);
             setView("createVenue");
           }}
-          onUpdate={refetchListings}
+          onRefresh={fetchListings}
         />
       )}
 
       {view === "bookings" && (
-        <BookingsDropdown
+        <HeaderBookings
           bookings={bookings}
-          onCancel={async () => {
-            const refreshed = await fetchUserBookings(user.name);
-            setBookings(refreshed.data);
-          }}
           onBack={() => setView("main")}
+          onRefresh={fetchBookings}
         />
       )}
     </div>
