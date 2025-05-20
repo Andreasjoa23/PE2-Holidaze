@@ -19,51 +19,15 @@ import {
   isFavorite,
   toggleFavoriteVenue,
 } from "../components/Venue/favoritesHelpers";
+import toast, { Toaster } from "react-hot-toast";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import "yet-another-react-lightbox/styles.css";
 
-type Media = {
-  url: string;
-  alt?: string;
-};
-
-type Booking = {
-  dateFrom: string;
-  dateTo: string;
-};
-
-type Venue = {
-  id: string;
-  name: string;
-  description: string;
-  maxGuests: number;
-  location: {
-    city: string;
-    country: string;
-  };
-  meta?: {
-    wifi?: boolean;
-    parking?: boolean;
-    breakfast?: boolean;
-    pets?: boolean;
-  };
-  media: Media[];
-  bookings: Booking[];
-  owner?: {
-    name: string;
-    email: string;
-    avatar?: {
-      url: string;
-      alt?: string;
-    };
-  };
-};
-
 const VenueDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [venue, setVenue] = useState<Venue | null>(null);
+  const [venue, setVenue] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -80,7 +44,7 @@ const VenueDetails = () => {
   useEffect(() => {
     const fetchVenue = async () => {
       try {
-        const response = await apiClient.get<{ data: Venue }>(
+        const response = await apiClient.get(
           `/holidaze/venues/${id}?_bookings=true&_owner=true`
         );
         setVenue(response.data.data);
@@ -99,30 +63,30 @@ const VenueDetails = () => {
 
   const handleBooking = async () => {
     const { startDate, endDate } = dateRange[0];
-    const bookingData = {
-      dateFrom: startDate!.toISOString(),
-      dateTo: endDate!.toISOString(),
-      guests: guests,
-      venueId: id!,
-    };
-
     try {
-      await createBooking(bookingData);
-      setTimeout(() => {
-        navigate("/bookingConfirmation", {
-          state: {
-            venueImage: venue?.media?.[0]?.url,
-            venueName: venue?.name,
-            guests: guests,
-            dateFrom: startDate?.toISOString(),
-            dateTo: endDate?.toISOString(),
-          },
-        });
-      }, 1000);
+      await createBooking({
+        dateFrom: startDate!.toISOString(),
+        dateTo: endDate!.toISOString(),
+        guests,
+        venueId: id!,
+      });
+      navigate("/bookingConfirmation", {
+        state: {
+          venueImage: venue?.media?.[0]?.url,
+          venueName: venue?.name,
+          guests,
+          dateFrom: startDate?.toISOString(),
+          dateTo: endDate?.toISOString(),
+        },
+      });
     } catch (err) {
-      console.error("Booking failed:", err);
-      alert("Failed to book. Please try again.");
+      toast.error("Failed to book. Try again.");
     }
+  };
+
+  const handleToggleFavorite = () => {
+    const updated = toggleFavoriteVenue(id!);
+    setIsFav(updated.includes(id));
   };
 
   const getDisabledDates = () => {
@@ -138,20 +102,13 @@ const VenueDetails = () => {
     return disabled;
   };
 
-  const handleToggleFavorite = () => {
-    const updated = toggleFavoriteVenue(id!);
-    setIsFav(updated.includes(id));
-  };
-
-  if (isLoading)
-    return <p className="text-center mt-10">Loading venue details...</p>;
-  if (error)
-    return <p className="text-center text-red-500 mt-10">{error}</p>;
-  if (!venue)
-    return <p className="text-center mt-10">Venue not found.</p>;
+  if (isLoading) return <p className="text-center mt-10">Loading...</p>;
+  if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
+  if (!venue) return <p className="text-center mt-10">Venue not found.</p>;
 
   return (
     <section className="p-4 md:p-12 max-w-7xl mx-auto">
+      <Toaster />
       <h1 className="text-2xl md:text-5xl font-bold text-[#0E1E34] mb-4 md:mb-8">
         {venue.name}
       </h1>
@@ -163,22 +120,18 @@ const VenueDetails = () => {
           alt={venue.name}
           className="w-full h-60 md:h-80 object-cover rounded-2xl shadow-lg cursor-pointer col-span-2"
         />
-        <div className="flex md:flex-col gap-4">
-          {venue.media?.slice(1, 3).map((img, i) => (
-            <img
-              key={i}
-              onClick={() => setIsLightboxOpen(true)}
-              src={img.url || "https://via.placeholder.com/300"}
-              alt={venue.name}
-              className="w-1/2 md:w-full h-24 md:h-36 object-cover rounded-2xl shadow-md cursor-pointer"
-            />
-          ))}
-          <button
-            className="flex items-center justify-center px-4 py-2 bg-[#0E1E34] text-white text-sm rounded-full shadow md:hidden"
-            onClick={() => setIsLightboxOpen(true)}
-          >
-            <FaImages className="mr-2" /> See all Images
-          </button>
+        <div className="flex gap-4 md:flex-col">
+          {venue.media
+            ?.slice(1, 3)
+            .map((img, i) => (
+              <img
+                key={i}
+                onClick={() => setIsLightboxOpen(true)}
+                src={img.url || "https://via.placeholder.com/300"}
+                alt={venue.name}
+                className="w-1/2 md:w-full h-24 md:h-36 object-cover rounded-2xl shadow-md cursor-pointer"
+              />
+            ))}
         </div>
       </div>
 
@@ -190,42 +143,42 @@ const VenueDetails = () => {
         />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div className="space-y-6">
-          <div className="space-y-2 text-[#0E1E34]">
-            <p className="font-semibold">
-              {venue.location?.city}, {venue.location?.country}
-            </p>
-            <div className="flex items-center gap-2 font-semibold">
-              <FaUsers /> {venue.maxGuests} Guests
-            </div>
-            <div className="flex items-center gap-2 font-semibold">
-              <FaBed /> {Math.floor(venue.maxGuests / 2)} Beds
-            </div>
+          <p className="font-semibold text-[#0E1E34]">
+            {venue.location?.city}, {venue.location?.country}
+          </p>
+          <div className="flex items-center gap-2 text-[#0E1E34]">
+            <FaUsers /> {venue.maxGuests} Guests
+          </div>
+          <div className="flex items-center gap-2 text-[#0E1E34]">
+            <FaBed /> {Math.floor(venue.maxGuests / 2)} Beds
           </div>
 
-          {venue.owner ? (
-            <div className="flex items-center gap-4 bg-gray-100 p-4 rounded-xl shadow">
-              <img
-                src={venue.owner.avatar?.url || "https://placehold.co/80"}
-                alt={venue.owner.avatar?.alt || venue.owner.name}
-                className="w-12 h-12 rounded-full object-cover border-2 border-white"
-              />
-              <div>
-                <p className="font-semibold text-[#0E1E34]">
-                  {venue.owner.name}
-                </p>
-                <p className="text-sm text-gray-500">{venue.owner.email}</p>
+          <div className="bg-gray-100 p-4 rounded-xl shadow">
+            {venue.owner ? (
+              <div className="flex items-center gap-4">
+                <img
+                  src={venue.owner.avatar?.url || "https://placehold.co/80"}
+                  alt={venue.owner.name}
+                  className="w-12 h-12 rounded-full object-cover border-2 border-white"
+                />
+                <div>
+                  <p className="font-semibold text-[#0E1E34]">
+                    {venue.owner.name}
+                  </p>
+                  <p className="text-sm text-gray-500">{venue.owner.email}</p>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="h-20 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 text-sm">
-              Host info not available.
-            </div>
-          )}
+            ) : (
+              <p className="text-gray-500">Host info not available</p>
+            )}
+          </div>
 
           <div>
-            <h2 className="text-xl font-bold text-[#0E1E34] mb-2">Description</h2>
+            <h2 className="text-xl font-bold text-[#0E1E34] mb-2">
+              Description
+            </h2>
             <p className="text-gray-700 text-sm leading-relaxed">
               {venue.description}
             </p>
@@ -233,14 +186,22 @@ const VenueDetails = () => {
 
           <div className="flex gap-4 flex-wrap">
             {venue.meta?.wifi && <FeatureIcon icon={<FaWifi />} label="Wifi" />}
-            {venue.meta?.parking && <FeatureIcon icon={<FaParking />} label="Parking" />}
-            {venue.meta?.breakfast && <FeatureIcon icon={<FaCoffee />} label="Breakfast" />}
-            {venue.meta?.pets && <FeatureIcon icon={<FaDog />} label="Pet Friendly" />}
+            {venue.meta?.parking && (
+              <FeatureIcon icon={<FaParking />} label="Parking" />
+            )}
+            {venue.meta?.breakfast && (
+              <FeatureIcon icon={<FaCoffee />} label="Breakfast" />
+            )}
+            {venue.meta?.pets && (
+              <FeatureIcon icon={<FaDog />} label="Pet Friendly" />
+            )}
           </div>
         </div>
 
         <div>
-          <h2 className="text-xl font-bold text-[#0E1E34] mb-4">Select your stay</h2>
+          <h2 className="text-xl font-bold text-[#0E1E34] mb-4">
+            Select your stay
+          </h2>
           <DateRange
             ranges={dateRange}
             onChange={(item) => setDateRange([item.selection])}
@@ -251,36 +212,36 @@ const VenueDetails = () => {
             className="shadow-xl rounded-xl overflow-hidden"
           />
 
-          <div className="flex justify-between items-center mt-6">
-            <div className="mt-4 w-1/2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Number of Guests
-              </label>
-              <input
-                type="number"
-                min={1}
-                max={venue.maxGuests}
-                value={guests}
-                onChange={(e) => setGuests(Number(e.target.value))}
-                className="w-full border px-4 py-2 rounded-md shadow-sm focus:ring-[#0E1E34] focus:border-[#0E1E34]"
-              />
-              <small className="text-gray-500">Max allowed: {venue.maxGuests}</small>
-            </div>
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Number of Guests
+            </label>
+            <input
+              type="number"
+              min={1}
+              max={venue.maxGuests}
+              value={guests}
+              onChange={(e) => setGuests(Number(e.target.value))}
+              className="w-full border px-4 py-2 rounded-md shadow-sm focus:ring-[#0E1E34] focus:border-[#0E1E34]"
+            />
+            <small className="text-gray-500">Max: {venue.maxGuests}</small>
+          </div>
 
-            <div className="flex flex-col items-end space-y-2 ml-4">
-              <button
-                onClick={handleBooking}
-                className="bg-[#0E1E34] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1d2d50] transition"
-              >
-                Book Now
-              </button>
-              <button
-                className="text-[#0E1E34] text-xl hover:scale-110 transition"
-                onClick={handleToggleFavorite}
-              >
-                {isFav ? <FaHeart className="text-red-500" /> : <FaRegHeart className="text-gray-400" />}
-              </button>
-            </div>
+          <div className="flex flex-col gap-4 mt-6">
+            <button
+              onClick={handleBooking}
+              className="bg-[#0E1E34] text-white px-8 py-3 rounded-full font-semibold hover:bg-[#1d2d50] transition w-full"
+            >
+              Book Now
+            </button>
+
+            <button
+              onClick={handleToggleFavorite}
+              className="flex items-center justify-center gap-2 border border-[#0E1E34] text-[#0E1E34] px-8 py-3 rounded-full font-semibold hover:bg-[#0E1E34] hover:text-white transition w-full"
+            >
+              {isFav ? <FaHeart /> : <FaRegHeart />}{" "}
+              {isFav ? "Favorited" : "Add to favorites"}
+            </button>
           </div>
         </div>
       </div>
@@ -288,7 +249,13 @@ const VenueDetails = () => {
   );
 };
 
-const FeatureIcon = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
+const FeatureIcon = ({
+  icon,
+  label,
+}: {
+  icon: React.ReactNode;
+  label: string;
+}) => (
   <div className="flex flex-col items-center">
     <div className="bg-[#0E1E34] p-3 rounded-full text-white">{icon}</div>
     <p className="text-xs mt-1 text-[#0E1E34]">{label}</p>

@@ -83,15 +83,14 @@ const SearchBanner: React.FC = () => {
 
   return (
     <section
-      className="relative w-full rounded-2xl my-12 py-16 overflow-visible"
+      className="relative w-full my-12 py-16 overflow-visible"
       style={{
         backgroundImage: `url(${FormImg})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
     >
-
-      <div className="absolute inset-0 bg-black/30 rounded-2xl pointer-events-none" />
+      <div className="absolute inset-0 bg-black/30 pointer-events-none" />
       <div className="relative z-10 max-w-6xl mx-auto flex flex-col items-center px-4">
         <h2 className="text-white text-4xl md:text-5xl font-bold text-center mb-8">
           Where to next?
