@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import holidazeLogo from "../assets/holidazeLogo.png";
 import { Search, User } from "lucide-react";
 import AuthDropdown from "./Auth/AuthDropdown";
-import UserDropdown from "./profile/UserDropDown";
+import UserDropdown from "./header/UserDropDown";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

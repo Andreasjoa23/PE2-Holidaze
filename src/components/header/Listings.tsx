@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X, Home, Trash, Pencil } from "lucide-react";
-import { useState } from "react";
 
 interface Venue {
   id: string;
@@ -56,9 +55,9 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
               alt={venue.name}
               className="w-24 h-24 object-cover rounded-md"
             />
-            <div className="flex-1 space-y-1">
+            <div className="flex-1 space-y-1 overflow-hidden">
               <h3 className="font-semibold text-[#0E1E34]">{venue.name}</h3>
-              <p className="text-sm text-gray-600 truncate">
+              <p className="text-sm text-gray-600 line-clamp-2">
                 {venue.description || "No description"}
               </p>
               <div className="flex justify-between text-xs text-gray-500">
@@ -68,7 +67,8 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
               </div>
               {venue.bookings?.length > 0 && (
                 <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full mt-1">
-                  {venue.bookings.length} booking{venue.bookings.length > 1 ? "s" : ""}
+                  {venue.bookings.length} booking
+                  {venue.bookings.length > 1 ? "s" : ""}
                 </span>
               )}
               <div className="flex gap-3 mt-2">

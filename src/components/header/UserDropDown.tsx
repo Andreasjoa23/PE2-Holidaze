@@ -10,10 +10,10 @@ import {
 } from "lucide-react";
 import apiClient from "../../api/apiClient";
 import { logout } from "../../utils/auth";
-import EditProfile from "./EditProfile";
+import EditProfile from "../profile/EditProfile";
 import VenueForm from "../Venue/VenueForm";
-import HeaderBookings from "../header/Bookings";
-import HeaderListings from "../header/Listings";
+import HeaderBookings from "./Bookings";
+import HeaderListings from "./Listings";
 import { fetchUserBookings, fetchUserListings } from "../../api/profile";
 
 interface UserDropdownProps {

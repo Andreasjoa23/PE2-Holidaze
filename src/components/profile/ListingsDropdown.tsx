@@ -133,9 +133,9 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
                         </button>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-600 truncate">
-                      {venue.description}
-                    </p>
+                      <p className="text-sm text-gray-600 line-clamp-2 overflow-hidden">
+                        {venue.description}
+                      </p>
                     <div className="text-xs text-gray-500 mt-1 flex gap-4">
                       <span>{Math.floor(venue.maxGuests / 2)} beds</span>
                       <span>{venue.maxGuests} people</span>
