@@ -11,6 +11,12 @@ interface AuthDropdownProps {
 
 const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
   const [view, setView] = useState<View>("initial");
+  const [prefillEmail, setPrefillEmail] = useState<string>("");
+
+  const handleRegistrationSuccess = (email: string) => {
+    setPrefillEmail(email);
+    setView("login"); // auto-switch
+  };
 
   return (
     <div className="relative w-80">
@@ -59,7 +65,7 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
             <h2 className="text-center text-lg font-semibold text-[#0E1E34] mb-4">
               Log in
             </h2>
-            <LoginForm />
+            <LoginForm prefillEmail={prefillEmail} />
           </>
         )}
 
@@ -68,10 +74,11 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
             <h2 className="text-center text-lg font-semibold text-[#0E1E34] mb-4">
               Sign up
             </h2>
-            <RegisterForm onSuccess={onClose} />
+            <RegisterForm
+              onSuccess={(user) => handleRegistrationSuccess(user.email)}
+            />
           </>
         )}
-
       </div>
     </div>
   );

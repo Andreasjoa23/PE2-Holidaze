@@ -1,4 +1,5 @@
 import apiClient from "./apiClient";
+import { UserProfile } from "../types/api";
 
 export const loginUser = (credentials: {
   email: string;
@@ -7,9 +8,7 @@ export const loginUser = (credentials: {
   return apiClient.post("/auth/login", credentials);
 };
 
-
-
-export async function registerUser(data: {
+interface RegisterPayload {
   name: string;
   email: string;
   password: string;
@@ -17,7 +16,13 @@ export async function registerUser(data: {
   avatar?: { url: string; alt: string };
   banner?: { url: string; alt: string };
   venueManager?: boolean;
-}) {
-  const response = await apiClient.post("/auth/register", data);
-  return response.data;
+}
+
+interface RegisterResponse {
+  data: UserProfile;
+}
+
+export async function registerUser(payload: RegisterPayload): Promise<UserProfile> {
+  const response = await apiClient.post<RegisterResponse>("/auth/register", payload);
+  return response.data.data;
 }
