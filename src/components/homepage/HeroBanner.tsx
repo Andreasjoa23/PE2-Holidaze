@@ -1,11 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Parallax } from "react-scroll-parallax";
 import { motion } from "framer-motion";
+import AuthDropdown from "../Auth/AuthDropdown";
 import HeroBannerImg from "../../assets/HeroIllustration3d@3x.png";
 
 const HeroBanner: React.FC = () => {
+  const navigate = useNavigate();
+  const [showAuth, setShowAuth] = useState(false);
+
   return (
-    <section className="w-full bg-white py-16 px-4 sm:px-8 lg:px-12 overflow-hidden">
+    <section className="w-full bg-white py-16 px-4 sm:px-8 lg:px-12 overflow-hidden relative">
       <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between gap-12">
         <motion.div
           className="w-full md:w-5/12 text-center md:text-left space-y-6 pl-6 md:pl-12"
@@ -45,6 +50,7 @@ const HeroBanner: React.FC = () => {
               className="w-full sm:w-auto bg-[#0E1E34] text-white py-3 px-6 rounded-full font-semibold"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => setShowAuth(true)}
             >
               Become a dazer
             </motion.button>
@@ -52,6 +58,7 @@ const HeroBanner: React.FC = () => {
               className="w-full sm:w-auto border border-[#0E1E34] text-[#0E1E34] py-3 px-6 rounded-full font-semibold"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => navigate("/venues")}
             >
               Explore properties
             </motion.button>
@@ -60,8 +67,7 @@ const HeroBanner: React.FC = () => {
 
         <Parallax speed={20}>
           <motion.div
-            className="w-full md:w-7/12 md:ml-8 flex justify-center
-+                       -mt-8 md:-mt-12"
+            className="w-full md:w-7/12 md:ml-8 flex justify-center -mt-8 md:-mt-12"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1 }}
@@ -74,6 +80,12 @@ const HeroBanner: React.FC = () => {
           </motion.div>
         </Parallax>
       </div>
+
+      {showAuth && (
+        <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-black/50 z-50">
+          <AuthDropdown onClose={() => setShowAuth(false)} />
+        </div>
+      )}
     </section>
   );
 };
