@@ -27,7 +27,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
 
   const [user, setUser] = useState<UserProfile | null>(() => {
     const stored = localStorage.getItem("user");
-    return stored ? JSON.parse(stored) : null;
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored);
+    return parsed.data ?? parsed;
   });
 
   const [view, setView] = useState<
@@ -41,7 +44,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         onClose();
       }
     };
