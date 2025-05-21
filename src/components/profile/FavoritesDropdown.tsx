@@ -93,7 +93,7 @@ const FavoritesDropdown: React.FC = () => {
                   <span className="text-sm text-gray-500 mb-2">
                     ${venue.price} /night
                   </span>
-                  <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                  <p className="text-sm text-gray-600 mb-3 line-clamp-2 overflow-hidden">
                     {venue.description || "No description provided."}
                   </p>
                   <div className="flex items-center gap-4 text-sm text-gray-700 mb-4">

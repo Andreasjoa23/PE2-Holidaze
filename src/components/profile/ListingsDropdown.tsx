@@ -78,15 +78,13 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
                   className="bg-white rounded-xl shadow border p-3 flex items-center gap-4"
                 >
                   <img
-                    src={
-                      venue.media[0]?.url || "https://via.placeholder.com/100"
-                    }
+                    src={venue.media[0]?.url || "https://via.placeholder.com/100"}
                     alt={venue.name}
                     className="w-24 h-24 rounded-lg object-cover"
                   />
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-base font-semibold text-[#0E1E34] truncate pr-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start gap-2">
+                      <h3 className="text-base font-semibold text-[#0E1E34] truncate max-w-full pr-2">
                         {venue.name}
                       </h3>
                       <div className="flex items-center gap-2">
@@ -146,7 +144,6 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
           onUpdate();
         }}
       />
-
 
       <AnimatePresence>
         {showBookingsModal && selectedVenue?.bookings && (

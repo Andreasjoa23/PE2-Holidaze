@@ -87,13 +87,12 @@ const BookingsDropdown: React.FC<BookingsDropdownProps> = ({
                     alt={booking.venue?.name || "Venue image"}
                     className="w-24 h-24 rounded-lg object-cover"
                   />
-                  <div className="flex-1 space-y-1">
-                    <h3 className="text-base font-semibold text-[#0E1E34] truncate">
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <h3 className="text-base font-semibold text-[#0E1E34] truncate max-w-full">
                       {booking.venue?.name || "Unnamed venue"}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {formatDate(booking.dateFrom)} –{" "}
-                      {formatDate(booking.dateTo)}
+                      {formatDate(booking.dateFrom)} – {formatDate(booking.dateTo)}
                     </p>
                     <div className="text-xs text-gray-500 flex justify-between">
                       <span>{booking.venue?.maxGuests} people</span>
