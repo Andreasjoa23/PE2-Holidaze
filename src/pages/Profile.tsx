@@ -63,7 +63,7 @@ const Profile: React.FC = () => {
   };
 
   const viewsCount = listings.reduce(
-    (sum, venue) => sum + (venue.views || 0),
+    (sum, venue) => sum + (venue.bookings?.length || 0),
     0
   );
 
@@ -82,11 +82,13 @@ const Profile: React.FC = () => {
     );
 
   const nextBooking = futureBookings[0]
-    ? new Date(futureBookings[0].dateFrom).toLocaleDateString(undefined, {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
+    ? new Date(futureBookings[0].dateFrom)
+        .toLocaleDateString("en-US", {
+          year: "2-digit",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .replace(/\//g, ".")
     : "None";
 
   if (!user) {
