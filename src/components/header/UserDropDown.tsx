@@ -100,7 +100,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   return (
     <div
       ref={dropdownRef}
-      className="absolute top-4 right-4 z-50 w-[620px] bg-white rounded-xl shadow-xl p-6 max-h-[90vh] overflow-y-auto"
+      className="fixed top-4 left-0 right-0 mx-auto w-[95%] sm:right-4 sm:left-auto sm:w-[420px] md:w-[620px] z-50 bg-white rounded-xl shadow-xl p-6 max-h-[90vh] overflow-y-auto"
     >
       <button
         onClick={onClose}
