@@ -2,6 +2,7 @@ import { useLocation, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import Confetti from "react-confetti";
 import { useEffect, useState } from "react";
+import BookingImg from "../assets/BookingConfirmed.png";
 
 const BookingConfirmation = () => {
   const location = useLocation();
@@ -69,7 +70,7 @@ const BookingConfirmation = () => {
       >
         <div className="flex-1 text-center md:text-left">
           <motion.img
-            src="/src/assets/BookingConfirmed.png"
+            src={BookingImg}
             alt="Booking confirmed"
             initial={{ y: -30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
