@@ -4,7 +4,7 @@ import { UserProfile } from "../../types/api";
 
 interface RegisterFormProps {
   onSuccess?: (user: UserProfile) => void;
-  switchToLogin?: () => void; // 👈 new prop
+  switchToLogin?: () => void;
 }
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, switchToLogin }) => {
@@ -56,7 +56,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess, switchToLogin })
 
     try {
       const user = await registerUser(payload);
-      localStorage.setItem("user", JSON.stringify(user));
       setSuccessMessage("🎉 Registration successful!");
       setIsRegistered(true);
 

@@ -15,7 +15,7 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
 
   const handleRegistrationSuccess = (email: string) => {
     setPrefillEmail(email);
-    setView("login"); // auto-switch
+    setView("login");
   };
 
   return (
