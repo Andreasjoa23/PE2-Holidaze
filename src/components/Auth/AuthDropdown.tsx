@@ -13,11 +13,6 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
   const [view, setView] = useState<View>("initial");
   const [prefillEmail, setPrefillEmail] = useState<string>("");
 
-  const handleRegistrationSuccess = (email: string) => {
-    setPrefillEmail(email);
-    setView("login");
-  };
-
   return (
     <div className="relative w-80">
       {view !== "initial" && (
@@ -75,7 +70,8 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
               Sign up
             </h2>
             <RegisterForm
-              onSuccess={(user) => handleRegistrationSuccess(user.email)}
+              switchToLogin={() => setView("login")}
+              setPrefillEmail={setPrefillEmail}
             />
           </>
         )}
