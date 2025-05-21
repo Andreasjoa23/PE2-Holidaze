@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { createVenue, updateVenue } from "../../api/venues";
 import { motion } from "framer-motion";
+import { createVenue, updateVenue } from "../../api/venues";
 import { Venue, MetaInfo, Location } from "../../types/api";
 
 interface VenueFormProps {

@@ -7,6 +7,10 @@ interface LoginFormProps {
   prefillEmail?: string;
 }
 
+interface LoginResponse extends UserProfile {
+  accessToken: string;
+}
+
 const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, prefillEmail = "" }) => {
   const [email, setEmail] = useState(prefillEmail);
   const [password, setPassword] = useState("");
@@ -14,35 +18,40 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, prefillEmail = "" }) =
 
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
-  // Autofocus password field if email is prefilled
   useEffect(() => {
     if (prefillEmail && passwordInputRef.current) {
       passwordInputRef.current.focus();
     }
   }, [prefillEmail]);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMsg("");
+
     try {
-      const response = (await loginUser({ email, password })) as {
-        data: {
-          data: UserProfile;
-          accessToken: string;
-        };
+      const response = await loginUser({ email, password });
+      const data = response.data as { data: LoginResponse };
+
+      const { accessToken, ...userWithoutToken } = data.data;
+
+      const user: UserProfile = {
+        ...userWithoutToken,
+        banner: userWithoutToken.banner ?? {
+          url: "",
+          alt: "Default banner",
+        },
       };
 
-      const userData = response.data.data as UserProfile;
-      const accessToken = response.data.accessToken;
-
       localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("user", JSON.stringify(user));
 
       if (onSuccess) {
-        onSuccess(userData);
+        onSuccess(user);
       } else {
         window.location.reload();
       }
-    } catch {
+    } catch (error) {
+      console.error("Login error:", error);
       setErrorMsg("Login failed. Please check your email and password.");
     }
   };
