@@ -12,7 +12,9 @@ interface ProfileUpdatePayload {
   banner: { url: string; alt: string };
 }
 
-export async function updateProfile(data: ProfileUpdatePayload): Promise<ApiSingleResponse<UserProfile>> {
+export async function updateProfile(
+  data: ProfileUpdatePayload
+): Promise<ApiSingleResponse<UserProfile>> {
   const user = JSON.parse(localStorage.getItem("user") || "{}") as UserProfile;
   const username = user?.name;
 
@@ -25,7 +27,9 @@ export async function updateProfile(data: ProfileUpdatePayload): Promise<ApiSing
   return response.data;
 }
 
-export async function fetchUserBookings(username: string): Promise<ApiListResponse<Booking>> {
+export async function fetchUserBookings(
+  username: string
+): Promise<ApiListResponse<Booking>> {
   const response = await apiClient.get<ApiListResponse<Booking>>(
     `/holidaze/profiles/${username}/bookings?_venue=true&_customer=true`
   );
@@ -34,7 +38,7 @@ export async function fetchUserBookings(username: string): Promise<ApiListRespon
 
 export async function fetchUserListings(name: string): Promise<Venue[]> {
   const response = await apiClient.get<ApiListResponse<Venue>>(
-    `/holidaze/profiles/${name}/venues?_bookings=true`
+    `/holidaze/profiles/${name}/venues?_bookings=true&_views=true`
   );
   return response.data.data;
 }
