@@ -24,10 +24,17 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, prefillEmail = "" }) =
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await loginUser({ email, password });
-      const userData = response.data as UserProfile & { accessToken: string };
+      const response = (await loginUser({ email, password })) as {
+        data: {
+          data: UserProfile;
+          accessToken: string;
+        };
+      };
 
-      localStorage.setItem("accessToken", userData.accessToken);
+      const userData = response.data.data as UserProfile;
+      const accessToken = response.data.accessToken;
+
+      localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("user", JSON.stringify(userData));
 
       if (onSuccess) {
