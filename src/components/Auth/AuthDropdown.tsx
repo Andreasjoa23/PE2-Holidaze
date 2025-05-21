@@ -68,9 +68,10 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
             <h2 className="text-center text-lg font-semibold text-[#0E1E34] mb-4">
               Sign up
             </h2>
-            <RegisterForm />
+            <RegisterForm onSuccess={onClose} />
           </>
         )}
+
       </div>
     </div>
   );

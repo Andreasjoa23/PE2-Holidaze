@@ -1,5 +1,3 @@
-// components/Profile/DeleteConfirmationModal.tsx
-
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 

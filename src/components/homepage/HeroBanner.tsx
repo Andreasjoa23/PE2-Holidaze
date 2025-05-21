@@ -1,4 +1,3 @@
-// src/components/homepage/HeroBanner.tsx
 import React from "react";
 import { Parallax } from "react-scroll-parallax";
 import { motion } from "framer-motion";
@@ -8,7 +7,6 @@ const HeroBanner: React.FC = () => {
   return (
     <section className="w-full bg-white py-16 px-4 sm:px-8 lg:px-12 overflow-hidden">
       <div className="max-w-7xl mx-auto flex flex-col-reverse md:flex-row items-center justify-between gap-12">
-        {/* TEKST */}
         <motion.div
           className="w-full md:w-5/12 text-center md:text-left space-y-6 pl-6 md:pl-12"
           initial={{ opacity: 0, x: -50 }}
@@ -60,7 +58,6 @@ const HeroBanner: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* BILDE */}
         <Parallax speed={20}>
           <motion.div
             className="w-full md:w-7/12 md:ml-8 flex justify-center

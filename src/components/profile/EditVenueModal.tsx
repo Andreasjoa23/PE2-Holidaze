@@ -1,29 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { updateVenue } from "../../api/venues";
 import { X } from "lucide-react";
+import { Venue, MediaItem } from "../../types/api";
 
-const amenitiesList = ["wifi", "parking", "breakfast", "pets"];
+const amenitiesList = ["wifi", "parking", "breakfast", "pets"] as const;
 
-const EditVenueModal = ({
+interface EditVenueModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  initialData: Venue;
+  onSuccess: () => void;
+}
+
+const EditVenueModal: React.FC<EditVenueModalProps> = ({
   isOpen,
   onClose,
   initialData,
   onSuccess,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  initialData: any;
-  onSuccess: () => void;
 }) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
-    location: { country: "", city: "", address: "" },
+    location: {
+      country: "",
+      city: "",
+      address: "",
+    },
     media: [""],
     price: 0,
     maxGuests: 1,
     beds: 1,
-    meta: { wifi: false, parking: false, breakfast: false, pets: false },
+    meta: {
+      wifi: false,
+      parking: false,
+      breakfast: false,
+      pets: false,
+    },
   });
 
   const [error, setError] = useState("");
@@ -38,10 +50,10 @@ const EditVenueModal = ({
           city: initialData.location?.city || "",
           address: initialData.location?.address || "",
         },
-        media: initialData.media?.map((m: any) => m.url) || [""],
+        media: initialData.media?.map((m: MediaItem) => m.url) || [""],
         price: initialData.price || 0,
         maxGuests: initialData.maxGuests || 1,
-        beds: initialData.beds || 1,
+        beds: Math.floor(initialData.maxGuests / 2) || 1,
         meta: initialData.meta || {
           wifi: false,
           parking: false,
@@ -61,7 +73,7 @@ const EditVenueModal = ({
       setFormData((prev) => ({
         ...prev,
         [section]: {
-          ...prev[section as "location"],
+          ...(prev[section as keyof typeof prev] as Record<string, string>),
           [key]: value,
         },
       }));
@@ -82,19 +94,28 @@ const EditVenueModal = ({
     e.preventDefault();
     setError("");
 
+    const payload = {
+      name: formData.name,
+      description: formData.description,
+      media: formData.media
+        .filter((url) => url.trim() !== "")
+        .map((url) => ({ url, alt: `${formData.name} image` })),
+      price: Number(formData.price),
+      maxGuests: Number(formData.maxGuests),
+      meta: formData.meta,
+      location: {
+        address: formData.location.address || "",
+        city: formData.location.city || "",
+        country: formData.location.country || "",
+        zip: "",
+        continent: "",
+        lat: 0,
+        lng: 0,
+      },
+    };
+
     try {
-      await updateVenue(initialData.id, {
-        name: formData.name,
-        description: formData.description,
-        media: formData.media
-          .filter((url) => url.trim() !== "")
-          .map((url) => ({ url, alt: `${formData.name} image` })),
-        price: Number(formData.price),
-        maxGuests: Number(formData.maxGuests),
-        beds: Number(formData.beds),
-        meta: formData.meta,
-        location: formData.location,
-      });
+      await updateVenue(initialData.id, payload);
       onSuccess();
     } catch (err) {
       console.error(err);
@@ -117,96 +138,81 @@ const EditVenueModal = ({
         <h2 className="text-xl font-bold mb-4">Edit Listing</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4 text-sm">
-          <div>
-            <label className="block font-medium">Title</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2"
+            placeholder="Title"
+            required
+          />
+
+          <textarea
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2"
+            rows={4}
+            placeholder="Description"
+            required
+          />
+
+          <div className="grid grid-cols-3 gap-2">
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="location.country"
+              value={formData.location.country}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-              required
+              className="border px-3 py-2 rounded"
+              placeholder="Country"
             />
-          </div>
-
-          <div>
-            <label className="block font-medium">Description</label>
-            <textarea
-              name="description"
-              value={formData.description}
+            <input
+              type="text"
+              name="location.city"
+              value={formData.location.city}
               onChange={handleChange}
-              className="w-full border rounded px-3 py-2"
-              rows={4}
-              required
+              className="border px-3 py-2 rounded"
+              placeholder="City"
             />
-          </div>
-
-          <div>
-            <label className="block font-medium">Address</label>
-            <div className="grid grid-cols-3 gap-2 mt-1">
-              <input
-                type="text"
-                name="location.country"
-                value={formData.location.country}
-                onChange={handleChange}
-                className="border px-3 py-2 rounded"
-                placeholder="Country"
-              />
-              <input
-                type="text"
-                name="location.city"
-                value={formData.location.city}
-                onChange={handleChange}
-                className="border px-3 py-2 rounded"
-                placeholder="City"
-              />
-              <input
-                type="text"
-                name="location.address"
-                value={formData.location.address}
-                onChange={handleChange}
-                className="border px-3 py-2 rounded"
-                placeholder="Street address"
-              />
-            </div>
+            <input
+              type="text"
+              name="location.address"
+              value={formData.location.address}
+              onChange={handleChange}
+              className="border px-3 py-2 rounded"
+              placeholder="Street"
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block font-medium">Number of guests</label>
-              <input
-                type="number"
-                name="maxGuests"
-                value={formData.maxGuests}
-                onChange={handleChange}
-                className="w-full border px-3 py-2 rounded mt-1"
-                min={1}
-              />
-            </div>
-            <div>
-              <label className="block font-medium">Number of beds</label>
-              <input
-                type="number"
-                name="beds"
-                value={formData.beds}
-                onChange={handleChange}
-                className="w-full border px-3 py-2 rounded mt-1"
-                min={1}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block font-medium">Price per night</label>
             <input
               type="number"
-              name="price"
-              value={formData.price}
+              name="maxGuests"
+              value={formData.maxGuests}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded mt-1"
-              min={0}
+              className="w-full border px-3 py-2 rounded"
+              min={1}
+            />
+            <input
+              type="number"
+              name="beds"
+              value={formData.beds}
+              onChange={handleChange}
+              className="w-full border px-3 py-2 rounded"
+              min={1}
             />
           </div>
+
+          <input
+            type="number"
+            name="price"
+            value={formData.price}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            min={0}
+            placeholder="Price per night"
+          />
 
           <fieldset className="mt-4">
             <legend className="font-medium mb-2">Facilities</legend>

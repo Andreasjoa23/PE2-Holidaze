@@ -1,19 +1,28 @@
 import { useState } from "react";
 import { createVenue, updateVenue } from "../../api/venues";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
+import { Venue, MetaInfo, Location } from "../../types/api";
 
-const VenueForm = ({
-  mode,
-  initialData,
-  onSuccess,
-  onClose,
-}: {
+interface VenueFormProps {
   mode: "create" | "edit";
-  initialData?: any;
+  initialData?: Partial<Venue>;
   onSuccess: () => void;
   onClose: () => void;
-}) => {
-  const [formData, setFormData] = useState({
+}
+
+type FormLocation = Pick<Location, "country" | "city" | "address">;
+type FormData = {
+  title: string;
+  description: string;
+  location: FormLocation;
+  media: string[];
+  price: number;
+  maxGuests: number;
+  meta: MetaInfo;
+};
+
+const VenueForm: React.FC<VenueFormProps> = ({ mode, initialData, onSuccess, onClose }) => {
+  const [formData, setFormData] = useState<FormData>({
     title: initialData?.name || "",
     description: initialData?.description || "",
     location: {
@@ -21,7 +30,7 @@ const VenueForm = ({
       city: initialData?.location?.city || "",
       address: initialData?.location?.address || "",
     },
-    media: initialData?.media?.map((m: any) => m.url) || [""],
+    media: initialData?.media?.map((m) => m.url) || [""],
     price: initialData?.price || 0,
     maxGuests: initialData?.maxGuests || 1,
     meta: initialData?.meta || {
@@ -39,14 +48,22 @@ const VenueForm = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    if (name.includes(".")) {
-      const [section, key] = name.split(".");
+
+    if (name.startsWith("location.")) {
+      const key = name.split(".")[1] as keyof FormLocation;
       setFormData((prev) => ({
         ...prev,
-        [section]: { ...prev[section], [key]: value },
+        location: {
+          ...prev.location,
+          [key]: value,
+        },
       }));
     } else {
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      const key = name as keyof Omit<FormData, "location" | "meta" | "media">;
+      setFormData((prev) => ({
+        ...prev,
+        [key]: value,
+      }));
     }
   };
 
@@ -59,10 +76,7 @@ const VenueForm = ({
   };
 
   const handleAddImage = () => {
-    setFormData((prev) => ({
-      ...prev,
-      media: [...prev.media, ""],
-    }));
+    setFormData((prev) => ({ ...prev, media: [...prev.media, ""] }));
   };
 
   const handleMediaChange = (index: number, value: string) => {
@@ -90,7 +104,7 @@ const VenueForm = ({
       return;
     }
 
-    const payload = {
+    const payload: Omit<Venue, "id" | "rating" | "created" | "updated" | "owner" | "bookings"> = {
       name: formData.title,
       description: formData.description,
       media: formData.media
@@ -100,11 +114,11 @@ const VenueForm = ({
       maxGuests: Number(formData.maxGuests),
       meta: formData.meta,
       location: {
-        address: formData.location.address || null,
-        city: formData.location.city || null,
-        country: formData.location.country || null,
-        zip: null,
-        continent: null,
+        address: formData.location.address,
+        city: formData.location.city,
+        country: formData.location.country,
+        zip: "",
+        continent: "",
         lat: 0,
         lng: 0,
       },
@@ -112,23 +126,17 @@ const VenueForm = ({
 
     try {
       if (mode === "create") {
-        const response = await createVenue(payload);
-        console.log("Venue created:", response);
+        await createVenue(payload);
       } else if (mode === "edit" && initialData?.id) {
-        const response = await updateVenue(initialData.id, payload);
-        console.log("Venue updated:", response);
+        await updateVenue(initialData.id, payload);
       }
-      setSuccess(
-        `Venue ${mode === "create" ? "created" : "updated"} successfully!`
-      );
+      setSuccess(`Venue ${mode === "create" ? "created" : "updated"} successfully!`);
       onSuccess();
     } catch (err) {
-      console.error("Venue creation failed:", err); // 👈 Dette hjelper også
       console.error(err);
       setError(`Failed to ${mode} venue. Please check your inputs.`);
     }
   };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
       <motion.div
@@ -150,145 +158,104 @@ const VenueForm = ({
             {mode === "create" ? "Create" : "Edit"} Listing
           </h3>
 
-          <div>
-            <label className="font-medium block">Title</label>
+          <input
+            type="text"
+            name="title"
+            placeholder="Title"
+            value={formData.title}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+
+          <textarea
+            name="description"
+            placeholder="Description"
+            value={formData.description}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+            required
+          />
+
+          <div className="grid grid-cols-2 gap-4">
             <input
               type="text"
-              name="title"
-              value={formData.title}
+              name="location.country"
+              placeholder="Country"
+              value={formData.location.country}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded mt-1"
-              required
+              className="w-full border px-3 py-2 rounded"
             />
-          </div>
-
-          <div>
-            <label className="font-medium block">Information</label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              className="w-full border px-3 py-2 rounded mt-1"
-              rows={3}
-              required
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="font-medium block">Country</label>
-              <input
-                type="text"
-                name="location.country"
-                value={formData.location.country}
-                onChange={handleChange}
-                className="w-full border px-3 py-2 rounded mt-1"
-              />
-            </div>
-            <div>
-              <label className="font-medium block">City</label>
-              <input
-                type="text"
-                name="location.city"
-                value={formData.location.city}
-                onChange={handleChange}
-                className="w-full border px-3 py-2 rounded mt-1"
-              />
-            </div>
-            <div className="col-span-2">
-              <label className="font-medium block">Address</label>
-              <input
-                type="text"
-                name="location.address"
-                value={formData.location.address}
-                onChange={handleChange}
-                className="w-full border px-3 py-2 rounded mt-1"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="font-medium block">Number of guests</label>
-              <input
-                type="number"
-                name="maxGuests"
-                value={formData.maxGuests}
-                onChange={handleChange}
-                className="w-full border px-3 py-2 rounded mt-1"
-                min={1}
-              />
-            </div>
-            <div>
-              <label className="font-medium block">Number of beds</label>
-              <input
-                type="number"
-                name="beds"
-                value={Math.floor(formData.maxGuests / 2)}
-                onChange={() => {}}
-                className="w-full border px-3 py-2 rounded mt-1"
-                disabled
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="font-medium block">Upload cover image</label>
             <input
-              type="url"
-              value={formData.media[0]}
-              onChange={(e) => handleMediaChange(0, e.target.value)}
-              className="w-full border px-3 py-2 rounded mt-1"
-              placeholder="Cover image URL"
-              required
+              type="text"
+              name="location.city"
+              placeholder="City"
+              value={formData.location.city}
+              onChange={handleChange}
+              className="w-full border px-3 py-2 rounded"
+            />
+            <input
+              type="text"
+              name="location.address"
+              placeholder="Address"
+              value={formData.location.address}
+              onChange={handleChange}
+              className="col-span-2 w-full border px-3 py-2 rounded"
             />
           </div>
 
-          <div>
-            <label className="font-medium block">Additional images</label>
-            {formData.media.slice(1).map((url, idx) => (
-              <input
-                key={idx}
-                type="url"
-                value={url}
-                onChange={(e) => handleMediaChange(idx + 1, e.target.value)}
-                className="w-full border px-3 py-2 rounded mt-1"
-                placeholder={`Image URL ${idx + 2}`}
-              />
-            ))}
-            <button
-              type="button"
-              onClick={handleAddImage}
-              className="text-sm text-blue-700 hover:underline mt-2"
-            >
-              ➕ Add more images
-            </button>
-          </div>
-
-          <div>
-            <label className="font-medium block">Price per night</label>
+          <div className="grid grid-cols-2 gap-4">
+            <input
+              type="number"
+              name="maxGuests"
+              placeholder="Max Guests"
+              value={formData.maxGuests}
+              onChange={handleChange}
+              className="w-full border px-3 py-2 rounded"
+              min={1}
+            />
             <input
               type="number"
               name="price"
+              placeholder="Price per night"
               value={formData.price}
               onChange={handleChange}
-              className="w-full border px-3 py-2 rounded mt-1"
+              className="w-full border px-3 py-2 rounded"
               min={0}
             />
           </div>
 
+          {formData.media.map((url, i) => (
+            <input
+              key={i}
+              type="url"
+              placeholder={`Image URL ${i + 1}`}
+              value={url}
+              onChange={(e) => handleMediaChange(i, e.target.value)}
+              className="w-full border px-3 py-2 rounded"
+            />
+          ))}
+
+          <button
+            type="button"
+            onClick={handleAddImage}
+            className="text-sm text-blue-700 hover:underline"
+          >
+            ➕ Add more images
+          </button>
+
           <fieldset className="mt-4">
             <legend className="font-medium mb-2">Facilities</legend>
             <div className="flex flex-wrap gap-3">
-              {Object.keys(formData.meta).map((key) => (
-                <label key={key} className="flex items-center gap-1">
+              {Object.entries(formData.meta).map(([key, value]) => (
+                <label key={key} className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
                     name={key}
-                    checked={formData.meta[key as keyof typeof formData.meta]}
+                    checked={value}
                     onChange={handleCheckbox}
                   />
-                  <span className="capitalize text-sm">{key}</span>
+                  {key}
                 </label>
               ))}
             </div>
@@ -297,18 +264,11 @@ const VenueForm = ({
           {error && <p className="text-red-500 text-sm">{error}</p>}
           {success && <p className="text-green-600 text-sm">{success}</p>}
 
-          <div className="flex justify-end gap-4 mt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded border text-sm"
-            >
+          <div className="flex justify-end gap-4">
+            <button type="button" onClick={onClose} className="px-4 py-2 border rounded">
               Cancel
             </button>
-            <button
-              type="submit"
-              className="bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-800 text-sm"
-            >
+            <button type="submit" className="px-4 py-2 bg-blue-900 text-white rounded">
               {mode === "create" ? "Post" : "Save"}
             </button>
           </div>

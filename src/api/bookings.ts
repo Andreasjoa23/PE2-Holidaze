@@ -1,4 +1,6 @@
 import apiClient from "./apiClient";
+import { Booking } from "../types/api";
+import { ApiSingleResponse } from "../types/api";
 
 export const createBooking = (data: {
   dateFrom: string;
@@ -6,7 +8,7 @@ export const createBooking = (data: {
   venueId: string;
   guests: number;
 }) => {
-  return apiClient.post("/holidaze/bookings", data);
+  return apiClient.post<ApiSingleResponse<Booking>>("/holidaze/bookings", data);
 };
 
 export const deleteBooking = (id: string) => {

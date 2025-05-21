@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
-import { DateRange } from "react-date-range";
+import { DateRange, Range } from "react-date-range";
 import { FaSearch, FaCalendarAlt, FaUser, FaTimes } from "react-icons/fa";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
@@ -15,8 +15,12 @@ const SearchBanner: React.FC = () => {
   const dateInputRef = useRef<HTMLDivElement>(null);
 
   const [destination, setDestination] = useState("");
-  const [date, setDate] = useState([
-    { startDate: new Date(), endDate: new Date(), key: "selection" },
+  const [date, setDate] = useState<Range[]>([
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: "selection",
+    },
   ]);
   const [guests, setGuests] = useState(1);
   const [showCalendar, setShowCalendar] = useState(false);
@@ -43,6 +47,8 @@ const SearchBanner: React.FC = () => {
   const handleSearch = () => {
     clickSound.play();
     const [range] = date;
+    if (!range.startDate || !range.endDate) return;
+
     navigate(
       `/venues?destination=${encodeURIComponent(
         destination
@@ -63,7 +69,7 @@ const SearchBanner: React.FC = () => {
       </div>
       <DateRange
         ranges={date}
-        onChange={(item) => setDate([item.selection])}
+        onChange={(item) => setDate([item.selection as Range])}
         months={months}
         direction="horizontal"
         minDate={new Date()}
@@ -115,7 +121,8 @@ const SearchBanner: React.FC = () => {
           >
             <FaCalendarAlt className="text-gray-400 mr-3 flex-shrink-0" />
             <span className="text-gray-700 text-base">
-              {`${date[0].startDate.toLocaleDateString()} – ${date[0].endDate.toLocaleDateString()}`}
+              {date[0].startDate?.toLocaleDateString() || "Start"} –{" "}
+              {date[0].endDate?.toLocaleDateString() || "End"}
             </span>
 
             {showCalendar && !isMobile && (

@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { loginUser } from "../../api/auth";
+import { UserProfile } from "../../types/api";
 
-const HOLIDAZE_BLUE = "#0E1E34";
+interface LoginFormProps {
+  onSuccess?: (user: UserProfile) => void;
+}
 
-const LoginForm: React.FC = () => {
+const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -12,10 +15,16 @@ const LoginForm: React.FC = () => {
     e.preventDefault();
     try {
       const response = await loginUser({ email, password });
-      const userData = response.data;
+      const userData = response.data as UserProfile & { accessToken: string };
+
       localStorage.setItem("accessToken", userData.accessToken);
       localStorage.setItem("user", JSON.stringify(userData));
-      window.location.reload();
+
+      if (onSuccess) {
+        onSuccess(userData);
+      } else {
+        window.location.reload(); // fallback
+      }
     } catch {
       setErrorMsg("Login failed. Please check your email and password.");
     }

@@ -3,45 +3,10 @@ import { Home, ChevronDown, ChevronUp, Trash2, Pencil } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import EditVenueModal from "./EditVenueModal";
-
-interface Booking {
-  id: string;
-  dateFrom: string;
-  dateTo: string;
-  guests: number;
-  customer?: {
-    name?: string;
-    email?: string;
-    avatar?: {
-      url: string;
-      alt?: string;
-    };
-  };
-}
-
-interface Listing {
-  id: string;
-  name: string;
-  description: string;
-  media: { url: string }[];
-  price: number;
-  maxGuests: number;
-  location: {
-    address: string;
-    city: string;
-    country: string;
-  };
-  meta: {
-    wifi: boolean;
-    parking: boolean;
-    breakfast: boolean;
-    pets: boolean;
-  };
-  bookings?: Booking[];
-}
+import { Venue } from "../../types/api";
 
 interface ListingsDropdownProps {
-  listings: Listing[];
+  listings: Venue[];
   onDelete: (id: string) => void;
   onUpdate: () => void;
 }
@@ -52,22 +17,22 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   onUpdate,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedVenue, setSelectedVenue] = useState<Listing | null>(null);
+  const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showBookingsModal, setShowBookingsModal] = useState(false);
 
-  const handleDeleteClick = (venue: Listing) => {
+  const handleDeleteClick = (venue: Venue) => {
     setSelectedVenue(venue);
     setShowDeleteModal(true);
   };
 
-  const handleEditClick = (venue: Listing) => {
+  const handleEditClick = (venue: Venue) => {
     setSelectedVenue(venue);
     setShowEditModal(true);
   };
 
-  const handleShowBookings = (venue: Listing) => {
+  const handleShowBookings = (venue: Venue) => {
     setSelectedVenue(venue);
     setShowBookingsModal(true);
   };
@@ -133,9 +98,9 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
                         </button>
                       </div>
                     </div>
-                      <p className="text-sm text-gray-600 line-clamp-2 overflow-hidden">
-                        {venue.description}
-                      </p>
+                    <p className="text-sm text-gray-600 line-clamp-2 overflow-hidden">
+                      {venue.description}
+                    </p>
                     <div className="text-xs text-gray-500 mt-1 flex gap-4">
                       <span>{Math.floor(venue.maxGuests / 2)} beds</span>
                       <span>{venue.maxGuests} people</span>
@@ -174,13 +139,14 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
           setShowEditModal(false);
           setSelectedVenue(null);
         }}
-        initialData={selectedVenue}
+        initialData={selectedVenue as Venue}
         onSuccess={() => {
           setShowEditModal(false);
           setSelectedVenue(null);
           onUpdate();
         }}
       />
+
 
       <AnimatePresence>
         {showBookingsModal && selectedVenue?.bookings && (
@@ -207,7 +173,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
                     <img
                       src={
                         booking.customer?.avatar?.url ||
-                        "https://placehold.co/48x48?text=\uD83D\uDC64"
+                        "https://placehold.co/48x48?text=👤"
                       }
                       alt={
                         booking.customer?.avatar?.alt ||

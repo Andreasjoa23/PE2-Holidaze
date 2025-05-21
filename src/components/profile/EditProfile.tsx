@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { updateProfile } from "../../api/profile";
 import { X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import { UserProfile } from "../../types/api";
 
 const EditProfile = ({
   onSuccess,
   onClose,
 }: {
-  onSuccess: (updatedUser: any) => void;
+  onSuccess: (updatedUser: UserProfile) => void;
   onClose: () => void;
 }) => {
   const [formData, setFormData] = useState({
@@ -56,6 +57,7 @@ const EditProfile = ({
         onSuccess(updated.data);
       }, 1000);
     } catch (err) {
+      console.error(err);
       setError("Update failed. Please check your inputs.");
     }
   };

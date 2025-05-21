@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   LogOut,
@@ -15,6 +15,7 @@ import VenueForm from "../Venue/VenueForm";
 import HeaderBookings from "./Bookings";
 import HeaderListings from "./Listings";
 import { fetchUserBookings, fetchUserListings } from "../../api/profile";
+import { UserProfile, Venue, Booking } from "../../types/api";
 
 interface UserDropdownProps {
   onClose: () => void;
@@ -24,7 +25,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  const [user, setUser] = useState<any>(() => {
+  const [user, setUser] = useState<UserProfile | null>(() => {
     const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
   });
@@ -33,12 +34,11 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
     "main" | "editProfile" | "createVenue" | "listings" | "bookings"
   >("main");
 
-  const [listings, setListings] = useState<any[]>([]);
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [editVenue, setEditVenue] = useState<any | null>(null);
+  const [listings, setListings] = useState<Venue[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [editVenue, setEditVenue] = useState<Partial<Venue> | null>(null);
   const [error, setError] = useState("");
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -49,15 +49,8 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [onClose]);
 
-  // Fetch data
-  useEffect(() => {
-    if (user?.name) {
-      fetchListings();
-      fetchBookings();
-    }
-  }, [user?.name]);
-
-  const fetchListings = async () => {
+  const fetchListings = useCallback(async () => {
+    if (!user?.name) return;
     try {
       const listingsData = await fetchUserListings(user.name);
       setListings(listingsData);
@@ -65,9 +58,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
       console.error("Failed to fetch listings", err);
       setError("Failed to load listings.");
     }
-  };
+  }, [user?.name]);
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
+    if (!user?.name) return;
     try {
       const bookingsData = await fetchUserBookings(user.name);
       setBookings(bookingsData.data);
@@ -75,9 +69,14 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
       console.error("Failed to fetch bookings", err);
       setError("Failed to load bookings.");
     }
-  };
+  }, [user?.name]);
 
-  const handleProfileUpdate = (updatedUser: any) => {
+  useEffect(() => {
+    fetchListings();
+    fetchBookings();
+  }, [fetchListings, fetchBookings]);
+
+  const handleProfileUpdate = (updatedUser: UserProfile) => {
     localStorage.setItem("user", JSON.stringify(updatedUser));
     setUser(updatedUser);
     setView("main");
@@ -105,17 +104,16 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
         <X size={20} />
       </button>
 
-      {/* Main menu */}
-      {view === "main" && (
+      {view === "main" && user && (
         <>
           <div className="flex flex-col items-center text-center mb-4">
             <img
-              src={user?.avatar?.url || "https://placehold.co/80"}
-              alt={user?.avatar?.alt || user?.name}
+              src={user.avatar?.url || "https://placehold.co/80"}
+              alt={user.avatar?.alt || user.name}
               className="w-20 h-20 rounded-full mb-3 object-cover"
             />
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              Hello, {user?.name}!
+              Hello, {user.name}!
             </h3>
           </div>
 
@@ -168,7 +166,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
         </>
       )}
 
-      {/* Edit profile form */}
       {view === "editProfile" && (
         <EditProfile
           onSuccess={handleProfileUpdate}
@@ -176,11 +173,10 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
         />
       )}
 
-      {/* Create/edit venue form */}
       {view === "createVenue" && (
         <VenueForm
           mode={editVenue ? "edit" : "create"}
-          initialData={editVenue}
+          initialData={editVenue ?? undefined}
           onClose={() => {
             setEditVenue(null);
             setView("main");
@@ -193,14 +189,13 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
         />
       )}
 
-      {/* Listings in modal view */}
       {view === "listings" && (
         <HeaderListings
           listings={listings}
           onBack={() => setView("main")}
           onDelete={handleDelete}
           onEdit={(venue) => {
-            setEditVenue(venue);
+            setEditVenue(venue as Partial<Venue>);
             setView("createVenue");
           }}
           onRefresh={fetchListings}

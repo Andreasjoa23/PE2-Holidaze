@@ -1,4 +1,3 @@
-// src/components/ScrollProgress.tsx
 import React from "react";
 import { useViewportScroll, motion } from "framer-motion";
 

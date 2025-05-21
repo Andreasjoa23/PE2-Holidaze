@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { registerUser } from "../../api/auth";
+import { UserProfile } from "../../types/api";
 
-const HOLIDAZE_BLUE = "#0E1E34";
+interface RegisterFormProps {
+  onSuccess?: (user: UserProfile) => void;
+}
 
-const RegisterForm: React.FC = () => {
+const RegisterForm: React.FC<RegisterFormProps> = ({ onSuccess }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -11,46 +14,48 @@ const RegisterForm: React.FC = () => {
     avatarUrl: "",
     venueManager: false,
   });
+
   const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-
-    if (type === "checkbox") {
-      setFormData({ ...formData, [name]: checked });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
     if (!formData.email.toLowerCase().endsWith("@stud.noroff.no")) {
       setError("Email must be a @stud.noroff.no address.");
       return;
     }
 
-    const safeName = formData.name.trim().toLowerCase().replace(/\s+/g, "_"); // eksempel: "andreas_abrahamsen"
+    const safeName = formData.name.trim().toLowerCase().replace(/\s+/g, "_");
 
-    const payload: any = {
+    const payload = {
       name: safeName,
       email: formData.email.toLowerCase(),
       password: formData.password,
       venueManager: formData.venueManager,
+      avatar: formData.avatarUrl
+        ? {
+            url: formData.avatarUrl.trim(),
+            alt: `${formData.name}'s avatar`,
+          }
+        : undefined,
     };
 
-    if (formData.avatarUrl.trim()) {
-      payload.avatar = {
-        url: formData.avatarUrl,
-        alt: `${formData.name}'s avatar`,
-      };
-    }
-
     try {
-      console.log("Register payload:", payload);
-      await registerUser(payload);
-      window.location.reload();
-    } catch {
+      const response = await registerUser(payload);
+      const user = (response as { data: UserProfile }).data;
+      localStorage.setItem("user", JSON.stringify(user));
+      if (onSuccess) onSuccess(user);
+    } catch (err) {
+      console.error(err);
       setError("Registration failed. Try a different name or email.");
     }
   };

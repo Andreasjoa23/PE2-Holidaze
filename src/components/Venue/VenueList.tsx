@@ -1,16 +1,14 @@
 import { deleteVenue } from "../../api/venues";
+import { Venue } from "../../types/api";
 
-const VenueList = ({
-  venues,
-  onEdit,
-  onClose,
-  onDeleted,
-}: {
-  venues: any[];
-  onEdit: (venue: any) => void;
+interface VenueListProps {
+  venues: Venue[];
+  onEdit: (venue: Venue) => void;
   onClose: () => void;
   onDeleted: () => void;
-}) => {
+}
+
+const VenueList: React.FC<VenueListProps> = ({ venues, onEdit, onClose, onDeleted }) => {
   const handleDelete = async (venueId: string) => {
     if (window.confirm("Are you sure you want to delete this venue?")) {
       try {
@@ -37,8 +35,8 @@ const VenueList = ({
           {venues.map((venue) => (
             <div key={venue.id} className="flex bg-gray-100 rounded shadow p-4">
               <img
-                src={venue.media[0]?.url || "https://placehold.co/100x100"}
-                alt={venue.media[0]?.alt || venue.name}
+                src={venue.media?.[0]?.url || "https://placehold.co/100x100"}
+                alt={venue.media?.[0]?.alt || venue.name}
                 className="w-28 h-28 object-cover rounded mr-4"
               />
               <div className="flex-1">
@@ -47,11 +45,9 @@ const VenueList = ({
                   {venue.description || "No description"}
                 </p>
                 <div className="flex gap-4 mt-2 text-sm text-gray-700">
-                  <span>🛏 {venue.beds || "N/A"} beds</span>
+                  <span>🛏 {Math.floor(venue.maxGuests / 2)} beds</span>
                   <span>👥 {venue.maxGuests} guests</span>
-                  <span>
-                    💰 {venue.price} <span className="text-xs">/night</span>
-                  </span>
+                  <span>💰 {venue.price} <span className="text-xs">/night</span></span>
                 </div>
               </div>
               <div className="flex flex-col justify-start items-end ml-4">

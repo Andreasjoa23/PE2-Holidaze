@@ -8,7 +8,6 @@ import {
   FaDog,
   FaUsers,
   FaBed,
-  FaImages,
   FaHeart,
   FaRegHeart,
 } from "react-icons/fa";
@@ -20,6 +19,7 @@ import {
   toggleFavoriteVenue,
 } from "../components/Venue/favoritesHelpers";
 import toast, { Toaster } from "react-hot-toast";
+import { Venue, BookingSummary } from "../types/api";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import "yet-another-react-lightbox/styles.css";
@@ -27,7 +27,7 @@ import "yet-another-react-lightbox/styles.css";
 const VenueDetails = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [venue, setVenue] = useState(null);
+  const [venue, setVenue] = useState<Venue | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -47,7 +47,8 @@ const VenueDetails = () => {
         const response = await apiClient.get(
           `/holidaze/venues/${id}?_bookings=true&_owner=true`
         );
-        setVenue(response.data.data);
+        const venueData = (response.data as { data: Venue }).data;
+        setVenue(venueData);
       } catch {
         setError("Failed to load venue details.");
       } finally {
@@ -68,7 +69,7 @@ const VenueDetails = () => {
         dateFrom: startDate!.toISOString(),
         dateTo: endDate!.toISOString(),
         guests,
-        venueId: id!,
+        venueId: id as string,
       });
       navigate("/bookingConfirmation", {
         state: {
@@ -79,20 +80,20 @@ const VenueDetails = () => {
           dateTo: endDate?.toISOString(),
         },
       });
-    } catch (err) {
+    } catch {
       toast.error("Failed to book. Try again.");
     }
   };
 
   const handleToggleFavorite = () => {
-    const updated = toggleFavoriteVenue(id!);
-    setIsFav(updated.includes(id));
+    const updated = toggleFavoriteVenue(id as string);
+    setIsFav(updated.includes(id as string));
   };
 
   const getDisabledDates = () => {
     if (!venue?.bookings) return [];
     const disabled: Date[] = [];
-    venue.bookings.forEach((booking) => {
+    venue.bookings.forEach((booking: BookingSummary) => {
       const start = new Date(booking.dateFrom);
       const end = new Date(booking.dateTo);
       for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
@@ -167,7 +168,9 @@ const VenueDetails = () => {
                   <p className="font-semibold text-[#0E1E34]">
                     {venue.owner.name}
                   </p>
-                  <p className="text-sm text-gray-500">{venue.owner.email}</p>
+                  <p className="text-sm text-gray-500">
+                    {venue.owner.email}
+                  </p>
                 </div>
               </div>
             ) : (
@@ -185,7 +188,9 @@ const VenueDetails = () => {
           </div>
 
           <div className="flex gap-4 flex-wrap">
-            {venue.meta?.wifi && <FeatureIcon icon={<FaWifi />} label="Wifi" />}
+            {venue.meta?.wifi && (
+              <FeatureIcon icon={<FaWifi />} label="Wifi" />
+            )}
             {venue.meta?.parking && (
               <FeatureIcon icon={<FaParking />} label="Parking" />
             )}
@@ -224,7 +229,9 @@ const VenueDetails = () => {
               onChange={(e) => setGuests(Number(e.target.value))}
               className="w-full border px-4 py-2 rounded-md shadow-sm focus:ring-[#0E1E34] focus:border-[#0E1E34]"
             />
-            <small className="text-gray-500">Max: {venue.maxGuests}</small>
+            <small className="text-gray-500">
+              Max: {venue.maxGuests}
+            </small>
           </div>
 
           <div className="flex flex-col gap-4 mt-6">

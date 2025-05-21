@@ -1,22 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X, Home, Trash, Pencil } from "lucide-react";
-
-interface Venue {
-  id: string;
-  name: string;
-  description?: string;
-  media?: { url: string }[];
-  price?: number;
-  maxGuests?: number;
-  beds?: number;
-  bookings?: any[];
-}
+import { Venue } from "../../types/api";
 
 interface HeaderListingsProps {
-  listings: Venue[];
+  listings: Partial<Venue>[];
   onBack: () => void;
   onDelete: (id: string) => void;
-  onEdit: (venue: Venue) => void;
+  onEdit: (venue: Partial<Venue>) => void;
   onRefresh: () => void;
 }
 
@@ -56,16 +46,18 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
               className="w-24 h-24 object-cover rounded-md"
             />
             <div className="flex-1 space-y-1 overflow-hidden">
-              <h3 className="font-semibold text-[#0E1E34]">{venue.name}</h3>
+              <h3 className="font-semibold text-[#0E1E34]">
+                {venue.name || "Unnamed Venue"}
+              </h3>
               <p className="text-sm text-gray-600 line-clamp-2">
                 {venue.description || "No description"}
               </p>
               <div className="flex justify-between text-xs text-gray-500">
-                <span>{venue.beds || 1} beds</span>
+                <span>{venue.maxGuests ? Math.floor(venue.maxGuests / 2) : 1} beds</span>
                 <span>{venue.maxGuests || 1} people</span>
-                <span>{venue.price} /night</span>
+                <span>{venue.price || 0} /night</span>
               </div>
-              {venue.bookings?.length > 0 && (
+              {venue.bookings?.length && venue.bookings.length > 0 && (
                 <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full mt-1">
                   {venue.bookings.length} booking
                   {venue.bookings.length > 1 ? "s" : ""}
@@ -80,8 +72,10 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
                 </button>
                 <button
                   onClick={() => {
-                    onDelete(venue.id);
-                    onRefresh();
+                    if (venue.id) {
+                      onDelete(venue.id);
+                      onRefresh();
+                    }
                   }}
                   className="text-sm text-red-500 hover:text-red-700 flex items-center gap-1"
                 >

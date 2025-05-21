@@ -2,23 +2,12 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getAllVenues } from "../api/venues";
 import VenueCard from "../components/Venue/VenueCard";
-import { DateRange } from "react-date-range";
+import { DateRange, Range } from "react-date-range";
 import { FaSearch, FaCalendarAlt, FaUser } from "react-icons/fa";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import Illustration from "../assets/VenueIllustration3.png";
-
-interface Venue {
-  id: string;
-  name: string;
-  description: string;
-  media: { url: string }[];
-  price: number;
-  maxGuests: number;
-  location: { city?: string; country?: string };
-  created: string;
-  bookings?: any[];
-}
+import { Venue, ApiListResponse } from "../types/api";
 
 export default function Venues() {
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -36,16 +25,17 @@ export default function Venues() {
 
   const [destination, setDestination] = useState(initDestination);
   const [guests, setGuests] = useState(initGuests);
-  const [date, setDate] = useState([
+  const [date, setDate] = useState<Range[]>([
     { startDate: initStart, endDate: initEnd, key: "selection" },
   ]);
   const [showCalendar, setShowCalendar] = useState(false);
 
   const loadVenues = async () => {
     try {
-      const { data }: { data: Venue[] } = await getAllVenues();
+      const response = await getAllVenues();
+      const result = response as ApiListResponse<Venue>;
 
-      const sorted = data
+      const sorted = result.data
         .filter((v) => Array.isArray(v.bookings))
         .sort((a, b) => (b.bookings?.length ?? 0) - (a.bookings?.length ?? 0));
 
@@ -61,6 +51,8 @@ export default function Venues() {
 
   const handleSearch = () => {
     const [range] = date;
+    if (!range.startDate || !range.endDate) return;
+
     setSearchParams({
       destination,
       guests: String(guests),
@@ -79,6 +71,8 @@ export default function Venues() {
       v.location?.country?.toLowerCase().includes(q);
     return match && v.maxGuests >= guests;
   });
+
+  const formatDate = (d?: Date) => d?.toLocaleDateString() || "Select date";
 
   if (error) {
     return <div className="text-center text-red-500 py-8">{error}</div>;
@@ -137,7 +131,7 @@ export default function Venues() {
             >
               <FaCalendarAlt className="text-gray-400 mr-2" />
               <span className="text-sm md:text-base">
-                {`${date[0].startDate.toLocaleDateString()} – ${date[0].endDate.toLocaleDateString()}`}
+                {`${formatDate(date[0].startDate)} – ${formatDate(date[0].endDate)}`}
               </span>
             </div>
           </label>
@@ -214,7 +208,6 @@ export default function Venues() {
               price={v.price}
               maxGuests={v.maxGuests}
               location={v.location}
-              bookings={v.bookings}
             />
           ))}
         </div>

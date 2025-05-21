@@ -49,7 +49,6 @@ const VenueCard: React.FC<VenueCardProps> = ({
       onClick={handleClick}
       className="cursor-pointer bg-white rounded-2xl overflow-hidden shadow-md transition transform hover:scale-102 hover:shadow-lg flex flex-col relative"
     >
-      {/* Image + favorite icon */}
       <div className="relative h-48 w-full overflow-hidden">
         <img src={imageUrl} alt={name} className="w-full h-full object-cover" />
         <div
@@ -64,7 +63,6 @@ const VenueCard: React.FC<VenueCardProps> = ({
         </div>
       </div>
 
-      {/* Content */}
       <div className="p-6 flex flex-col flex-grow">
         <h2 className="text-lg font-semibold text-gray-900 truncate mb-2">
           {name}

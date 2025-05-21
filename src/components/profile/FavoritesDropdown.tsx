@@ -8,17 +8,19 @@ import {
 import { useNavigate } from "react-router-dom";
 import { FaBed, FaUserFriends } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { Venue, ApiListResponse } from "../../types/api";
 
 const FavoritesDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [favorites, setFavorites] = useState<any[]>([]);
+  const [favorites, setFavorites] = useState<Venue[]>([]);
   const navigate = useNavigate();
 
   const fetchFavorites = async () => {
     const response = await getAllVenues();
-    const allVenues = response.data || response;
+    const allVenues = (response as ApiListResponse<Venue>).data;
+
     const favIds = getFavoriteVenueIds();
-    const favVenues = allVenues.filter((v: any) => favIds.includes(v.id));
+    const favVenues = allVenues.filter((v) => favIds.includes(v.id));
     setFavorites(favVenues);
   };
 
@@ -79,7 +81,8 @@ const FavoritesDropdown: React.FC = () => {
                 >
                   <img
                     src={
-                      venue.media?.[0]?.url || "https://via.placeholder.com/150"
+                      venue.media?.[0]?.url ||
+                      "https://via.placeholder.com/150"
                     }
                     alt={venue.name}
                     className="w-full h-40 object-cover rounded-xl mb-4"

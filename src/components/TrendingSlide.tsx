@@ -1,7 +1,5 @@
-// src/components/homepage/TrendingSlide.tsx
 import React from "react";
 import { motion } from "framer-motion";
-import VenueCard from "../components/Venue/VenueCard";
 
 interface Venue {
   id: string;
@@ -39,20 +37,18 @@ const TrendingSlide: React.FC<TrendingSlideProps> = ({ venue }) => {
       whileHover="hover"
       animate="rest"
     >
-      {/* Bakgrunnsbildet */}
+
       <img
         src={imageUrl}
         alt={venue.name}
         className="w-full h-64 object-cover"
       />
 
-      {/* Gradient‐overlay */}
       <motion.div
         variants={overlayVariants}
         className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"
       />
 
-      {/* Panel med knapp og tittel */}
       <motion.div
         variants={infoVariants}
         className="absolute bottom-4 left-4 right-4 flex flex-col items-start"

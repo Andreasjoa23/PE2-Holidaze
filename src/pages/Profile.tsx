@@ -9,18 +9,18 @@ import Insights from "../components/profile/Insights";
 import { fetchUserBookings, fetchUserListings } from "../api/profile";
 import { deleteVenue } from "../api/venues";
 import { AnimatePresence } from "framer-motion";
+import { BookingSummary, Venue, UserProfile } from "../types/api";
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
 
-  const [user, setUser] = useState<any>(() => {
+  const [user, setUser] = useState<UserProfile | null>(() => {
     const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
   });
 
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [listings, setListings] = useState<any[]>([]);
-  const [favorites] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<BookingSummary[]>([]);
+  const [listings, setListings] = useState<Venue[]>([]);
   const [error, setError] = useState("");
 
   const [showEditor, setShowEditor] = useState(false);
@@ -46,7 +46,7 @@ const Profile: React.FC = () => {
     load();
   }, [user?.name]);
 
-  const handleProfileUpdate = (updated: any) => {
+  const handleProfileUpdate = (updated: UserProfile) => {
     localStorage.setItem("user", JSON.stringify(updated));
     setUser(updated);
     setShowEditor(false);
@@ -55,7 +55,7 @@ const Profile: React.FC = () => {
   const handleVenueDeleted = async (id: string) => {
     try {
       await deleteVenue(id);
-      const updated = await fetchUserListings(user.name);
+      const updated = await fetchUserListings(user!.name);
       setListings(updated);
     } catch (err) {
       console.error("Failed to delete venue:", err);
@@ -183,7 +183,7 @@ const Profile: React.FC = () => {
               setListings(refreshed);
             }}
           />
-          <FavoritesDropdown favorites={favorites} />
+          <FavoritesDropdown />
         </div>
 
         <Insights

@@ -2,38 +2,29 @@ import React, { useEffect, useState } from "react";
 import { getAllVenues } from "../../api/venues";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-
-interface Venue {
-  id: string;
-  name: string;
-  description: string;
-  media: { url: string }[];
-  price: number;
-}
+import { Venue } from "../../types/api";
 
 const Trending: React.FC = () => {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
 
-useEffect(() => {
-  (async () => {
-    try {
-      const res = await getAllVenues();
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await getAllVenues();
 
-      const sortedByPopularity = res.data
-        .filter((v) => Array.isArray(v.bookings))
-        .sort((a, b) => b.bookings.length - a.bookings.length);
+        const sortedByPopularity = response.data
+          .filter((venue) => Array.isArray(venue.bookings))
+          .sort((a, b) => b.bookings!.length - a.bookings!.length);
 
-      setVenues(sortedByPopularity.slice(0, 8));
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  })();
-}, []);
-
-
+        setVenues(sortedByPopularity.slice(0, 8));
+      } catch (err) {
+        console.error("Failed to fetch trending venues:", err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
   if (loading) {
     return (
@@ -57,13 +48,11 @@ useEffect(() => {
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 120 }}
           >
-
             <img
               src={v.media?.[0]?.url || "https://via.placeholder.com/400"}
               alt={v.name}
               className="w-full h-64 object-cover"
             />
-
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
               <h3 className="text-white text-xl font-semibold mb-1">
                 {v.name}
