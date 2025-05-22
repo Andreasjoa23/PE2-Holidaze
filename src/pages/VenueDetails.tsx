@@ -21,11 +21,10 @@ import {
 import toast, { Toaster } from "react-hot-toast";
 import { Venue, BookingSummary } from "../types/api";
 import { isLoggedIn } from "../utils/isLoggedIn";
-
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import "yet-another-react-lightbox/styles.css";
-import Loader from "../components/Loader";
+import Loader from "../components/ui/Loader";
 
 const VenueDetails = () => {
   const { id } = useParams<{ id: string }>();
