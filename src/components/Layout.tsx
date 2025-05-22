@@ -2,9 +2,10 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "./header/Header";
 import Footer from "./Footer";
+import { isLoggedIn } from "../utils/isLoggedIn";
 
 const Layout: React.FC = () => {
-  const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
+  const loggedIn = isLoggedIn();
 
   return (
     <>
@@ -12,7 +13,7 @@ const Layout: React.FC = () => {
       <main>
         <Outlet />
       </main>
-      <Footer isLoggedIn={isLoggedIn} />
+      <Footer isLoggedIn={loggedIn} />
     </>
   );
 };
