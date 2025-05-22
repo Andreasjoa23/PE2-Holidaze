@@ -1,8 +1,9 @@
 import React from "react";
-import { useViewportScroll, motion } from "framer-motion";
+import { useScroll, motion } from "framer-motion";
 
 const ScrollProgress: React.FC = () => {
-  const { scrollYProgress } = useViewportScroll();
+  const { scrollYProgress } = useScroll();
+
   return (
     <motion.div
       style={{ scaleX: scrollYProgress }}
