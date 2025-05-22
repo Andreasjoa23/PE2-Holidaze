@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import AppRoutes from "./routes/AppRoutes";
-import Loader from "./components/Loader";
+import Loader from "./components/ui/Loader";
 
 function App() {
   const [loading, setLoading] = useState(true);

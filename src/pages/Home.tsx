@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import ScrollProgress from "../components/ScrollProgress";
+import ScrollProgress from "../components/ui/ScrollProgress";
 import HeroBanner from "../components/homepage/HeroBanner";
 import SearchBanner from "../components/homepage/SearchBanner";
 import Trending from "../components/homepage/Trending";

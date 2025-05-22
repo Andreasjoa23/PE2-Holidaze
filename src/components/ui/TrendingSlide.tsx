@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { TrendingSlideProps } from "../types/props";
+import { TrendingSlideProps } from "../../types/props";
 
 const overlayVariants = {
   rest: { opacity: 0 },
