@@ -9,7 +9,7 @@ import {
   X,
 } from "lucide-react";
 import apiClient from "../../api/apiClient";
-import { logout } from "../../utils/auth";
+import { logout } from "../../utils/logout";
 import EditProfile from "../profile/EditProfile";
 import VenueForm from "../Venue/VenueForm";
 import HeaderBookings from "./Bookings";

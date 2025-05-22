@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import holidazeLogo from "../assets/holidazeLogo.png";
+import holidazeLogo from "../../assets/holidazeLogo.png";
 import { User } from "lucide-react";
-import AuthDropdown from "./Auth/AuthDropdown";
-import UserDropdown from "./header/UserDropDown";
+import AuthDropdown from "../Auth/AuthDropdown";
+import UserDropdown from "./UserDropDown";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
