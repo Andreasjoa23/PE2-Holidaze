@@ -3,7 +3,15 @@ import { useSearchParams } from "react-router-dom";
 import { getAllVenues } from "../api/venues";
 import VenueCard from "../components/Venue/VenueCard";
 import { DateRange, Range } from "react-date-range";
-import { FaSearch, FaCalendarAlt, FaUser } from "react-icons/fa";
+import {
+  FaSearch,
+  FaCalendarAlt,
+  FaUser,
+  FaWifi,
+  FaPaw,
+  FaParking,
+  FaCoffee,
+} from "react-icons/fa";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import Illustration from "../assets/VenueIllustration3.png";
@@ -29,17 +37,19 @@ export default function Venues() {
     { startDate: initStart, endDate: initEnd, key: "selection" },
   ]);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [filters, setFilters] = useState({
+    wifi: false,
+    pets: false,
+    parking: false,
+    breakfast: false,
+  });
+  const [sortOption, setSortOption] = useState("most-booked");
 
   const loadVenues = async () => {
     try {
       const response = await getAllVenues();
       const result = response as ApiListResponse<Venue>;
-
-      const sorted = result.data
-        .filter((v) => Array.isArray(v.bookings))
-        .sort((a, b) => (b.bookings?.length ?? 0) - (a.bookings?.length ?? 0));
-
-      setVenues(sorted.slice(0, 100));
+      setVenues(result.data);
     } catch {
       setError("Failed to fetch venues");
     }
@@ -49,28 +59,46 @@ export default function Venues() {
     loadVenues();
   }, []);
 
-  const handleSearch = () => {
-    const [range] = date;
-    if (!range.startDate || !range.endDate) return;
-
-    setSearchParams({
+  useEffect(() => {
+    const params: Record<string, string> = {
       destination,
       guests: String(guests),
-      start: range.startDate.toISOString(),
-      end: range.endDate.toISOString(),
+      start: date[0].startDate?.toISOString() || "",
+      end: date[0].endDate?.toISOString() || "",
+    };
+    setSearchParams(params);
+  }, [destination, guests, date]);
+
+  const filteredVenues = venues
+    .filter((v) => {
+      const q = destination.toLowerCase();
+      const match =
+        !destination ||
+        v.name.toLowerCase().includes(q) ||
+        v.location?.city?.toLowerCase().includes(q) ||
+        v.location?.country?.toLowerCase().includes(q);
+
+      const meetsFilters =
+        (!filters.wifi || v.meta.wifi) &&
+        (!filters.pets || v.meta.pets) &&
+        (!filters.parking || v.meta.parking) &&
+        (!filters.breakfast || v.meta.breakfast);
+
+      return match && v.maxGuests >= guests && meetsFilters;
+    })
+    .sort((a, b) => {
+      switch (sortOption) {
+        case "price-low":
+          return a.price - b.price;
+        case "price-high":
+          return b.price - a.price;
+        case "newest":
+          return new Date(b.created).getTime() - new Date(a.created).getTime();
+        case "most-booked":
+        default:
+          return (b.bookings?.length || 0) - (a.bookings?.length || 0);
+      }
     });
-  };
-
-  const filteredVenues = venues.filter((v) => {
-    if (!destination) return v.maxGuests >= guests;
-
-    const q = destination.toLowerCase();
-    const match =
-      v.name.toLowerCase().includes(q) ||
-      v.location?.city?.toLowerCase().includes(q) ||
-      v.location?.country?.toLowerCase().includes(q);
-    return match && v.maxGuests >= guests;
-  });
 
   const formatDate = (d?: Date) => d?.toLocaleDateString() || "Select date";
 
@@ -103,8 +131,7 @@ export default function Venues() {
         <h2 className="text-xl md:text-2xl font-bold text-[#0E1E34] mb-6 text-center">
           Refine Your Search
         </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <label className="flex flex-col">
             <span className="text-sm font-medium text-gray-600 mb-1">
               Destination
@@ -153,15 +180,46 @@ export default function Venues() {
           </label>
         </div>
 
-        <div className="mt-6 text-center">
-          <button
-            onClick={handleSearch}
-            className="bg-[#0E1E34] text-white font-semibold px-8 py-3 rounded-full text-sm md:text-base hover:bg-[#182944] transition"
-          >
-            Search
-          </button>
-        </div>
+        <div className="flex flex-wrap gap-3 justify-between items-center mb-4">
+          <div className="flex flex-wrap gap-3">
+            {[
+              { key: "wifi", label: "Wi-Fi", icon: <FaWifi /> },
+              { key: "pets", label: "Pets", icon: <FaPaw /> },
+              { key: "parking", label: "Parking", icon: <FaParking /> },
+              { key: "breakfast", label: "Breakfast", icon: <FaCoffee /> },
+            ].map(({ key, label, icon }) => (
+              <button
+                key={key}
+                onClick={() =>
+                  setFilters((prev) => ({
+                    ...prev,
+                    [key]: !prev[key as keyof typeof prev],
+                  }))
+                }
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition ${
+                  filters[key as keyof typeof filters]
+                    ? "bg-[#0E1E34] text-white"
+                    : "bg-gray-100 text-[#0E1E34]"
+                }`}
+              >
+                {icon} {label}
+              </button>
+            ))}
+          </div>
 
+          <div className="mt-4 md:mt-0">
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              className="bg-[#0E1E34] text-white px-4 py-2 rounded-full text-sm font-medium pr-5 appearance-none focus:outline-none focus:ring-2 focus:ring-[#0E1E34] transition"
+            >
+              <option value="most-booked">Most Booked</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="newest">Newest</option>
+            </select>
+          </div>
+        </div>
         {showCalendar && (
           <div
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
