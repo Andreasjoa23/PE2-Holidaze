@@ -114,7 +114,7 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
             >
               <button
                 onClick={handleClose}
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
               >
                 ✕
               </button>
