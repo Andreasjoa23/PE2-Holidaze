@@ -16,6 +16,8 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import Illustration from "../assets/VenueIllustration3.png";
 import { Venue, ApiListResponse } from "../types/api";
+import { motion } from "framer-motion";
+import { Parallax } from "react-scroll-parallax";
 
 export default function Venues() {
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -107,9 +109,19 @@ export default function Venues() {
   }
 
   return (
-    <section className="pt-20 space-y-12 pb-12 bg-white px-4 md:px-8 lg:px-20">
+    <motion.section
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+      className="pt-20 space-y-12 pb-12 bg-white px-4 md:px-8 lg:px-20"
+    >
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8">
-        <div className="flex-1 text-center md:text-left">
+        <motion.div
+          initial={{ x: -50, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="flex-1 text-center md:text-left"
+        >
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-[#0E1E34] leading-tight mb-4">
             Find Your Perfect Getaway
           </h1>
@@ -117,15 +129,17 @@ export default function Venues() {
             Browse exclusive stays handpicked by our community to make your next
             vacation truly unforgettable.
           </p>
-        </div>
-        <div className="flex-1 flex justify-center">
+        </motion.div>
+        <Parallax speed={10}>
           <img
             src={Illustration}
             alt="Travel illustration"
             className="w-64 md:w-80 lg:w-96"
           />
-        </div>
+        </Parallax>
       </div>
+
+      {/* Resten av koden for søkefilter, kalendervisning og venue cards vises her. */}
 
       <div className="max-w-4xl mx-auto bg-white rounded-3xl p-6 md:p-8 shadow-sm hover:shadow-lg transition-shadow">
         <h2 className="text-xl md:text-2xl font-bold text-[#0E1E34] mb-6 text-center">
@@ -276,6 +290,6 @@ export default function Venues() {
           </p>
         )}
       </div>
-    </section>
+    </motion.section>
   );
 }
