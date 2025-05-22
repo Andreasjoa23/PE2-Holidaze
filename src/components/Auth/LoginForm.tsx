@@ -1,15 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { loginUser } from "../../api/auth";
-import { UserProfile } from "../../types/api";
-
-interface LoginFormProps {
-  onSuccess?: (user: UserProfile) => void;
-  prefillEmail?: string;
-}
-
-interface LoginResponse extends UserProfile {
-  accessToken: string;
-}
+import { UserProfile, LoginResponse } from "../../types/api";
+import { LoginFormProps } from "../../types/props"; // ✅ Props import
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, prefillEmail = "" }) => {
   const [email, setEmail] = useState(prefillEmail);

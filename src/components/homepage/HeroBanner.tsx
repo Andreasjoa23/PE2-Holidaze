@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import AuthDropdown from "../Auth/AuthDropdown";
 import HeroBannerImg from "../../assets/HeroIllustration3d@3x.png";
 
+
 const HeroBanner: React.FC = () => {
   const navigate = useNavigate();
   const [showAuth, setShowAuth] = useState(false);

@@ -3,17 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaBed, FaUserFriends, FaHeart, FaRegHeart } from "react-icons/fa";
 import { isFavorite, toggleFavoriteVenue } from "./favoritesHelpers";
 import { isLoggedIn } from "../../utils/isLoggedIn";
-
-interface VenueCardProps {
-  id: string;
-  name: string;
-  description: string;
-  media: { url: string }[];
-  price: number;
-  maxGuests: number;
-  location?: { city?: string; country?: string };
-  onFavoriteToggle?: () => void;
-}
+import { VenueCardProps } from "../../types/props";
 
 const VenueCard: React.FC<VenueCardProps> = ({
   id,

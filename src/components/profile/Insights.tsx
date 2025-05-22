@@ -1,11 +1,5 @@
 import React from "react";
-
-interface InsightsProps {
-  bookingsCount: number;
-  viewsCount: number;
-  income: number;
-  nextBooking?: string;
-}
+import { InsightsProps } from "../../types/props";
 
 const Insights: React.FC<InsightsProps> = ({
   bookingsCount,

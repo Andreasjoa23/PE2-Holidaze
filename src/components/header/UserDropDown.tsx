@@ -16,10 +16,7 @@ import HeaderBookings from "./Bookings";
 import HeaderListings from "./Listings";
 import { fetchUserBookings, fetchUserListings } from "../../api/profile";
 import { UserProfile, Venue, Booking } from "../../types/api";
-
-interface UserDropdownProps {
-  onClose: () => void;
-}
+import { UserDropdownProps } from "../../types/props";
 
 const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);

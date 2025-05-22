@@ -1,28 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { createVenue, updateVenue } from "../../api/venues";
-import { Venue, MetaInfo, Location } from "../../types/api";
-
-interface VenueFormProps {
-  mode: "create" | "edit";
-  initialData?: Partial<Venue>;
-  onSuccess: () => void;
-  onClose: () => void;
-}
-
-type FormLocation = Pick<Location, "country" | "city" | "address">;
-type FormData = {
-  title: string;
-  description: string;
-  location: FormLocation;
-  media: string[];
-  price: number;
-  maxGuests: number;
-  meta: MetaInfo;
-};
+import { Venue } from "../../types/api";
+import { VenueFormProps, VenueFormData } from "../../types/forms";
 
 const VenueForm: React.FC<VenueFormProps> = ({ mode, initialData, onSuccess, onClose }) => {
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<VenueFormData>({
     title: initialData?.name || "",
     description: initialData?.description || "",
     location: {
@@ -50,7 +33,7 @@ const VenueForm: React.FC<VenueFormProps> = ({ mode, initialData, onSuccess, onC
     const { name, value } = e.target;
 
     if (name.startsWith("location.")) {
-      const key = name.split(".")[1] as keyof FormLocation;
+      const key = name.split(".")[1] as keyof VenueFormData["location"];
       setFormData((prev) => ({
         ...prev,
         location: {
@@ -59,7 +42,7 @@ const VenueForm: React.FC<VenueFormProps> = ({ mode, initialData, onSuccess, onC
         },
       }));
     } else {
-      const key = name as keyof Omit<FormData, "location" | "meta" | "media">;
+      const key = name as keyof Omit<VenueFormData, "location" | "meta" | "media">;
       setFormData((prev) => ({
         ...prev,
         [key]: value,
@@ -137,6 +120,7 @@ const VenueForm: React.FC<VenueFormProps> = ({ mode, initialData, onSuccess, onC
       setError(`Failed to ${mode} venue. Please check your inputs.`);
     }
   };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
       <motion.div

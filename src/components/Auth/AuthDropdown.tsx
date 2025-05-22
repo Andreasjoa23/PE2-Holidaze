@@ -2,12 +2,9 @@ import { useState } from "react";
 import { X, ArrowLeft } from "lucide-react";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
+import { AuthDropdownProps } from "../../types/props";
 
 type View = "initial" | "login" | "register";
-
-interface AuthDropdownProps {
-  onClose: () => void;
-}
 
 const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
   const [view, setView] = useState<View>("initial");

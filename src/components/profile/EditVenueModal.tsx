@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { updateVenue } from "../../api/venues";
 import { X } from "lucide-react";
-import { Venue, MediaItem } from "../../types/api";
+import { MediaItem } from "../../types/api";
+import { EditVenueModalProps } from "../../types/props";
 
 const amenitiesList = ["wifi", "parking", "breakfast", "pets"] as const;
-
-interface EditVenueModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  initialData: Venue;
-  onSuccess: () => void;
-}
 
 const EditVenueModal: React.FC<EditVenueModalProps> = ({
   isOpen,

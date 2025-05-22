@@ -1,15 +1,10 @@
 import React, { useState } from "react";
 import { Home, ChevronDown, ChevronUp, Trash2, Pencil } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import DeleteConfirmationModal from "./DeleteConfirmationModal";
+import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
 import EditVenueModal from "./EditVenueModal";
 import { Venue } from "../../types/api";
-
-interface ListingsDropdownProps {
-  listings: Venue[];
-  onDelete: (id: string) => void;
-  onUpdate: () => void;
-}
+import { ListingsDropdownProps } from "../../types/props";
 
 const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   listings,

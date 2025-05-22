@@ -69,7 +69,7 @@ export default function Venues() {
       end: date[0].endDate?.toISOString() || "",
     };
     setSearchParams(params);
-  }, [destination, guests, date]);
+  }, [destination, guests, date, setSearchParams]);
 
   const filteredVenues = venues
     .filter((v) => {

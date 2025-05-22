@@ -2,22 +2,10 @@ import React, { useState } from "react";
 import { Calendar, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { deleteBooking } from "../../api/bookings";
-
-interface Booking {
-  id: string;
-  venue?: {
-    id?: string;
-    name?: string;
-    media?: { url: string }[];
-    price?: number;
-    maxGuests?: number;
-  };
-  dateFrom: string;
-  dateTo: string;
-}
+import { BookingSummary } from "../../types/api";
 
 interface BookingsDropdownProps {
-  bookings: Booking[];
+  bookings: BookingSummary[];
   onCancel: () => void;
 }
 
@@ -95,8 +83,16 @@ const BookingsDropdown: React.FC<BookingsDropdownProps> = ({
                       {formatDate(booking.dateFrom)} – {formatDate(booking.dateTo)}
                     </p>
                     <div className="text-xs text-gray-500 flex justify-between">
-                      <span>{booking.venue?.maxGuests} people</span>
-                      <span>{booking.venue?.price} /night</span>
+                      <span>
+                        {booking.venue?.maxGuests
+                          ? `${booking.venue.maxGuests} people`
+                          : "Guests not available"}
+                      </span>
+                      <span>
+                        {booking.venue?.price
+                          ? `$${booking.venue.price} /night`
+                          : "Price not available"}
+                      </span>
                     </div>
 
                     {confirmingId === booking.id ? (
