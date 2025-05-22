@@ -6,6 +6,7 @@ import { FaSearch, FaCalendarAlt, FaUser, FaTimes } from "react-icons/fa";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import FormImg from "../../assets/FormImg.png";
+import { motion } from "framer-motion";
 
 const HOLIDAZE_BLUE = "#0E1E34";
 const clickSound = new Audio("/click.mp3");
@@ -89,7 +90,7 @@ const SearchBanner: React.FC = () => {
 
   return (
     <section
-      className="relative w-full my-12 py-16 overflow-visible"
+      className="relative w-full my-12 sm:my-16 lg:my-24 py-16 overflow-visible"
       style={{
         backgroundImage: `url(${FormImg})`,
         backgroundSize: "cover",
@@ -98,12 +99,18 @@ const SearchBanner: React.FC = () => {
     >
       <div className="absolute inset-0 bg-black/30 pointer-events-none" />
       <div className="relative z-10 max-w-6xl mx-auto flex flex-col items-center px-4">
-        <h2 className="text-white text-4xl md:text-5xl font-bold text-center mb-8">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-white text-4xl md:text-5xl font-bold text-center mb-8"
+        >
           Where to next?
-        </h2>
+        </motion.h2>
 
-        <div className="bg-white rounded-3xl shadow-lg w-full max-w-4xl flex flex-col md:flex-row gap-4 p-6 md:p-8">
-          <div className="flex items-center flex-1 border border-gray-200 rounded-full px-4 py-3">
+        <div className="bg-white rounded-3xl shadow-lg w-full max-w-4xl flex flex-col sm:flex-col md:flex-row gap-4 p-6 md:p-8">
+          <div className="flex items-center w-full border border-gray-200 rounded-full px-4 py-3">
             <FaSearch className="text-gray-400 mr-3 flex-shrink-0" />
             <input
               type="text"
@@ -116,7 +123,7 @@ const SearchBanner: React.FC = () => {
 
           <div
             ref={dateInputRef}
-            className="relative flex items-center flex-1 border border-gray-200 rounded-full px-4 py-3 cursor-pointer"
+            className="relative flex items-center w-full border border-gray-200 rounded-full px-4 py-3 cursor-pointer"
             onClick={() => setShowCalendar(true)}
           >
             <FaCalendarAlt className="text-gray-400 mr-3 flex-shrink-0" />
@@ -136,7 +143,7 @@ const SearchBanner: React.FC = () => {
             )}
           </div>
 
-          <div className="flex items-center flex-1 border border-gray-200 rounded-full px-4 py-3">
+          <div className="flex items-center w-full md:w-auto border border-gray-200 rounded-full px-4 py-3">
             <FaUser className="text-gray-400 mr-3 flex-shrink-0" />
             <input
               type="number"
@@ -149,7 +156,7 @@ const SearchBanner: React.FC = () => {
 
           <button
             onClick={handleSearch}
-            className="bg-[var(--holidaze-blue)] text-white px-8 py-3 rounded-full font-medium text-base hover:bg-[#1d2d50] transition"
+            className="bg-[var(--holidaze-blue)] w-full md:w-auto text-white px-8 py-3 rounded-full font-medium text-base hover:bg-[#1d2d50] transition"
             style={{ backgroundColor: HOLIDAZE_BLUE }}
           >
             Search
