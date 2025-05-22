@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { logout } from "../utils/auth";
-import logoHolidaze from "../assets/logoHolidazeBlue.png";
-import LoginForm from "./Auth/LoginForm";
-import RegisterForm from "./Auth/RegisterForm";
+import { logout } from "../../utils/logout";
+import logoHolidaze from "../../assets/logoHolidazeBlue.png";
+import LoginForm from "../Auth/LoginForm";
+import RegisterForm from "../Auth/RegisterForm";
 import { LogOut } from "lucide-react";
 
 interface FooterProps {
@@ -25,7 +25,6 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
     return (
       <footer className="bg-[#0E1E34] text-white py-20 px-10">
         <div className="max-w-[1920px] mx-auto flex flex-col lg:flex-row justify-between items-center gap-20">
-          {/* Logo */}
           <div className="flex-shrink-0">
             <img
               src={logoHolidaze}
@@ -34,7 +33,6 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
             />
           </div>
 
-          {/* Links */}
           <div className="flex flex-wrap justify-center gap-20 text-3xl font-extrabold">
             <Link to="/profile" className="hover:text-gray-300 transition">
               Profile
@@ -50,7 +48,6 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
             </Link>
           </div>
 
-          {/* Logout Button */}
           <div className="flex-shrink-0">
             <button
               onClick={logout}

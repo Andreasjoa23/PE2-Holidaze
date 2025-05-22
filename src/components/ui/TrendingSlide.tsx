@@ -1,18 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-
-interface Venue {
-  id: string;
-  name: string;
-  description: string;
-  media?: { url: string }[];
-  price: number;
-  maxGuests: number;
-}
-
-interface TrendingSlideProps {
-  venue: Venue;
-}
+import { TrendingSlideProps } from "../../types/props";
 
 const overlayVariants = {
   rest: { opacity: 0 },

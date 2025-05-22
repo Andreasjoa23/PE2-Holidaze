@@ -2,17 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaBed, FaUserFriends, FaHeart, FaRegHeart } from "react-icons/fa";
 import { isFavorite, toggleFavoriteVenue } from "./favoritesHelpers";
-
-interface VenueCardProps {
-  id: string;
-  name: string;
-  description: string;
-  media: { url: string }[];
-  price: number;
-  maxGuests: number;
-  location?: { city?: string; country?: string };
-  onFavoriteToggle?: () => void;
-}
+import { isLoggedIn } from "../../utils/isLoggedIn";
+import { VenueCardProps } from "../../types/props";
 
 const VenueCard: React.FC<VenueCardProps> = ({
   id,
@@ -39,9 +30,15 @@ const VenueCard: React.FC<VenueCardProps> = ({
 
   const handleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation();
+
+    if (!isLoggedIn()) {
+      alert("Please log in to save favorites.");
+      return;
+    }
+
     const updated = toggleFavoriteVenue(id);
     setIsFav(updated.includes(id));
-    if (onFavoriteToggle) onFavoriteToggle();
+    onFavoriteToggle?.();
   };
 
   return (

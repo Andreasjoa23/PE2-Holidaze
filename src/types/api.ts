@@ -86,3 +86,7 @@ export interface ApiSingleResponse<T> {
   data: T;
   meta?: Record<string, unknown>;
 }
+
+export interface LoginResponse extends UserProfile {
+  accessToken: string;
+}

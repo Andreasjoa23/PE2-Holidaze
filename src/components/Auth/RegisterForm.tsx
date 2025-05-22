@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";
 import { registerUser } from "../../api/auth";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
-
-interface RegisterFormProps {
-  switchToLogin?: () => void;
-  setPrefillEmail?: (email: string) => void;
-}
+import { RegisterFormProps } from "../../types/props";
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEmail }) => {
   const [formData, setFormData] = useState({

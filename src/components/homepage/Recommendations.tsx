@@ -1,15 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaStar } from "react-icons/fa";
-
-interface Recommendation {
-  id: number;
-  name: string;
-  avatar: string;
-  location: string;
-  rating: number;
-  comment: string;
-}
+import { Recommendation } from "../../types/props";
 
 const recommendations: Recommendation[] = [
   {

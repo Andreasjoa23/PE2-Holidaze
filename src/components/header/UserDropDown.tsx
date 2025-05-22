@@ -9,17 +9,14 @@ import {
   X,
 } from "lucide-react";
 import apiClient from "../../api/apiClient";
-import { logout } from "../../utils/auth";
+import { logout } from "../../utils/logout";
 import EditProfile from "../profile/EditProfile";
 import VenueForm from "../Venue/VenueForm";
 import HeaderBookings from "./Bookings";
 import HeaderListings from "./Listings";
 import { fetchUserBookings, fetchUserListings } from "../../api/profile";
 import { UserProfile, Venue, Booking } from "../../types/api";
-
-interface UserDropdownProps {
-  onClose: () => void;
-}
+import { UserDropdownProps } from "../../types/props";
 
 const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -156,11 +153,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
           <hr className="border-t border-gray-200 my-4" />
 
           <button
-            onClick={() => {
-              logout();
-              navigate("/");
-              onClose();
-            }}
+            onClick={logout}
             className="w-full flex items-center justify-center gap-2 bg-[#0E1E34] text-white py-3 rounded-lg font-medium hover:bg-[#182944] transition"
           >
             <LogOut size={18} /> Log out

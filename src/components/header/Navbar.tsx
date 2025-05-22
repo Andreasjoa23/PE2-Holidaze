@@ -1,14 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
-import holidazeLogo from "../assets/holidazeLogo.png";
+import holidazeLogo from "../../assets/holidazeLogo.png";
 import { User } from "lucide-react";
-import AuthDropdown from "./Auth/AuthDropdown";
-import UserDropdown from "./header/UserDropDown";
+import AuthDropdown from "../Auth/AuthDropdown";
+import UserDropdown from "./UserDropDown";
+import { isLoggedIn } from "../../utils/isLoggedIn";
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
+  const loggedIn = isLoggedIn();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -27,10 +28,10 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (loggedIn) {
       setIsDropdownOpen(false);
     }
-  }, [isLoggedIn]);
+  }, [loggedIn]);
 
   return (
     <header className="bg-white shadow-sm w-full">
@@ -52,7 +53,7 @@ const Navbar = () => {
 
           {isDropdownOpen && (
             <div ref={dropdownRef} className="absolute top-12 right-0 z-50">
-              {isLoggedIn ? (
+              {loggedIn ? (
                 <UserDropdown onClose={() => setIsDropdownOpen(false)} />
               ) : (
                 <AuthDropdown onClose={() => setIsDropdownOpen(false)} />

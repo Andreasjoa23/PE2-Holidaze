@@ -1,11 +1,5 @@
 import React from "react";
-
-interface DeleteConfirmationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  venueName?: string;
-}
+import { DeleteConfirmationModalProps } from "../types/ui";
 
 const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
   isOpen,

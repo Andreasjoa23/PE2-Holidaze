@@ -1,10 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
-import ScrollProgress from "../components/ScrollProgress";
+import ScrollProgress from "../components/ui/ScrollProgress";
 import HeroBanner from "../components/homepage/HeroBanner";
 import SearchBanner from "../components/homepage/SearchBanner";
 import Trending from "../components/homepage/Trending";
 import Recommendations from "../components/homepage/Recommendations";
+import { isLoggedIn } from "../utils/isLoggedIn";
 
 const sectionVariant = {
   hidden: { opacity: 0, y: 30 },
@@ -12,13 +13,13 @@ const sectionVariant = {
 };
 
 const Home: React.FC = () => {
-  const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
+  const loggedIn = isLoggedIn();
 
   return (
     <>
       <ScrollProgress />
 
-      {!isLoggedIn && (
+      {!loggedIn && (
         <motion.div
           variants={sectionVariant}
           initial="hidden"
@@ -30,7 +31,7 @@ const Home: React.FC = () => {
         </motion.div>
       )}
 
-      {!isLoggedIn && (
+      {!loggedIn && (
         <motion.div
           variants={sectionVariant}
           initial="hidden"
@@ -45,7 +46,7 @@ const Home: React.FC = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.8, delay: isLoggedIn ? 0 : 0.2 }}
+        transition={{ duration: 0.8, delay: loggedIn ? 0 : 0.2 }}
       >
         <SearchBanner />
       </motion.div>
@@ -55,7 +56,7 @@ const Home: React.FC = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.8, delay: isLoggedIn ? 0.1 : 0.3 }}
+        transition={{ duration: 0.8, delay: loggedIn ? 0.1 : 0.3 }}
       >
         <Trending />
       </motion.div>
@@ -65,7 +66,7 @@ const Home: React.FC = () => {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.2 }}
-        transition={{ duration: 0.8, delay: isLoggedIn ? 0.2 : 0.4 }}
+        transition={{ duration: 0.8, delay: loggedIn ? 0.2 : 0.4 }}
       >
         <Recommendations />
       </motion.div>

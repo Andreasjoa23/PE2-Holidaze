@@ -2,25 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { createVenue, updateVenue } from "../../api/venues";
-import { Venue, MetaInfo, Location } from "../../types/api";
-
-interface VenueFormProps {
-  mode: "create" | "edit";
-  initialData?: Partial<Venue>;
-  onSuccess: (newId: string) => void;
-  onClose: () => void;
-}
-
-type FormLocation = Pick<Location, "country" | "city" | "address">;
-type FormData = {
-  title: string;
-  description: string;
-  location: FormLocation;
-  media: string[];
-  price: number;
-  maxGuests: number;
-  meta: MetaInfo;
-};
+import { VenueFormProps, VenueFormData } from "../../types/forms";
 
 const VenueForm: React.FC<VenueFormProps> = ({
   mode,
@@ -30,7 +12,7 @@ const VenueForm: React.FC<VenueFormProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<VenueFormData>({
     title: initialData?.name || "",
     description: initialData?.description || "",
     location: {
@@ -57,7 +39,7 @@ const VenueForm: React.FC<VenueFormProps> = ({
   ) => {
     const { name, value } = e.target;
     if (name.startsWith("location.")) {
-      const key = name.split(".")[1] as keyof FormLocation;
+      const key = name.split(".")[1] as keyof VenueFormData["location"];
       setFormData((prev) => ({
         ...prev,
         location: {
@@ -66,7 +48,7 @@ const VenueForm: React.FC<VenueFormProps> = ({
         },
       }));
     } else {
-      const key = name as keyof Omit<FormData, "location" | "meta" | "media">;
+      const key = name as keyof Omit<VenueFormData, "location" | "meta" | "media">;
       setFormData((prev) => ({
         ...prev,
         [key]: value,
@@ -95,8 +77,9 @@ const VenueForm: React.FC<VenueFormProps> = ({
   const validateForm = () => {
     if (formData.price < 0) return "Price must be zero or positive.";
     if (formData.maxGuests < 1) return "At least 1 guest must be allowed.";
-    if (!formData.media.some((url) => url.trim() !== ""))
+    if (!formData.media.some((url) => url.trim() !== "")) {
       return "Please provide at least one image URL.";
+    }
     return "";
   };
 
@@ -172,12 +155,14 @@ const VenueForm: React.FC<VenueFormProps> = ({
               >
                 Great, thanks!
               </button>
-              <button
-                onClick={() => navigate(`/venue/${newVenueId}`)}
-                className="px-4 py-2 bg-blue-900 text-white rounded text-sm"
-              >
-                View Venue Page
-              </button>
+              {newVenueId && (
+                <button
+                  onClick={() => navigate(`/venue/${newVenueId}`)}
+                  className="px-4 py-2 bg-blue-900 text-white rounded text-sm"
+                >
+                  View Venue Page
+                </button>
+              )}
             </div>
           </div>
         ) : (

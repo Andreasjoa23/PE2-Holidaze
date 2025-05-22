@@ -1,12 +1,5 @@
 import { deleteVenue } from "../../api/venues";
-import { Venue } from "../../types/api";
-
-interface VenueListProps {
-  venues: Venue[];
-  onEdit: (venue: Venue) => void;
-  onClose: () => void;
-  onDeleted: () => void;
-}
+import { VenueListProps } from "../../types/props";
 
 const VenueList: React.FC<VenueListProps> = ({ venues, onEdit, onClose, onDeleted }) => {
   const handleDelete = async (venueId: string) => {

@@ -2,24 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X, Calendar } from "lucide-react";
 import { deleteBooking } from "../../api/bookings";
 import { useState } from "react";
-
-interface Booking {
-  id: string;
-  venue?: {
-    name?: string;
-    media?: { url: string }[];
-    price?: number;
-    maxGuests?: number;
-  };
-  dateFrom: string;
-  dateTo: string;
-}
-
-interface HeaderBookingsProps {
-  bookings: Booking[];
-  onBack: () => void;
-  onRefresh: () => void;
-}
+import { HeaderBookingsProps } from "../../types/props";
 
 const formatDate = (iso: string) => {
   const date = new Date(iso);
