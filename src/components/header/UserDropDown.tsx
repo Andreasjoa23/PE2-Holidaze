@@ -156,11 +156,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
           <hr className="border-t border-gray-200 my-4" />
 
           <button
-            onClick={() => {
-              logout();
-              navigate("/");
-              onClose();
-            }}
+            onClick={logout}
             className="w-full flex items-center justify-center gap-2 bg-[#0E1E34] text-white py-3 rounded-lg font-medium hover:bg-[#182944] transition"
           >
             <LogOut size={18} /> Log out
