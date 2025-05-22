@@ -159,9 +159,9 @@ const Profile: React.FC = () => {
         {showCreateForm && (
           <VenueForm
             mode="create"
-            onSuccess={() => {
+            onSuccess={(newId) => {
               setShowCreateForm(false);
-              navigate("/venues");
+              navigate(`/venue/${newId}`);
             }}
             onClose={() => setShowCreateForm(false)}
           />
