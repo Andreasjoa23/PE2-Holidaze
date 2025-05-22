@@ -15,7 +15,7 @@ const faqs = [
   {
     question: "Do hosts provide extra cleaning services?",
     answer:
-      "Many hosts offer optional cleaning add-ons. Check the venue’s Amenities section when booking, or contact the host directly via the message center.",
+      "Many hosts offer optional cleaning add-ons. Check the venue’s Amenities section when booking.",
   },
 ];
 
