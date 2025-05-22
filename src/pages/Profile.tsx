@@ -118,9 +118,7 @@ const Profile: React.FC = () => {
           />
           <div>
             <h2 className="text-xl font-bold text-[#0E1E34]">{user.name}</h2>
-            <p className="text-sm text-gray-500">
-              {user.location || "Unknown location"}
-            </p>
+            <p className="text-sm text-gray-500"></p>
           </div>
         </div>
 

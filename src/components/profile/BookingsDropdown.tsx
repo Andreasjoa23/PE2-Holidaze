@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Calendar, ChevronDown, ChevronUp } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { deleteBooking } from "../../api/bookings";
+import { Link } from "react-router-dom";
 
 interface Booking {
   id: string;
@@ -92,36 +93,49 @@ const BookingsDropdown: React.FC<BookingsDropdownProps> = ({
                       {booking.venue?.name || "Unnamed venue"}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {formatDate(booking.dateFrom)} – {formatDate(booking.dateTo)}
+                      {formatDate(booking.dateFrom)} –{" "}
+                      {formatDate(booking.dateTo)}
                     </p>
                     <div className="text-xs text-gray-500 flex justify-between">
                       <span>{booking.venue?.maxGuests} people</span>
                       <span>{booking.venue?.price} /night</span>
                     </div>
 
-                    {confirmingId === booking.id ? (
-                      <div className="mt-2 flex gap-2">
-                        <button
-                          onClick={() => handleDelete(booking.id)}
-                          className="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1 rounded-full"
-                        >
-                          Yes, cancel
-                        </button>
-                        <button
-                          onClick={() => setConfirmingId(null)}
-                          className="text-xs text-gray-600 hover:underline"
-                        >
-                          No, go back
-                        </button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => setConfirmingId(booking.id)}
-                        className="mt-2 bg-red-500 hover:bg-red-600 text-white text-xs px-4 py-1 rounded-full"
-                      >
-                        Cancel booking
-                      </button>
-                    )}
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {confirmingId === booking.id ? (
+                        <>
+                          <button
+                            onClick={() => handleDelete(booking.id)}
+                            className="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1 rounded-full"
+                          >
+                            Yes, cancel
+                          </button>
+                          <button
+                            onClick={() => setConfirmingId(null)}
+                            className="text-xs text-gray-600 hover:underline"
+                          >
+                            No, go back
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => setConfirmingId(booking.id)}
+                            className="bg-red-500 hover:bg-red-600 text-white text-xs px-4 py-1 rounded-full"
+                          >
+                            Cancel booking
+                          </button>
+                          {booking.venue?.id && (
+                            <Link
+                              to={`/venue/${booking.venue.id}`}
+                              className="bg-[#0E1E34] hover:bg-[#1a2c4f] text-white text-xs px-4 py-1 rounded-full"
+                            >
+                              See Venue
+                            </Link>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))

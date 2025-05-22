@@ -23,6 +23,7 @@ import { Venue, BookingSummary } from "../types/api";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import "yet-another-react-lightbox/styles.css";
+import Loader from "../components/Loader";
 
 const VenueDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -103,7 +104,7 @@ const VenueDetails = () => {
     return disabled;
   };
 
-  if (isLoading) return <p className="text-center mt-10">Loading...</p>;
+  if (isLoading) return <Loader />;
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
   if (!venue) return <p className="text-center mt-10">Venue not found.</p>;
 
@@ -168,9 +169,7 @@ const VenueDetails = () => {
                   <p className="font-semibold text-[#0E1E34]">
                     {venue.owner.name}
                   </p>
-                  <p className="text-sm text-gray-500">
-                    {venue.owner.email}
-                  </p>
+                  <p className="text-sm text-gray-500">{venue.owner.email}</p>
                 </div>
               </div>
             ) : (
@@ -188,9 +187,7 @@ const VenueDetails = () => {
           </div>
 
           <div className="flex gap-4 flex-wrap">
-            {venue.meta?.wifi && (
-              <FeatureIcon icon={<FaWifi />} label="Wifi" />
-            )}
+            {venue.meta?.wifi && <FeatureIcon icon={<FaWifi />} label="Wifi" />}
             {venue.meta?.parking && (
               <FeatureIcon icon={<FaParking />} label="Parking" />
             )}
@@ -229,9 +226,7 @@ const VenueDetails = () => {
               onChange={(e) => setGuests(Number(e.target.value))}
               className="w-full border px-4 py-2 rounded-md shadow-sm focus:ring-[#0E1E34] focus:border-[#0E1E34]"
             />
-            <small className="text-gray-500">
-              Max: {venue.maxGuests}
-            </small>
+            <small className="text-gray-500">Max: {venue.maxGuests}</small>
           </div>
 
           <div className="flex flex-col gap-4 mt-6">
