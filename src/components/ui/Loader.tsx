@@ -1,4 +1,4 @@
-import logo from "../assets/logoHolidazeBlue.png";
+import logo from "../../assets/logoHolidazeBlue.png";
 
 const Loader = () => {
   return (
