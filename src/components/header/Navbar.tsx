@@ -37,9 +37,18 @@ const Navbar = () => {
     <header className="bg-white shadow-sm w-full">
       <nav className="flex justify-between items-center px-4 sm:px-8 lg:px-12 py-3 relative">
         <div className="flex items-center gap-1">
-          <img src={holidazeLogo} alt="Holidaze Logo" className="h-7 w-auto" />
-          <Link to="/" className="text-base font-small text-[#0E1E34]">
-            holidaze
+          <Link
+            to="/"
+            className="flex items-center gap-1 hover:opacity-80 transition"
+          >
+            <img
+              src={holidazeLogo}
+              alt="Holidaze Logo"
+              className="h-7 w-auto"
+            />
+            <span className="text-base font-small text-[#0E1E34]">
+              holidaze
+            </span>
           </Link>
         </div>
 

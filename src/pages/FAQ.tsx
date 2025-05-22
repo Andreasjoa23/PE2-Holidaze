@@ -10,7 +10,7 @@ const faqs = [
   {
     question: "Can I cancel or modify my booking?",
     answer:
-      "Yes—visit your Profile > Bookings, choose the upcoming stay, and follow the prompts to modify or cancel (subject to the venue’s cancellation policy).",
+      "Yes—visit your Profile > Bookings, choose the upcoming stay, and follow the prompts to cancel (subject to the venue’s cancellation policy).",
   },
   {
     question: "Do hosts provide extra cleaning services?",

@@ -100,98 +100,100 @@ const Profile: React.FC = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4 space-y-6">
-      <div className="relative mb-4">
+    <div className="min-h-[calc(100vh-320px)]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10">
         <img
-          src={user.banner?.url || "https://placehold.co/600x200"}
+          src={user.banner?.url || "https://placehold.co/1600x400"}
           alt={user.banner?.alt || "Banner"}
-          className="w-full h-48 md:h-56 object-cover rounded-2xl"
+          className="w-full h-48 md:h-64 lg:h-80 object-cover rounded-2xl"
         />
-      </div>
 
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-0 px-2">
-        <div className="flex items-center gap-4">
-          <img
-            src={user.avatar?.url || "https://placehold.co/80"}
-            alt={user.avatar?.alt || user.name}
-            className="w-20 h-20 md:w-24 md:h-24 rounded-full border-4 border-white object-cover shadow"
-          />
-          <div>
-            <h2 className="text-xl font-bold text-[#0E1E34]">{user.name}</h2>
-            <p className="text-sm text-gray-500"></p>
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+          <div className="flex items-center gap-6">
+            <img
+              src={user.avatar?.url || "https://placehold.co/100"}
+              alt={user.avatar?.alt || user.name}
+              className="w-24 h-24 lg:w-28 lg:h-28 rounded-full border-4 border-white object-cover shadow"
+            />
+            <div>
+              <h2 className="text-2xl lg:text-3xl font-bold text-[#0E1E34]">
+                {user.name}
+              </h2>
+              <p className="text-sm text-gray-500">Your profile overview</p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 mt-4 lg:mt-0">
+            <button
+              onClick={() => {
+                setShowCreateForm(true);
+                setShowEditor(false);
+              }}
+              className="bg-[#0E1E34] text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-[#182944] transition"
+            >
+              Create listing
+            </button>
+            <button
+              onClick={() => {
+                setShowEditor(true);
+                setShowCreateForm(false);
+              }}
+              className="bg-[#0E1E34] text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-[#182944] transition"
+            >
+              Edit Profile
+            </button>
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-3 mt-2 md:mt-0">
-          <button
-            onClick={() => {
-              setShowCreateForm(true);
-              setShowEditor(false);
-            }}
-            className="bg-[#0E1E34] text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-[#182944] transition"
-          >
-            Create listing
-          </button>
-          <button
-            onClick={() => {
-              setShowEditor(true);
-              setShowCreateForm(false);
-            }}
-            className="bg-[#0E1E34] text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-[#182944] transition"
-          >
-            Edit Profile
-          </button>
+        {error && <p className="text-red-500 text-center">{error}</p>}
+
+        <AnimatePresence>
+          {showEditor && (
+            <EditProfile
+              onSuccess={handleProfileUpdate}
+              onClose={() => setShowEditor(false)}
+            />
+          )}
+
+          {showCreateForm && (
+            <VenueForm
+              mode="create"
+              onSuccess={(newId) => {
+                setShowCreateForm(false);
+                navigate(`/venue/${newId}`);
+              }}
+              onClose={() => setShowCreateForm(false)}
+            />
+          )}
+        </AnimatePresence>
+
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-10 items-start">
+          <div className="col-span-2 flex flex-col space-y-6">
+            <BookingsDropdown
+              bookings={bookings}
+              onCancel={async () => {
+                const refreshed = await fetchUserBookings(user.name);
+                setBookings(refreshed.data);
+              }}
+            />
+            <ListingsDropdown
+              listings={listings}
+              onDelete={handleVenueDeleted}
+              onUpdate={async () => {
+                const refreshed = await fetchUserListings(user.name);
+                setListings(refreshed);
+              }}
+            />
+            <FavoritesDropdown />
+          </div>
+
+          <Insights
+            bookingsCount={bookings.length}
+            viewsCount={viewsCount}
+            income={income}
+            nextBooking={nextBooking}
+          />
         </div>
-      </div>
-
-      {error && <p className="text-red-500 text-center">{error}</p>}
-
-      <AnimatePresence>
-        {showEditor && (
-          <EditProfile
-            onSuccess={handleProfileUpdate}
-            onClose={() => setShowEditor(false)}
-          />
-        )}
-
-        {showCreateForm && (
-          <VenueForm
-            mode="create"
-            onSuccess={(newId) => {
-              setShowCreateForm(false);
-              navigate(`/venue/${newId}`);
-            }}
-            onClose={() => setShowCreateForm(false)}
-          />
-        )}
-      </AnimatePresence>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-        <div className="flex flex-col space-y-4">
-          <BookingsDropdown
-            bookings={bookings}
-            onCancel={async () => {
-              const refreshed = await fetchUserBookings(user.name);
-              setBookings(refreshed.data);
-            }}
-          />
-          <ListingsDropdown
-            listings={listings}
-            onDelete={handleVenueDeleted}
-            onUpdate={async () => {
-              const refreshed = await fetchUserListings(user.name);
-              setListings(refreshed);
-            }}
-          />
-          <FavoritesDropdown />
-        </div>
-
-        <Insights
-          bookingsCount={bookings.length}
-          viewsCount={viewsCount}
-          income={income}
-          nextBooking={nextBooking}
-        />
       </div>
     </div>
   );
