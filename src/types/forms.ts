@@ -15,7 +15,7 @@ export interface VenueFormData {
 export interface VenueFormProps {
   mode: "create" | "edit";
   initialData?: Partial<Venue>;
-  onSuccess: () => void;
+  onSuccess: (id?: string) => void;
   onClose: () => void;
 }
 
