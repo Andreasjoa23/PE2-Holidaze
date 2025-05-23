@@ -3,6 +3,7 @@ import { updateProfile } from "../../api/profile";
 import { X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { UserProfile } from "../../types/api";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
 const EditProfile = ({
   onSuccess,
@@ -87,11 +88,10 @@ const EditProfile = ({
           <h3 className="text-xl font-bold mb-4 text-center">Edit Profile</h3>
 
           <form onSubmit={handleSubmit} className="space-y-4 text-sm">
-            {/* Banner */}
             <div>
               <label className="block font-medium">Banner image</label>
               <img
-                src={formData.banner.url || "https://placehold.co/300x100"}
+                src={getPlaceholderImage(formData.banner.url, 300, 100)}
                 alt="Banner preview"
                 className="w-full h-24 object-cover rounded mt-2 mb-2"
               />
@@ -113,11 +113,10 @@ const EditProfile = ({
               />
             </div>
 
-            {/* Avatar */}
             <div>
               <label className="block font-medium">Avatar image</label>
               <img
-                src={formData.avatar.url || "https://placehold.co/80"}
+                src={getPlaceholderImage(formData.avatar.url, 80, 80)}
                 alt="Avatar preview"
                 className="w-16 h-16 rounded-full mx-auto mb-2"
               />

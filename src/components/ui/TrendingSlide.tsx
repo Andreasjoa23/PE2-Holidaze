@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { TrendingSlideProps } from "../../types/props";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
 const overlayVariants = {
   rest: { opacity: 0 },
@@ -13,10 +14,7 @@ const infoVariants = {
 };
 
 const TrendingSlide: React.FC<TrendingSlideProps> = ({ venue }) => {
-  const imageUrl =
-    venue.media && venue.media.length > 0
-      ? venue.media[0].url
-      : "https://via.placeholder.com/400x300";
+  const imageUrl = getPlaceholderImage(venue.media?.[0]?.url, 400, 300);
 
   return (
     <motion.div
@@ -25,7 +23,6 @@ const TrendingSlide: React.FC<TrendingSlideProps> = ({ venue }) => {
       whileHover="hover"
       animate="rest"
     >
-
       <img
         src={imageUrl}
         alt={venue.name}
@@ -47,7 +44,6 @@ const TrendingSlide: React.FC<TrendingSlideProps> = ({ venue }) => {
         <button
           className="bg-[#0E1E34] hover:bg-[#1d2d50] text-white px-4 py-2 rounded-full text-sm font-medium transition"
           onClick={() => {
-            // naviger til detaljside
             window.location.href = `/venue/${venue.id}`;
           }}
         >

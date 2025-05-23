@@ -3,6 +3,7 @@ import { getAllVenues } from "../../api/venues";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Venue } from "../../types/api";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
 const Trending: React.FC = () => {
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -49,7 +50,7 @@ const Trending: React.FC = () => {
             transition={{ type: "spring", stiffness: 120 }}
           >
             <img
-              src={v.media?.[0]?.url || "https://via.placeholder.com/400"}
+              src={getPlaceholderImage(v.media?.[0]?.url, 400, 300)}
               alt={v.name}
               className="w-full h-64 object-cover"
             />

@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X, Home, Trash, Pencil } from "lucide-react";
 import { Venue } from "../../types/api";
 import { calculateBeds } from "../ui/Beds";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
 interface HeaderListingsProps {
   listings: Partial<Venue>[];
@@ -42,7 +43,7 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
             className="border rounded-xl p-3 flex gap-4 shadow-sm"
           >
             <img
-              src={venue.media?.[0]?.url || "https://via.placeholder.com/100"}
+              src={getPlaceholderImage(venue.media?.[0]?.url, 100, 100)}
               alt={venue.name}
               className="w-24 h-24 object-cover rounded-md"
             />

@@ -26,6 +26,7 @@ import "react-date-range/dist/theme/default.css";
 import "yet-another-react-lightbox/styles.css";
 import Loader from "../components/ui/Loader";
 import { calculateBeds } from "../components/ui/Beds";
+import { getPlaceholderImage } from "../utils/missingImage";
 
 const VenueDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -125,22 +126,20 @@ const VenueDetails = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-10">
         <img
           onClick={() => setIsLightboxOpen(true)}
-          src={venue.media?.[0]?.url || "https://via.placeholder.com/600x400"}
+          src={getPlaceholderImage(venue.media?.[0]?.url, 600, 400)}
           alt={venue.name}
           className="w-full h-60 md:h-80 object-cover rounded-2xl shadow-lg cursor-pointer col-span-2"
         />
         <div className="flex gap-4 md:flex-col">
-          {venue.media
-            ?.slice(1, 3)
-            .map((img, i) => (
-              <img
-                key={i}
-                onClick={() => setIsLightboxOpen(true)}
-                src={img.url || "https://via.placeholder.com/300"}
-                alt={venue.name}
-                className="w-1/2 md:w-full h-24 md:h-36 object-cover rounded-2xl shadow-md cursor-pointer"
-              />
-            ))}
+          {venue.media?.slice(1, 3).map((img, i) => (
+            <img
+              key={i}
+              onClick={() => setIsLightboxOpen(true)}
+              src={getPlaceholderImage(img.url, 300, 200)}
+              alt={venue.name}
+              className="w-1/2 md:w-full h-24 md:h-36 object-cover rounded-2xl shadow-md cursor-pointer"
+            />
+          ))}
         </div>
       </div>
 
@@ -148,7 +147,7 @@ const VenueDetails = () => {
         <Lightbox
           open={isLightboxOpen}
           close={() => setIsLightboxOpen(false)}
-          slides={venue.media.map((img) => ({ src: img.url }))}
+          slides={venue.media.map((img) => ({ src: getPlaceholderImage(img.url) }))}
         />
       )}
 
@@ -168,7 +167,7 @@ const VenueDetails = () => {
             {venue.owner ? (
               <div className="flex items-center gap-4">
                 <img
-                  src={venue.owner.avatar?.url || "https://placehold.co/80"}
+                  src={getPlaceholderImage(venue.owner.avatar?.url, 80, 80)}
                   alt={venue.owner.name}
                   className="w-12 h-12 rounded-full object-cover border-2 border-white"
                 />
@@ -195,22 +194,14 @@ const VenueDetails = () => {
 
           <div className="flex gap-4 flex-wrap">
             {venue.meta?.wifi && <FeatureIcon icon={<FaWifi />} label="Wifi" />}
-            {venue.meta?.parking && (
-              <FeatureIcon icon={<FaParking />} label="Parking" />
-            )}
-            {venue.meta?.breakfast && (
-              <FeatureIcon icon={<FaCoffee />} label="Breakfast" />
-            )}
-            {venue.meta?.pets && (
-              <FeatureIcon icon={<FaDog />} label="Pet Friendly" />
-            )}
+            {venue.meta?.parking && <FeatureIcon icon={<FaParking />} label="Parking" />}
+            {venue.meta?.breakfast && <FeatureIcon icon={<FaCoffee />} label="Breakfast" />}
+            {venue.meta?.pets && <FeatureIcon icon={<FaDog />} label="Pet Friendly" />}
           </div>
         </div>
 
         <div>
-          <h2 className="text-xl font-bold text-[#0E1E34] mb-4">
-            Select your stay
-          </h2>
+          <h2 className="text-xl font-bold text-[#0E1E34] mb-4">Select your stay</h2>
           <DateRange
             ranges={dateRange}
             onChange={(item) => setDateRange([item.selection])}

@@ -6,6 +6,7 @@ import EditVenueModal from "./EditVenueModal";
 import { Venue } from "../../types/api";
 import { ListingsDropdownProps } from "../../types/props";
 import { calculateBeds } from "../ui/Beds";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
 const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   listings,
@@ -74,7 +75,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
                   className="bg-white rounded-xl shadow border p-3 flex items-center gap-4"
                 >
                   <img
-                    src={venue.media[0]?.url || "https://via.placeholder.com/100"}
+                    src={getPlaceholderImage(venue.media?.[0]?.url, 100, 100)}
                     alt={venue.name}
                     className="w-24 h-24 rounded-lg object-cover"
                   />
@@ -164,10 +165,11 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
                     className="bg-blue-50 border border-blue-100 p-4 rounded-xl shadow-sm flex items-start gap-4"
                   >
                     <img
-                      src={
-                        booking.customer?.avatar?.url ||
-                        "https://placehold.co/48x48?text=👤"
-                      }
+                      src={getPlaceholderImage(
+                        booking.customer?.avatar?.url,
+                        48,
+                        48
+                      )}
                       alt={
                         booking.customer?.avatar?.alt ||
                         booking.customer?.name ||

@@ -10,6 +10,7 @@ import { fetchUserBookings, fetchUserListings } from "../api/profile";
 import { deleteVenue } from "../api/venues";
 import { AnimatePresence } from "framer-motion";
 import { BookingSummary, Venue, UserProfile } from "../types/api";
+import { getPlaceholderImage } from "../utils/missingImage";
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
@@ -103,7 +104,7 @@ const Profile: React.FC = () => {
     <div className="min-h-[calc(100vh-320px)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10">
         <img
-          src={user.banner?.url || "https://placehold.co/1600x400"}
+          src={getPlaceholderImage(user.banner?.url, 1600, 400)}
           alt={user.banner?.alt || "Banner"}
           className="w-full h-48 md:h-64 lg:h-80 object-cover rounded-2xl"
         />
@@ -111,7 +112,7 @@ const Profile: React.FC = () => {
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="flex items-center gap-6">
             <img
-              src={user.avatar?.url || "https://placehold.co/100"}
+              src={getPlaceholderImage(user.avatar?.url, 100, 100)}
               alt={user.avatar?.alt || user.name}
               className="w-24 h-24 lg:w-28 lg:h-28 rounded-full border-4 border-white object-cover shadow"
             />
@@ -159,6 +160,7 @@ const Profile: React.FC = () => {
               onSuccess={(newId) => {
                 setShowCreateForm(false);
                 navigate(`/venue/${newId}`);
+                window.location.reload(); // Optional: reload to reflect the new listing immediately
               }}
               onClose={() => setShowCreateForm(false)}
             />

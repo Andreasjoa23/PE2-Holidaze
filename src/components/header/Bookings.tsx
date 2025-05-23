@@ -3,6 +3,7 @@ import { ArrowLeft, X, Calendar } from "lucide-react";
 import { deleteBooking } from "../../api/bookings";
 import { useState } from "react";
 import { HeaderBookingsProps } from "../../types/props";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
 const formatDate = (iso: string) => {
   const date = new Date(iso);
@@ -50,7 +51,7 @@ const HeaderBookings: React.FC<HeaderBookingsProps> = ({
         bookings.map((b) => (
           <div key={b.id} className="border rounded-xl p-3 flex gap-4 shadow-sm">
             <img
-              src={b.venue?.media?.[0]?.url || "https://via.placeholder.com/100"}
+              src={getPlaceholderImage(b.venue?.media?.[0]?.url, 100, 100)}
               alt={b.venue?.name}
               className="w-24 h-24 object-cover rounded-md"
             />

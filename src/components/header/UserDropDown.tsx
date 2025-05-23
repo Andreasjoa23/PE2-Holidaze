@@ -16,6 +16,7 @@ import HeaderListings from "./Listings";
 import { fetchUserBookings, fetchUserListings } from "../../api/profile";
 import { UserProfile, Venue, Booking } from "../../types/api";
 import { UserDropdownProps } from "../../types/props";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
 const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -104,7 +105,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
         <>
           <div className="flex flex-col items-center text-center mb-4">
             <img
-              src={user.avatar?.url || "https://placehold.co/80"}
+              src={getPlaceholderImage(user.avatar?.url, 80, 80)}
               alt={user.avatar?.alt || user.name}
               className="w-20 h-20 rounded-full mb-3 object-cover"
             />

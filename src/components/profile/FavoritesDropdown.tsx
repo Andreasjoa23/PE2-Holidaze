@@ -10,6 +10,7 @@ import { FaBed, FaUserFriends } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { Venue, ApiListResponse } from "../../types/api";
 import { calculateBeds } from "../ui/Beds";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
 const FavoritesDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -81,10 +82,7 @@ const FavoritesDropdown: React.FC = () => {
                   className="bg-white rounded-2xl shadow p-4 flex flex-col"
                 >
                   <img
-                    src={
-                      venue.media?.[0]?.url ||
-                      "https://via.placeholder.com/150"
-                    }
+                    src={getPlaceholderImage(venue.media?.[0]?.url, 400, 300)}
                     alt={venue.name}
                     className="w-full h-40 object-cover rounded-xl mb-4"
                   />

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { deleteBooking } from "../../api/bookings";
 import { BookingSummary } from "../../types/api";
 import { Link } from "react-router-dom";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
 interface BookingsDropdownProps {
   bookings: BookingSummary[];
@@ -69,10 +70,7 @@ const BookingsDropdown: React.FC<BookingsDropdownProps> = ({
                   className="bg-white rounded-xl shadow border p-3 flex flex-col sm:flex-row gap-4"
                 >
                   <img
-                    src={
-                      booking.venue?.media?.[0]?.url ||
-                      "https://via.placeholder.com/100"
-                    }
+                    src={getPlaceholderImage(booking.venue?.media?.[0]?.url, 100, 100)}
                     alt={booking.venue?.name || "Venue image"}
                     className="w-24 h-24 rounded-lg object-cover"
                   />
@@ -81,8 +79,7 @@ const BookingsDropdown: React.FC<BookingsDropdownProps> = ({
                       {booking.venue?.name || "Unnamed venue"}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {formatDate(booking.dateFrom)} –{" "}
-                      {formatDate(booking.dateTo)}
+                      {formatDate(booking.dateFrom)} – {formatDate(booking.dateTo)}
                     </p>
                     <div className="text-xs text-gray-500 flex justify-between">
                       <span>

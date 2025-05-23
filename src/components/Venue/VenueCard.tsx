@@ -5,6 +5,7 @@ import { isFavorite, toggleFavoriteVenue } from "./favoritesHelpers";
 import { isLoggedIn } from "../../utils/isLoggedIn";
 import { VenueCardProps } from "../../types/props";
 import { calculateBeds } from "../ui/Beds";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
 const VenueCard: React.FC<VenueCardProps> = ({
   id,
@@ -18,10 +19,7 @@ const VenueCard: React.FC<VenueCardProps> = ({
   const navigate = useNavigate();
   const [isFav, setIsFav] = useState(false);
 
-  const imageUrl =
-    media && media.length > 0
-      ? media[0].url
-      : "https://via.placeholder.com/400";
+  const imageUrl = getPlaceholderImage(media?.[0]?.url, 400, 300);
 
   const handleClick = () => navigate(`/venue/${id}`);
 
@@ -69,16 +67,15 @@ const VenueCard: React.FC<VenueCardProps> = ({
 
         <div className="mt-auto space-y-4">
           <div className="flex justify-between text-gray-700">
-          <div className="flex items-center gap-2">
-            <FaBed className="text-base" />
-            <span>{calculateBeds(maxGuests)} beds</span>
+            <div className="flex items-center gap-2">
+              <FaBed className="text-base" />
+              <span>{calculateBeds(maxGuests)} beds</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <FaUserFriends className="text-base" />
+              <span>{maxGuests} guests</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <FaUserFriends className="text-base" />
-            <span>{maxGuests} guests</span>
-          </div>
-        </div>
-
 
           <div className="flex items-center justify-between">
             <div>

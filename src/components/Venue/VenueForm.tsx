@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { calculateBeds } from "../ui/Beds";
 import { useNavigate } from "react-router-dom";
 import { createVenue, updateVenue } from "../../api/venues";
 import { VenueFormProps, VenueFormData } from "../../types/forms";
-import { calculateBeds } from "../ui/Beds";
 
 const VenueForm: React.FC<VenueFormProps> = ({
   mode,
@@ -152,11 +152,15 @@ const VenueForm: React.FC<VenueFormProps> = ({
             </h3>
             <div className="flex justify-center gap-4">
               <button
-                onClick={onClose}
+                onClick={() => {
+                  onClose();
+                  window.location.reload();
+                }}
                 className="px-4 py-2 border rounded text-sm"
               >
                 Great, thanks!
               </button>
+
               <button
                 onClick={() => navigate(`/venue/${newVenueId}`)}
                 className="px-4 py-2 bg-blue-900 text-white rounded text-sm"
