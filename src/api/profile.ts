@@ -12,6 +12,11 @@ interface ProfileUpdatePayload {
   banner: { url: string; alt: string };
 }
 
+/**
+ * Updates a user's profile information.
+ * @param data Avatar and banner data
+ * @returns Updated user profile
+ */
 export async function updateProfile(
   data: ProfileUpdatePayload
 ): Promise<ApiSingleResponse<UserProfile>> {
@@ -27,6 +32,11 @@ export async function updateProfile(
   return response.data;
 }
 
+/**
+ * Fetches bookings for a user.
+ * @param username Username to fetch bookings for
+ * @returns List of bookings
+ */
 export async function fetchUserBookings(
   username: string
 ): Promise<ApiListResponse<Booking>> {
@@ -36,6 +46,11 @@ export async function fetchUserBookings(
   return response.data;
 }
 
+/**
+ * Fetches venues owned by a user.
+ * @param name Username
+ * @returns List of venues
+ */
 export async function fetchUserListings(name: string): Promise<Venue[]> {
   const response = await apiClient.get<ApiListResponse<Venue>>(
     `/holidaze/profiles/${name}/venues?_bookings=true&_views=true`
@@ -43,6 +58,11 @@ export async function fetchUserListings(name: string): Promise<Venue[]> {
   return response.data.data;
 }
 
+/**
+ * Fetches favorite venues for a user.
+ * @param username Username
+ * @returns List of favorite venues
+ */
 export async function fetchUserFavorites(username: string): Promise<Venue[]> {
   const response = await apiClient.get<ApiListResponse<Venue>>(
     `/holidaze/profiles/${username}/favorites`

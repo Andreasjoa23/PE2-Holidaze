@@ -5,7 +5,12 @@ import { useState } from "react";
 import { HeaderBookingsProps } from "../../types/props";
 import { getPlaceholderImage } from "../../utils/missingImage";
 
-const formatDate = (iso: string) => {
+/**
+ * Formats an ISO date string into a localized readable format.
+ * @param iso ISO 8601 date string
+ * @returns Localized date string
+ */
+const formatDate = (iso: string): string => {
   const date = new Date(iso);
   return date.toLocaleDateString(undefined, {
     year: "numeric",
@@ -14,6 +19,10 @@ const formatDate = (iso: string) => {
   });
 };
 
+/**
+ * Displays a list of a user's bookings with options to cancel each one.
+ * Includes a back button, booking details, and a fallback message when empty.
+ */
 const HeaderBookings: React.FC<HeaderBookingsProps> = ({
   bookings,
   onBack,
@@ -22,6 +31,10 @@ const HeaderBookings: React.FC<HeaderBookingsProps> = ({
   const navigate = useNavigate();
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
+  /**
+   * Deletes a booking by its ID and refreshes the list.
+   * @param id Booking ID
+   */
   const handleDelete = async (id: string) => {
     try {
       await deleteBooking(id);

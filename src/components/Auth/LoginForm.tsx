@@ -3,6 +3,9 @@ import { loginUser } from "../../api/auth";
 import { UserProfile, LoginResponse } from "../../types/api";
 import { LoginFormProps } from "../../types/props";
 
+/**
+ * Login form component that handles user authentication.
+ */
 const LoginForm: React.FC<LoginFormProps> = ({ prefillEmail = "" }) => {
   const [email, setEmail] = useState(prefillEmail.toLowerCase());
   const [password, setPassword] = useState("");
@@ -14,12 +17,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ prefillEmail = "" }) => {
   useEffect(() => {
     if (prefillEmail) {
       setEmail(prefillEmail.toLowerCase());
-      if (passwordInputRef.current) {
-        passwordInputRef.current.focus();
-      }
+      passwordInputRef.current?.focus();
     }
   }, [prefillEmail]);
 
+  /**
+   * Handles login form submission.
+   */
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMsg("");
@@ -33,10 +37,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ prefillEmail = "" }) => {
 
       const user: UserProfile = {
         ...userWithoutToken,
-        banner: userWithoutToken.banner ?? {
-          url: "",
-          alt: "Default banner",
-        },
+        banner: userWithoutToken.banner ?? { url: "", alt: "Default banner" },
       };
 
       localStorage.setItem("accessToken", accessToken);
@@ -46,8 +47,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ prefillEmail = "" }) => {
       setTimeout(() => {
         window.location.reload();
       }, 1000);
-    } catch (error) {
-      console.error("Login error:", error);
+    } catch {
       setErrorMsg("Login failed. Please check your email and password.");
     }
   };

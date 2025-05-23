@@ -7,6 +7,10 @@ import { calculateBeds } from "../ui/Beds";
 
 const amenitiesList = ["wifi", "parking", "breakfast", "pets"] as const;
 
+/**
+ * Modal form for editing an existing venue.
+ * Includes fields for title, description, location, price, media, and amenities.
+ */
 const EditVenueModal: React.FC<EditVenueModalProps> = ({
   isOpen,
   onClose,
@@ -35,6 +39,9 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
 
   const [error, setError] = useState("");
 
+  /**
+   * Pre-fill form data from the initial venue.
+   */
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -59,6 +66,9 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
     }
   }, [initialData]);
 
+  /**
+   * Update form state for text inputs and textareas.
+   */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -77,6 +87,9 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
     }
   };
 
+  /**
+   * Toggle checkbox values in meta object.
+   */
   const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setFormData((prev) => ({
@@ -85,6 +98,9 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
     }));
   };
 
+  /**
+   * Submit the updated venue to the API.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -126,6 +142,7 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+          aria-label="Close edit venue modal"
         >
           <X className="w-5 h-5" />
         </button>
@@ -133,6 +150,7 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
         <h2 className="text-xl font-bold mb-4">Edit Listing</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4 text-sm">
+          {/* Title */}
           <input
             type="text"
             name="name"
@@ -143,6 +161,7 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
             required
           />
 
+          {/* Description */}
           <textarea
             name="description"
             value={formData.description}
@@ -153,6 +172,7 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
             required
           />
 
+          {/* Location */}
           <div className="grid grid-cols-3 gap-2">
             <input
               type="text"
@@ -180,6 +200,7 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
             />
           </div>
 
+          {/* Guest and Bed Counts */}
           <div className="grid grid-cols-2 gap-4">
             <input
               type="number"
@@ -199,6 +220,7 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
             />
           </div>
 
+          {/* Price */}
           <input
             type="number"
             name="price"
@@ -209,6 +231,7 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
             placeholder="Price per night"
           />
 
+          {/* Amenities */}
           <fieldset className="mt-4">
             <legend className="font-medium mb-2">Facilities</legend>
             <div className="flex flex-wrap gap-3">
@@ -217,7 +240,7 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
                   <input
                     type="checkbox"
                     name={key}
-                    checked={formData.meta[key as keyof typeof formData.meta]}
+                    checked={formData.meta[key]}
                     onChange={handleCheckbox}
                   />
                   <span className="capitalize">{key}</span>
@@ -228,6 +251,7 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
 
+          {/* Form Actions */}
           <div className="flex justify-between">
             <button
               type="button"

@@ -1,22 +1,16 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { DateRange, Range } from "react-date-range";
 import {
-  FaWifi,
-  FaParking,
-  FaCoffee,
-  FaDog,
-  FaUsers,
-  FaBed,
-  FaHeart,
-  FaRegHeart,
+  FaWifi, FaParking, FaCoffee, FaDog,
+  FaUsers, FaBed, FaHeart, FaRegHeart
 } from "react-icons/fa";
 import apiClient from "../api/apiClient";
 import { createBooking } from "../api/bookings";
 import Lightbox from "yet-another-react-lightbox";
 import {
   isFavorite,
-  toggleFavoriteVenue,
+  toggleFavoriteVenue
 } from "../components/Venue/favoritesHelpers";
 import toast, { Toaster } from "react-hot-toast";
 import { Venue, BookingSummary } from "../types/api";
@@ -28,9 +22,18 @@ import Loader from "../components/ui/Loader";
 import { calculateBeds } from "../components/ui/Beds";
 import { getPlaceholderImage } from "../utils/missingImage";
 
-const VenueDetails = () => {
+/**
+ * Renders detailed view of a single venue.
+ * Allows users to:
+ * - View photos, details, and amenities
+ * - Check availability via date picker
+ * - Book the venue
+ * - Add/remove from favorites
+ */
+const VenueDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
   const [venue, setVenue] = useState<Venue | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -45,14 +48,15 @@ const VenueDetails = () => {
   ]);
   const [guests, setGuests] = useState(1);
 
+  /** Fetch venue details and initialize favorite state */
   useEffect(() => {
     const fetchVenue = async () => {
       try {
-        const response = await apiClient.get(
+        const response = await apiClient.get<{ data: Venue }>(
           `/holidaze/venues/${id}?_bookings=true&_owner=true`
         );
-        const venueData = (response.data as { data: Venue }).data;
-        setVenue(venueData);
+        setVenue(response.data.data);
+
       } catch {
         setError("Failed to load venue details.");
       } finally {
@@ -66,6 +70,7 @@ const VenueDetails = () => {
     }
   }, [id]);
 
+  /** Book venue and navigate to confirmation */
   const handleBooking = async () => {
     const { startDate, endDate } = dateRange[0];
     try {
@@ -73,8 +78,9 @@ const VenueDetails = () => {
         dateFrom: startDate!.toISOString(),
         dateTo: endDate!.toISOString(),
         guests,
-        venueId: id as string,
+        venueId: id!,
       });
+
       navigate("/bookingConfirmation", {
         state: {
           venueImage: venue?.media?.[0]?.url,
@@ -89,16 +95,17 @@ const VenueDetails = () => {
     }
   };
 
+  /** Toggle favorite status */
   const handleToggleFavorite = () => {
     if (!isLoggedIn()) {
       toast("Please log in to save favorites.", { icon: "🔒" });
       return;
     }
-
-    const updated = toggleFavoriteVenue(id as string);
-    setIsFav(updated.includes(id as string));
+    const updated = toggleFavoriteVenue(id!);
+    setIsFav(updated.includes(id!));
   };
 
+  /** Generate an array of dates already booked */
   const getDisabledDates = () => {
     if (!venue?.bookings) return [];
     const disabled: Date[] = [];
@@ -112,6 +119,7 @@ const VenueDetails = () => {
     return disabled;
   };
 
+  // UI STATES
   if (isLoading) return <Loader />;
   if (error) return <p className="text-center text-red-500 mt-10">{error}</p>;
   if (!venue) return <p className="text-center mt-10">Venue not found.</p>;
@@ -119,11 +127,14 @@ const VenueDetails = () => {
   return (
     <section className="p-4 md:p-12 max-w-7xl mx-auto">
       <Toaster />
+
+      {/* Header */}
       <h1 className="text-2xl md:text-5xl font-bold text-[#0E1E34] mb-4 md:mb-8">
         {venue.name}
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-10">
+      {/* Main image + thumbnails */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10">
         <img
           onClick={() => setIsLightboxOpen(true)}
           src={getPlaceholderImage(venue.media?.[0]?.url, 600, 400)}
@@ -147,22 +158,23 @@ const VenueDetails = () => {
         <Lightbox
           open={isLightboxOpen}
           close={() => setIsLightboxOpen(false)}
-          slides={venue.media.map((img) => ({ src: getPlaceholderImage(img.url) }))}
+          slides={venue.media.map((img) => ({
+            src: getPlaceholderImage(img.url),
+          }))}
         />
       )}
 
+      {/* Details and Booking */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {/* Details */}
         <div className="space-y-6">
           <p className="font-semibold text-[#0E1E34]">
             {venue.location?.city}, {venue.location?.country}
           </p>
-          <div className="flex items-center gap-2 text-[#0E1E34]">
-            <FaUsers /> {venue.maxGuests} Guests
-          </div>
-          <div className="flex items-center gap-2 text-[#0E1E34]">
-            <FaBed /> {calculateBeds(venue.maxGuests)} Beds
-          </div>
+          <div className="flex items-center gap-2 text-[#0E1E34]"><FaUsers /> {venue.maxGuests} Guests</div>
+          <div className="flex items-center gap-2 text-[#0E1E34]"><FaBed /> {calculateBeds(venue.maxGuests)} Beds</div>
 
+          {/* Host info */}
           <div className="bg-gray-100 p-4 rounded-xl shadow">
             {venue.owner ? (
               <div className="flex items-center gap-4">
@@ -172,9 +184,7 @@ const VenueDetails = () => {
                   className="w-12 h-12 rounded-full object-cover border-2 border-white"
                 />
                 <div>
-                  <p className="font-semibold text-[#0E1E34]">
-                    {venue.owner.name}
-                  </p>
+                  <p className="font-semibold text-[#0E1E34]">{venue.owner.name}</p>
                   <p className="text-sm text-gray-500">{venue.owner.email}</p>
                 </div>
               </div>
@@ -183,15 +193,13 @@ const VenueDetails = () => {
             )}
           </div>
 
+          {/* Description */}
           <div>
-            <h2 className="text-xl font-bold text-[#0E1E34] mb-2">
-              Description
-            </h2>
-            <p className="text-gray-700 text-sm leading-relaxed">
-              {venue.description}
-            </p>
+            <h2 className="text-xl font-bold text-[#0E1E34] mb-2">Description</h2>
+            <p className="text-gray-700 text-sm leading-relaxed">{venue.description}</p>
           </div>
 
+          {/* Features */}
           <div className="flex gap-4 flex-wrap">
             {venue.meta?.wifi && <FeatureIcon icon={<FaWifi />} label="Wifi" />}
             {venue.meta?.parking && <FeatureIcon icon={<FaParking />} label="Parking" />}
@@ -200,6 +208,7 @@ const VenueDetails = () => {
           </div>
         </div>
 
+        {/* Booking */}
         <div>
           <h2 className="text-xl font-bold text-[#0E1E34] mb-4">Select your stay</h2>
           <DateRange
@@ -213,9 +222,7 @@ const VenueDetails = () => {
           />
 
           <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Number of Guests
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Number of Guests</label>
             <input
               type="number"
               min={1}
@@ -239,7 +246,7 @@ const VenueDetails = () => {
               onClick={handleToggleFavorite}
               className="flex items-center justify-center gap-2 border border-[#0E1E34] text-[#0E1E34] px-8 py-3 rounded-full font-semibold hover:bg-[#0E1E34] hover:text-white transition w-full"
             >
-              {isFav ? <FaHeart /> : <FaRegHeart />}{" "}
+              {isFav ? <FaHeart /> : <FaRegHeart />}
               {isFav ? "Favorited" : "Add to favorites"}
             </button>
           </div>
@@ -249,6 +256,9 @@ const VenueDetails = () => {
   );
 };
 
+/**
+ * Displays icon with label for venue amenities.
+ */
 const FeatureIcon = ({
   icon,
   label,

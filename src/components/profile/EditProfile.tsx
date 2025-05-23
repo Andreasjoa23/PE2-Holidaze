@@ -5,13 +5,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import { UserProfile } from "../../types/api";
 import { getPlaceholderImage } from "../../utils/missingImage";
 
-const EditProfile = ({
-  onSuccess,
-  onClose,
-}: {
+interface EditProfileProps {
+  /** Called when the profile is successfully updated */
   onSuccess: (updatedUser: UserProfile) => void;
+  /** Called when the modal is closed */
   onClose: () => void;
-}) => {
+}
+
+/**
+ * Modal form for editing the user's avatar and banner.
+ * Allows previewing and submitting profile updates.
+ */
+const EditProfile: React.FC<EditProfileProps> = ({ onSuccess, onClose }) => {
   const [formData, setFormData] = useState({
     avatar: { url: "", alt: "" },
     banner: { url: "", alt: "" },
@@ -20,6 +25,9 @@ const EditProfile = ({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  /**
+   * Load current user data from localStorage on mount.
+   */
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     setFormData({
@@ -34,6 +42,9 @@ const EditProfile = ({
     });
   }, []);
 
+  /**
+   * Handle input changes in both avatar and banner fields.
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const [section, key] = e.target.name.split(".");
     setFormData((prev) => ({
@@ -45,6 +56,9 @@ const EditProfile = ({
     }));
   };
 
+  /**
+   * Submit profile updates via API and update localStorage.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -78,16 +92,21 @@ const EditProfile = ({
           transition={{ duration: 0.2 }}
           className="bg-white w-full max-w-md rounded-2xl shadow-lg p-6 relative"
         >
+          {/* Close button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+            aria-label="Close modal"
           >
             <X className="w-5 h-5" />
           </button>
 
+          {/* Title */}
           <h3 className="text-xl font-bold mb-4 text-center">Edit Profile</h3>
 
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4 text-sm">
+            {/* Banner */}
             <div>
               <label className="block font-medium">Banner image</label>
               <img
@@ -113,6 +132,7 @@ const EditProfile = ({
               />
             </div>
 
+            {/* Avatar */}
             <div>
               <label className="block font-medium">Avatar image</label>
               <img
@@ -138,9 +158,11 @@ const EditProfile = ({
               />
             </div>
 
+            {/* Feedback */}
             {error && <p className="text-red-500">{error}</p>}
             {success && <p className="text-green-600">{success}</p>}
 
+            {/* Actions */}
             <div className="flex justify-end gap-4 pt-2">
               <button
                 type="button"

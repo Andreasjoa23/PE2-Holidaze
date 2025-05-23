@@ -5,10 +5,17 @@ import { Link } from "react-router-dom";
 import { Venue } from "../../types/api";
 import { getPlaceholderImage } from "../../utils/missingImage";
 
+/**
+ * Trending component fetches and displays the top 8 venues
+ * sorted by booking popularity in a grid layout.
+ */
 const Trending: React.FC = () => {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
 
+  /**
+   * Fetch and sort venues by number of bookings (descending).
+   */
   useEffect(() => {
     (async () => {
       try {
@@ -41,6 +48,7 @@ const Trending: React.FC = () => {
         Trending Stays
       </h2>
 
+      {/* Venue Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
         {venues.map((v) => (
           <motion.div
@@ -75,6 +83,7 @@ const Trending: React.FC = () => {
         ))}
       </div>
 
+      {/* View All CTA */}
       <div className="text-center mt-12">
         <Link
           to="/venues"

@@ -8,6 +8,12 @@ import Profile from "../pages/Profile";
 import NotFound from "../pages/NotFound";
 import FAQ from "../pages/FAQ";
 
+/**
+ * Defines the application's route configuration using React Router.
+ * Includes nested routing within a common `Layout` component and routes
+ * for pages like Home, Venues, Venue Details, Booking Confirmation, Profile,
+ * FAQ, and a catch-all NotFound route.
+ */
 const AppRoutes = () => {
   return (
     <Routes>
@@ -15,7 +21,7 @@ const AppRoutes = () => {
         <Route path="/faq" element={<FAQ />} />
         <Route path="/" element={<Home />} />
         <Route path="/venues" element={<Venues />} />
-        <Route path="/venue/:id" element={<VenueDetails />} />{" "}
+        <Route path="/venue/:id" element={<VenueDetails />} />
         <Route path="/bookingConfirmation" element={<BookingConfirmation />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="*" element={<NotFound />} />

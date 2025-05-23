@@ -1,10 +1,17 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { calculateBeds } from "../ui/Beds";
 import { useNavigate } from "react-router-dom";
 import { createVenue, updateVenue } from "../../api/venues";
+import { calculateBeds } from "../ui/Beds";
 import { VenueFormProps, VenueFormData } from "../../types/forms";
 
+/**
+ * Form component for creating or editing a venue listing.
+ * Supports dynamic media, validation, and submission handling.
+ *
+ * @component
+ * @param {VenueFormProps} props - Component props
+ */
 const VenueForm: React.FC<VenueFormProps> = ({
   mode,
   initialData,
@@ -35,29 +42,27 @@ const VenueForm: React.FC<VenueFormProps> = ({
   const [error, setError] = useState("");
   const [newVenueId, setNewVenueId] = useState<string | null>(null);
 
+  /**
+   * Handles input field updates for both top-level and nested location fields.
+   */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-
     if (name.startsWith("location.")) {
       const key = name.split(".")[1] as keyof VenueFormData["location"];
       setFormData((prev) => ({
         ...prev,
-        location: {
-          ...prev.location,
-          [key]: value,
-        },
+        location: { ...prev.location, [key]: value },
       }));
     } else {
-      const key = name as keyof Omit<VenueFormData, "location" | "meta" | "media">;
-      setFormData((prev) => ({
-        ...prev,
-        [key]: value,
-      }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
+  /**
+   * Toggles boolean checkbox values for venue facilities (meta).
+   */
   const handleCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     setFormData((prev) => ({
@@ -66,16 +71,25 @@ const VenueForm: React.FC<VenueFormProps> = ({
     }));
   };
 
+  /**
+   * Adds a new blank media input field.
+   */
   const handleAddImage = () => {
     setFormData((prev) => ({ ...prev, media: [...prev.media, ""] }));
   };
 
+  /**
+   * Updates a specific image URL by index.
+   */
   const handleMediaChange = (index: number, value: string) => {
     const updatedMedia = [...formData.media];
     updatedMedia[index] = value;
     setFormData((prev) => ({ ...prev, media: updatedMedia }));
   };
 
+  /**
+   * Validates user input and returns an error message if invalid.
+   */
   const validateForm = () => {
     if (formData.price < 0) return "Price must be zero or positive.";
     if (formData.maxGuests < 1) return "At least 1 guest must be allowed.";
@@ -85,6 +99,9 @@ const VenueForm: React.FC<VenueFormProps> = ({
     return "";
   };
 
+  /**
+   * Handles form submission: creates or updates venue based on mode.
+   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -130,16 +147,19 @@ const VenueForm: React.FC<VenueFormProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.2 }}
+        role="dialog"
+        aria-modal="true"
         className="bg-white max-w-lg w-full p-6 rounded-2xl shadow-xl relative overflow-y-auto max-h-[90vh]"
       >
         <button
           onClick={onClose}
+          aria-label="Close form"
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-xl"
         >
           &times;
@@ -160,7 +180,6 @@ const VenueForm: React.FC<VenueFormProps> = ({
               >
                 Great, thanks!
               </button>
-
               <button
                 onClick={() => navigate(`/venue/${newVenueId}`)}
                 className="px-4 py-2 bg-blue-900 text-white rounded text-sm"
@@ -178,7 +197,7 @@ const VenueForm: React.FC<VenueFormProps> = ({
             <input
               type="text"
               name="title"
-              placeholder="Enter a title for your listing"
+              placeholder="Title"
               value={formData.title}
               onChange={handleChange}
               className="w-full border px-3 py-2 rounded"
@@ -187,34 +206,31 @@ const VenueForm: React.FC<VenueFormProps> = ({
 
             <textarea
               name="description"
-              placeholder="Add some information about your place"
+              placeholder="Description"
               value={formData.description}
               onChange={handleChange}
               className="w-full border px-3 py-2 rounded"
+              rows={4}
               required
             />
 
             <div className="grid grid-cols-2 gap-4">
               <input
-                type="text"
                 name="location.country"
                 placeholder="Country"
                 value={formData.location.country}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="border px-3 py-2 rounded"
               />
               <input
-                type="text"
                 name="location.city"
                 placeholder="City"
                 value={formData.location.city}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="border px-3 py-2 rounded"
               />
             </div>
-
             <input
-              type="text"
               name="location.address"
               placeholder="Street address"
               value={formData.location.address}
@@ -223,27 +239,23 @@ const VenueForm: React.FC<VenueFormProps> = ({
             />
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col">
-                <label className="text-sm font-medium text-gray-700 mb-1">
-                  Number of guests
-                </label>
+              <div>
+                <label className="text-sm font-medium block mb-1">Max guests</label>
                 <input
                   type="number"
                   name="maxGuests"
                   value={formData.maxGuests}
                   onChange={handleChange}
-                  className="w-full border px-3 py-2 rounded"
                   min={1}
+                  className="w-full border px-3 py-2 rounded"
                 />
               </div>
-              <div className="flex flex-col">
-                <label className="text-sm font-medium text-gray-700 mb-1">
-                  Minimum beds needed
-                </label>
+              <div>
+                <label className="text-sm font-medium block mb-1">Beds (auto)</label>
                 <input
                   type="text"
-                  value={calculateBeds(formData.maxGuests)}
                   disabled
+                  value={calculateBeds(formData.maxGuests)}
                   className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-500"
                 />
               </div>
@@ -257,9 +269,6 @@ const VenueForm: React.FC<VenueFormProps> = ({
               className="w-full border px-3 py-2 rounded"
             />
 
-            <label className="text-sm font-medium text-gray-700">
-              Additional images
-            </label>
             {formData.media.slice(1).map((url, i) => (
               <input
                 key={i + 1}
@@ -267,7 +276,7 @@ const VenueForm: React.FC<VenueFormProps> = ({
                 placeholder={`Image URL ${i + 2}`}
                 value={url}
                 onChange={(e) => handleMediaChange(i + 1, e.target.value)}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border px-3 py-2 rounded mt-2"
               />
             ))}
 
@@ -279,21 +288,17 @@ const VenueForm: React.FC<VenueFormProps> = ({
               ➕ Add more images
             </button>
 
-            <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-700 mb-1">
-                Price per night (USD)
-              </label>
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
-                min={0}
-              />
-            </div>
+            <label className="text-sm font-medium block">Price per night (USD)</label>
+            <input
+              type="number"
+              name="price"
+              value={formData.price}
+              onChange={handleChange}
+              min={0}
+              className="w-full border px-3 py-2 rounded"
+            />
 
-            <fieldset className="mt-4">
+            <fieldset>
               <legend className="font-medium mb-2">Facilities</legend>
               <div className="flex flex-wrap gap-3">
                 {Object.entries(formData.meta).map(([key, value]) => (
