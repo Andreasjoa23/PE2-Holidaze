@@ -1,4 +1,4 @@
-import { UserProfile, Venue } from "./api";
+import { Venue } from "./api";
 
 export interface FooterProps {
   isLoggedIn: boolean;
@@ -29,7 +29,6 @@ export interface RegisterFormProps {
 }
 
 export interface LoginFormProps {
-  onSuccess?: (user: UserProfile) => void;
   prefillEmail?: string;
 }
 

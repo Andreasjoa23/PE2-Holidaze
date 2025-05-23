@@ -1,27 +1,32 @@
 import { useState, useEffect, useRef } from "react";
 import { loginUser } from "../../api/auth";
 import { UserProfile, LoginResponse } from "../../types/api";
-import { LoginFormProps } from "../../types/props"; // ✅ Props import
+import { LoginFormProps } from "../../types/props";
 
-const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, prefillEmail = "" }) => {
-  const [email, setEmail] = useState(prefillEmail);
+const LoginForm: React.FC<LoginFormProps> = ({ prefillEmail = "" }) => {
+  const [email, setEmail] = useState(prefillEmail.toLowerCase());
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
 
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (prefillEmail && passwordInputRef.current) {
-      passwordInputRef.current.focus();
+    if (prefillEmail) {
+      setEmail(prefillEmail.toLowerCase());
+      if (passwordInputRef.current) {
+        passwordInputRef.current.focus();
+      }
     }
   }, [prefillEmail]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMsg("");
+    setSuccessMsg("");
 
     try {
-      const response = await loginUser({ email, password });
+      const response = await loginUser({ email: email.toLowerCase(), password });
       const data = response.data as { data: LoginResponse };
 
       const { accessToken, ...userWithoutToken } = data.data;
@@ -37,11 +42,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, prefillEmail = "" }) =
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("user", JSON.stringify(user));
 
-      if (onSuccess) {
-        onSuccess(user);
-      } else {
+      setSuccessMsg("Login successful! Reloading...");
+      setTimeout(() => {
         window.location.reload();
-      }
+      }, 1000);
     } catch (error) {
       console.error("Login error:", error);
       setErrorMsg("Login failed. Please check your email and password.");
@@ -54,7 +58,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, prefillEmail = "" }) =
         type="email"
         placeholder="Email"
         value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        onChange={(e) => setEmail(e.target.value.toLowerCase())}
         className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0E1E34]"
         required
       />
@@ -68,6 +72,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, prefillEmail = "" }) =
         required
       />
       {errorMsg && <p className="text-red-500 text-sm">{errorMsg}</p>}
+      {successMsg && <p className="text-green-600 text-sm">{successMsg}</p>}
       <button
         type="submit"
         className="w-full bg-[#0E1E34] text-white py-3 rounded-full font-medium hover:bg-[#182944] transition"
