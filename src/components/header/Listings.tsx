@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X, Home, Trash, Pencil } from "lucide-react";
 import { Venue } from "../../types/api";
+import { calculateBeds } from "../ui/Beds";
 
 interface HeaderListingsProps {
   listings: Partial<Venue>[];
@@ -53,7 +54,7 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
                 {venue.description || "No description"}
               </p>
               <div className="flex justify-between text-xs text-gray-500">
-                <span>{venue.maxGuests ? Math.floor(venue.maxGuests / 2) : 1} beds</span>
+                <span>{calculateBeds(venue.maxGuests || 1)} beds</span>
                 <span>{venue.maxGuests || 1} people</span>
                 <span>{venue.price || 0} /night</span>
               </div>

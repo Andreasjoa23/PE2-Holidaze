@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { FaBed, FaUserFriends } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { Venue, ApiListResponse } from "../../types/api";
+import { calculateBeds } from "../ui/Beds";
 
 const FavoritesDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -98,12 +99,13 @@ const FavoritesDropdown: React.FC = () => {
                   </p>
                   <div className="flex items-center gap-4 text-sm text-gray-700 mb-4">
                     <div className="flex items-center gap-1">
-                      <FaBed /> {Math.floor(venue.maxGuests / 2)} beds
+                      <FaBed /> {calculateBeds(venue.maxGuests || 1)} beds
                     </div>
                     <div className="flex items-center gap-1">
                       <FaUserFriends /> {venue.maxGuests} people
                     </div>
                   </div>
+
                   <div className="flex justify-between">
                     <button
                       onClick={() => navigate(`/venue/${venue.id}`)}

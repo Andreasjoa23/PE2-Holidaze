@@ -4,6 +4,7 @@ import { FaBed, FaUserFriends, FaHeart, FaRegHeart } from "react-icons/fa";
 import { isFavorite, toggleFavoriteVenue } from "./favoritesHelpers";
 import { isLoggedIn } from "../../utils/isLoggedIn";
 import { VenueCardProps } from "../../types/props";
+import { calculateBeds } from "../ui/Beds";
 
 const VenueCard: React.FC<VenueCardProps> = ({
   id,
@@ -68,15 +69,16 @@ const VenueCard: React.FC<VenueCardProps> = ({
 
         <div className="mt-auto space-y-4">
           <div className="flex justify-between text-gray-700">
-            <div className="flex items-center gap-2">
-              <FaBed className="text-base" />
-              <span>{Math.floor(maxGuests / 2)} beds</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <FaUserFriends className="text-base" />
-              <span>{maxGuests} guests</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <FaBed className="text-base" />
+            <span>{calculateBeds(maxGuests)} beds</span>
           </div>
+          <div className="flex items-center gap-2">
+            <FaUserFriends className="text-base" />
+            <span>{maxGuests} guests</span>
+          </div>
+        </div>
+
 
           <div className="flex items-center justify-between">
             <div>

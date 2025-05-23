@@ -1,5 +1,6 @@
 import { deleteVenue } from "../../api/venues";
 import { VenueListProps } from "../../types/props";
+import { calculateBeds } from "../ui/Beds";
 
 const VenueList: React.FC<VenueListProps> = ({ venues, onEdit, onClose, onDeleted }) => {
   const handleDelete = async (venueId: string) => {
@@ -38,10 +39,11 @@ const VenueList: React.FC<VenueListProps> = ({ venues, onEdit, onClose, onDelete
                   {venue.description || "No description"}
                 </p>
                 <div className="flex gap-4 mt-2 text-sm text-gray-700">
-                  <span>🛏 {Math.floor(venue.maxGuests / 2)} beds</span>
+                  <span>🛏 {calculateBeds(venue.maxGuests || 1)} beds</span>
                   <span>👥 {venue.maxGuests} guests</span>
                   <span>💰 {venue.price} <span className="text-xs">/night</span></span>
                 </div>
+
               </div>
               <div className="flex flex-col justify-start items-end ml-4">
                 <button

@@ -25,6 +25,7 @@ import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import "yet-another-react-lightbox/styles.css";
 import Loader from "../components/ui/Loader";
+import { calculateBeds } from "../components/ui/Beds";
 
 const VenueDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -160,7 +161,7 @@ const VenueDetails = () => {
             <FaUsers /> {venue.maxGuests} Guests
           </div>
           <div className="flex items-center gap-2 text-[#0E1E34]">
-            <FaBed /> {Math.floor(venue.maxGuests / 2)} Beds
+            <FaBed /> {calculateBeds(venue.maxGuests)} Beds
           </div>
 
           <div className="bg-gray-100 p-4 rounded-xl shadow">

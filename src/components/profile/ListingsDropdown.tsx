@@ -5,6 +5,7 @@ import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
 import EditVenueModal from "./EditVenueModal";
 import { Venue } from "../../types/api";
 import { ListingsDropdownProps } from "../../types/props";
+import { calculateBeds } from "../ui/Beds";
 
 const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   listings,
@@ -95,7 +96,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
                       {venue.description}
                     </p>
                     <div className="text-xs text-gray-500 mt-1 flex gap-4">
-                      <span>{Math.floor(venue.maxGuests / 2)} beds</span>
+                      <span>{calculateBeds(venue.maxGuests || 1)} beds</span>
                       <span>{venue.maxGuests} people</span>
                       <span className="ml-auto">{venue.price} /night</span>
                     </div>

@@ -3,6 +3,7 @@ import { updateVenue } from "../../api/venues";
 import { X } from "lucide-react";
 import { MediaItem } from "../../types/api";
 import { EditVenueModalProps } from "../../types/props";
+import { calculateBeds } from "../ui/Beds";
 
 const amenitiesList = ["wifi", "parking", "breakfast", "pets"] as const;
 
@@ -47,7 +48,7 @@ const EditVenueModal: React.FC<EditVenueModalProps> = ({
         media: initialData.media?.map((m: MediaItem) => m.url) || [""],
         price: initialData.price || 0,
         maxGuests: initialData.maxGuests || 1,
-        beds: Math.floor(initialData.maxGuests / 2) || 1,
+        beds: calculateBeds(initialData.maxGuests || 1),
         meta: initialData.meta || {
           wifi: false,
           parking: false,
