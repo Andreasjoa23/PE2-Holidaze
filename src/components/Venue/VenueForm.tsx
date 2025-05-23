@@ -219,7 +219,7 @@ const VenueForm: React.FC<VenueFormProps> = ({
               <input
                 type="number"
                 name="maxGuests"
-                placeholder="Max Guests"
+                placeholder="Number of guests"
                 value={formData.maxGuests}
                 onChange={handleChange}
                 className="w-full border px-3 py-2 rounded"

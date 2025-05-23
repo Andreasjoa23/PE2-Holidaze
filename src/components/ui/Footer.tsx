@@ -26,11 +26,13 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
       <footer className="bg-[#0E1E34] text-white py-20 px-10">
         <div className="max-w-[1920px] mx-auto flex flex-col lg:flex-row justify-between items-center gap-20">
           <div className="flex-shrink-0">
-            <img
-              src={logoHolidaze}
-              alt="Holidaze logo"
-              className="h-40 w-auto"
-            />
+            <Link to="/">
+              <img
+                src={logoHolidaze}
+                alt="Holidaze logo"
+                className="h-40 w-auto hover:opacity-80 transition"
+              />
+            </Link>
           </div>
 
           <div className="flex flex-wrap justify-center gap-20 text-3xl font-extrabold">
@@ -69,7 +71,13 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
   return (
     <footer className="bg-[#0E1E34] text-white py-12">
       <div className="max-w-4xl mx-auto px-4 flex flex-col items-center space-y-8 relative">
-        <img src={logoHolidaze} alt="Holidaze logo" className="w-32" />
+        <Link to="/">
+          <img
+            src={logoHolidaze}
+            alt="Holidaze logo"
+            className="w-32 hover:opacity-80 transition"
+          />
+        </Link>
 
         <AnimatePresence>
           {active === "none" && (
