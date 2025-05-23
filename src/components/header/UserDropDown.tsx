@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import apiClient from "../../api/apiClient";
 import { logout } from "../../utils/logout";
-import EditProfile from "../profile/EditProfile";
 import VenueForm from "../Venue/VenueForm";
 import HeaderBookings from "./Bookings";
 import HeaderListings from "./Listings";
@@ -22,7 +21,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  const [user, setUser] = useState<UserProfile | null>(() => {
+  const [user] = useState<UserProfile | null>(() => {
     const stored = localStorage.getItem("user");
     if (!stored) return null;
 
@@ -31,7 +30,7 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   });
 
   const [view, setView] = useState<
-    "main" | "editProfile" | "createVenue" | "listings" | "bookings"
+    "main" | "createVenue" | "listings" | "bookings"
   >("main");
 
   const [listings, setListings] = useState<Venue[]>([]);
@@ -78,12 +77,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
     fetchListings();
     fetchBookings();
   }, [fetchListings, fetchBookings]);
-
-  const handleProfileUpdate = (updatedUser: UserProfile) => {
-    localStorage.setItem("user", JSON.stringify(updatedUser));
-    setUser(updatedUser);
-    setView("main");
-  };
 
   const handleDelete = async (id: string) => {
     try {
@@ -163,13 +156,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
             <p className="text-red-500 text-sm text-center mt-3">{error}</p>
           )}
         </>
-      )}
-
-      {view === "editProfile" && (
-        <EditProfile
-          onSuccess={handleProfileUpdate}
-          onClose={() => setView("main")}
-        />
       )}
 
       {view === "createVenue" && (
