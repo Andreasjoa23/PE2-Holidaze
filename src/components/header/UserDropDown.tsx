@@ -121,27 +121,33 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
             >
               <UserIcon size={18} /> Profile
             </button>
-            <button
-              onClick={() => setView("listings")}
-              className="flex items-center gap-2 text-base py-2 hover:text-[#0E1E34] transition"
-            >
-              <Home size={18} /> My listings
-            </button>
+
             <button
               onClick={() => setView("bookings")}
               className="flex items-center gap-2 text-base py-2 hover:text-[#0E1E34] transition"
             >
               <Calendar size={18} /> My bookings
             </button>
-            <button
-              onClick={() => {
-                setEditVenue(null);
-                setView("createVenue");
-              }}
-              className="flex items-center gap-2 text-base py-2 hover:text-[#0E1E34] transition"
-            >
-              <Plus size={18} /> List a property
-            </button>
+
+            {user?.venueManager && (
+              <>
+                <button
+                  onClick={() => setView("listings")}
+                  className="flex items-center gap-2 text-base py-2 hover:text-[#0E1E34] transition"
+                >
+                  <Home size={18} /> My listings
+                </button>
+                <button
+                  onClick={() => {
+                    setEditVenue(null);
+                    setView("createVenue");
+                  }}
+                  className="flex items-center gap-2 text-base py-2 hover:text-[#0E1E34] transition"
+                >
+                  <Plus size={18} /> List a property
+                </button>
+              </>
+            )}
           </nav>
 
           <hr className="border-t border-gray-200 my-4" />

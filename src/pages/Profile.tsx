@@ -123,15 +123,17 @@ const Profile: React.FC = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 mt-4 lg:mt-0">
-            <button
-              onClick={() => {
-                setShowCreateForm(true);
-                setShowEditor(false);
-              }}
-              className="bg-[#0E1E34] text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-[#182944] transition"
-            >
-              Create listing
-            </button>
+            {user.venueManager && (
+              <button
+                onClick={() => {
+                  setShowCreateForm(true);
+                  setShowEditor(false);
+                }}
+                className="bg-[#0E1E34] text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-[#182944] transition"
+              >
+                Create listing
+              </button>
+            )}
             <button
               onClick={() => {
                 setShowEditor(true);
@@ -142,6 +144,7 @@ const Profile: React.FC = () => {
               Edit Profile
             </button>
           </div>
+
         </div>
 
         {error && <p className="text-red-500 text-center">{error}</p>}
@@ -160,7 +163,7 @@ const Profile: React.FC = () => {
               onSuccess={(newId) => {
                 setShowCreateForm(false);
                 navigate(`/venue/${newId}`);
-                window.location.reload(); // Optional: reload to reflect the new listing immediately
+                window.location.reload();
               }}
               onClose={() => setShowCreateForm(false)}
             />

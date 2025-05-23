@@ -30,6 +30,7 @@ export interface Person {
 
 export interface UserProfile extends Person {
   location?: string;
+  venueManager: boolean;
 }
 
 export interface Venue {
