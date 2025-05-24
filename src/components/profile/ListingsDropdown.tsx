@@ -5,7 +5,13 @@ import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
 import EditVenueModal from "./EditVenueModal";
 import { Venue } from "../../types/api";
 import { ListingsDropdownProps } from "../../types/props";
+import { calculateBeds } from "../ui/Beds";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
+/**
+ * Dropdown component to manage a user's venue listings.
+ * Allows editing, deleting, and viewing upcoming bookings.
+ */
 const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   listings,
   onDelete,
@@ -17,21 +23,25 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   const [showEditModal, setShowEditModal] = useState(false);
   const [showBookingsModal, setShowBookingsModal] = useState(false);
 
+  /** Opens the delete confirmation modal for the selected venue */
   const handleDeleteClick = (venue: Venue) => {
     setSelectedVenue(venue);
     setShowDeleteModal(true);
   };
 
+  /** Opens the edit modal for the selected venue */
   const handleEditClick = (venue: Venue) => {
     setSelectedVenue(venue);
     setShowEditModal(true);
   };
 
+  /** Opens the bookings list for the selected venue */
   const handleShowBookings = (venue: Venue) => {
     setSelectedVenue(venue);
     setShowBookingsModal(true);
   };
 
+  /** Confirms deletion and triggers the parent callback */
   const confirmDelete = () => {
     if (selectedVenue) {
       onDelete(selectedVenue.id);
@@ -42,6 +52,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
 
   return (
     <div className="w-full max-w-md bg-white rounded-xl shadow p-4 relative z-10">
+      {/* Header button */}
       <button
         onClick={() => setIsOpen((o) => !o)}
         className="w-full flex justify-between items-center text-[#0E1E34] font-semibold"
@@ -57,6 +68,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
         )}
       </button>
 
+      {/* Listings content */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -73,7 +85,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
                   className="bg-white rounded-xl shadow border p-3 flex items-center gap-4"
                 >
                   <img
-                    src={venue.media[0]?.url || "https://via.placeholder.com/100"}
+                    src={getPlaceholderImage(venue.media?.[0]?.url, 100, 100)}
                     alt={venue.name}
                     className="w-24 h-24 rounded-lg object-cover"
                   />
@@ -95,7 +107,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
                       {venue.description}
                     </p>
                     <div className="text-xs text-gray-500 mt-1 flex gap-4">
-                      <span>{Math.floor(venue.maxGuests / 2)} beds</span>
+                      <span>{calculateBeds(venue.maxGuests || 1)} beds</span>
                       <span>{venue.maxGuests} people</span>
                       <span className="ml-auto">{venue.price} /night</span>
                     </div>
@@ -119,6 +131,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
         )}
       </AnimatePresence>
 
+      {/* Delete confirmation modal */}
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
@@ -126,6 +139,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
         venueName={selectedVenue?.name}
       />
 
+      {/* Edit modal */}
       <EditVenueModal
         isOpen={showEditModal && !!selectedVenue}
         onClose={() => {
@@ -140,6 +154,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
         }}
       />
 
+      {/* Bookings modal */}
       <AnimatePresence>
         {showBookingsModal && selectedVenue?.bookings && (
           <motion.div
@@ -163,10 +178,11 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
                     className="bg-blue-50 border border-blue-100 p-4 rounded-xl shadow-sm flex items-start gap-4"
                   >
                     <img
-                      src={
-                        booking.customer?.avatar?.url ||
-                        "https://placehold.co/48x48?text=👤"
-                      }
+                      src={getPlaceholderImage(
+                        booking.customer?.avatar?.url,
+                        48,
+                        48
+                      )}
                       alt={
                         booking.customer?.avatar?.alt ||
                         booking.customer?.name ||
@@ -196,6 +212,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
               <button
                 className="absolute top-2 right-3 text-gray-400 hover:text-gray-700 text-lg"
                 onClick={() => setShowBookingsModal(false)}
+                aria-label="Close bookings modal"
               >
                 &times;
               </button>

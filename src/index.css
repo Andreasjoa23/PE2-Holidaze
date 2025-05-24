@@ -1,3 +1,9 @@
+/* 
+ * Tailwind CSS base styles setup.
+ * - `@tailwind base`: Resets and normalizes styles (via Preflight).
+ * - `@tailwind components`: Injects Tailwind's component classes.
+ * - `@tailwind utilities`: Enables utility-first classes for rapid styling.
+ */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

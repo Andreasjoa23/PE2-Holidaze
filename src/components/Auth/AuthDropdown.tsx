@@ -6,6 +6,10 @@ import { AuthDropdownProps } from "../../types/props";
 
 type View = "initial" | "login" | "register";
 
+/**
+ * Renders a dropdown modal with login and registration options.
+ * Displays either a login form, register form, or initial buttons.
+ */
 const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
   const [view, setView] = useState<View>("initial");
   const [prefillEmail, setPrefillEmail] = useState<string>("");
@@ -45,7 +49,6 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ onClose }) => {
             </button>
 
             <hr className="border-gray-200 my-2" />
-
             <p className="text-center text-gray-500 text-sm px-2">
               Join Holidaze today, and unlock exclusive offers
             </p>

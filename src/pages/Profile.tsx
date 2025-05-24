@@ -10,7 +10,16 @@ import { fetchUserBookings, fetchUserListings } from "../api/profile";
 import { deleteVenue } from "../api/venues";
 import { AnimatePresence } from "framer-motion";
 import { BookingSummary, Venue, UserProfile } from "../types/api";
+import { getPlaceholderImage } from "../utils/missingImage";
 
+/**
+ * Profile page displaying user-specific content such as:
+ * - Bookings
+ * - Listings
+ * - Favorite venues
+ * - Profile editing
+ * - Venue creation (if manager)
+ */
 const Profile: React.FC = () => {
   const navigate = useNavigate();
 
@@ -29,7 +38,7 @@ const Profile: React.FC = () => {
   useEffect(() => {
     if (!user?.name) return;
 
-    const load = async () => {
+    const loadUserData = async () => {
       try {
         const [bk, ls] = await Promise.all([
           fetchUserBookings(user.name),
@@ -37,13 +46,13 @@ const Profile: React.FC = () => {
         ]);
         setBookings(bk.data);
         setListings(ls);
-      } catch (e) {
-        console.error(e);
+      } catch (err) {
+        console.error(err);
         setError("Failed to load your data.");
       }
     };
 
-    load();
+    loadUserData();
   }, [user?.name]);
 
   const handleProfileUpdate = (updated: UserProfile) => {
@@ -55,8 +64,8 @@ const Profile: React.FC = () => {
   const handleVenueDeleted = async (id: string) => {
     try {
       await deleteVenue(id);
-      const updated = await fetchUserListings(user!.name);
-      setListings(updated);
+      const refreshed = await fetchUserListings(user!.name);
+      setListings(refreshed);
     } catch (err) {
       console.error("Failed to delete venue:", err);
     }
@@ -67,28 +76,25 @@ const Profile: React.FC = () => {
     0
   );
 
-  const income = bookings.reduce((sum, b) => {
-    const price = b.venue?.price || 0;
+  const income = bookings.reduce((sum, booking) => {
+    const price = booking.venue?.price || 0;
     const nights =
-      (new Date(b.dateTo).getTime() - new Date(b.dateFrom).getTime()) /
+      (new Date(booking.dateTo).getTime() -
+        new Date(booking.dateFrom).getTime()) /
       (1000 * 60 * 60 * 24);
     return sum + price * nights;
   }, 0);
 
   const futureBookings = bookings
     .filter((b) => new Date(b.dateFrom) > new Date())
-    .sort(
-      (a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime()
-    );
+    .sort((a, b) => new Date(a.dateFrom).getTime() - new Date(b.dateFrom).getTime());
 
   const nextBooking = futureBookings[0]
-    ? new Date(futureBookings[0].dateFrom)
-        .toLocaleDateString("en-US", {
-          year: "2-digit",
-          month: "2-digit",
-          day: "2-digit",
-        })
-        .replace(/\//g, ".")
+    ? new Date(futureBookings[0].dateFrom).toLocaleDateString("en-US", {
+        year: "2-digit",
+        month: "2-digit",
+        day: "2-digit",
+      }).replace(/\//g, ".")
     : "None";
 
   if (!user) {
@@ -102,37 +108,41 @@ const Profile: React.FC = () => {
   return (
     <div className="min-h-[calc(100vh-320px)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10">
+
+        {/* Banner */}
         <img
-          src={user.banner?.url || "https://placehold.co/1600x400"}
+          src={getPlaceholderImage(user.banner?.url, 1600, 400)}
           alt={user.banner?.alt || "Banner"}
           className="w-full h-48 md:h-64 lg:h-80 object-cover rounded-2xl"
         />
 
+        {/* Header Section */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="flex items-center gap-6">
             <img
-              src={user.avatar?.url || "https://placehold.co/100"}
+              src={getPlaceholderImage(user.avatar?.url, 100, 100)}
               alt={user.avatar?.alt || user.name}
               className="w-24 h-24 lg:w-28 lg:h-28 rounded-full border-4 border-white object-cover shadow"
             />
             <div>
-              <h2 className="text-2xl lg:text-3xl font-bold text-[#0E1E34]">
-                {user.name}
-              </h2>
+              <h2 className="text-2xl lg:text-3xl font-bold text-[#0E1E34]">{user.name}</h2>
               <p className="text-sm text-gray-500">Your profile overview</p>
             </div>
           </div>
 
+          {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-3 mt-4 lg:mt-0">
-            <button
-              onClick={() => {
-                setShowCreateForm(true);
-                setShowEditor(false);
-              }}
-              className="bg-[#0E1E34] text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-[#182944] transition"
-            >
-              Create listing
-            </button>
+            {user.venueManager && (
+              <button
+                onClick={() => {
+                  setShowCreateForm(true);
+                  setShowEditor(false);
+                }}
+                className="bg-[#0E1E34] text-white px-6 py-2 rounded-full text-sm font-medium hover:bg-[#182944] transition"
+              >
+                Create listing
+              </button>
+            )}
             <button
               onClick={() => {
                 setShowEditor(true);
@@ -147,6 +157,7 @@ const Profile: React.FC = () => {
 
         {error && <p className="text-red-500 text-center">{error}</p>}
 
+        {/* Modals */}
         <AnimatePresence>
           {showEditor && (
             <EditProfile
@@ -161,12 +172,14 @@ const Profile: React.FC = () => {
               onSuccess={(newId) => {
                 setShowCreateForm(false);
                 navigate(`/venue/${newId}`);
+                window.location.reload();
               }}
               onClose={() => setShowCreateForm(false)}
             />
           )}
         </AnimatePresence>
 
+        {/* Main content layout */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-10 items-start">
           <div className="col-span-2 flex flex-col space-y-6">
             <BookingsDropdown

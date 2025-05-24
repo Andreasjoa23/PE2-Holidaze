@@ -16,6 +16,13 @@ const fadeVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
+/**
+ * The main Footer component.
+ * Renders login/register CTA if user is logged out,
+ * or a navigation and logout section if logged in.
+ *
+ * @param isLoggedIn - Indicates whether the user is authenticated.
+ */
 const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
   const [active, setActive] = useState<"none" | "login" | "register">("none");
 
@@ -25,6 +32,7 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
     return (
       <footer className="bg-[#0E1E34] text-white py-20 px-10">
         <div className="max-w-[1920px] mx-auto flex flex-col lg:flex-row justify-between items-center gap-20">
+          {/* Logo */}
           <div className="flex-shrink-0">
             <Link to="/">
               <img
@@ -35,6 +43,7 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
             </Link>
           </div>
 
+          {/* Navigation Links */}
           <div className="flex flex-wrap justify-center gap-20 text-3xl font-extrabold">
             <Link to="/profile" className="hover:text-gray-300 transition">
               Profile
@@ -50,6 +59,7 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
             </Link>
           </div>
 
+          {/* Logout Button */}
           <div className="flex-shrink-0">
             <button
               onClick={logout}
@@ -71,14 +81,16 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
   return (
     <footer className="bg-[#0E1E34] text-white py-12">
       <div className="max-w-4xl mx-auto px-4 flex flex-col items-center space-y-8 relative">
+        {/* Logo */}
         <Link to="/">
           <img
             src={logoHolidaze}
             alt="Holidaze logo"
-            className="h-40 w-auto hover:opacity-80 transition"
+            className="w-32 hover:opacity-80 transition"
           />
         </Link>
 
+        {/* Call to action buttons */}
         <AnimatePresence>
           {active === "none" && (
             <motion.div
@@ -106,6 +118,7 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
           )}
         </AnimatePresence>
 
+        {/* Login/Register Form Modal */}
         <AnimatePresence>
           {active !== "none" && (
             <motion.div
@@ -120,6 +133,7 @@ const Footer: React.FC<FooterProps> = ({ isLoggedIn }) => {
               <button
                 onClick={handleClose}
                 className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                aria-label="Close form"
               >
                 ✕
               </button>

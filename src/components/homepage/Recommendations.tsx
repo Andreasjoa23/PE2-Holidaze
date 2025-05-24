@@ -3,6 +3,9 @@ import { motion } from "framer-motion";
 import { FaStar } from "react-icons/fa";
 import { Recommendation } from "../../types/props";
 
+/**
+ * Static list of user testimonials displayed as animated cards.
+ */
 const recommendations: Recommendation[] = [
   {
     id: 1,
@@ -32,6 +35,9 @@ const recommendations: Recommendation[] = [
   },
 ];
 
+/**
+ * Framer Motion container animation settings.
+ */
 const containerVariants = {
   hidden: {},
   visible: {
@@ -39,11 +45,17 @@ const containerVariants = {
   },
 };
 
+/**
+ * Framer Motion animation for each testimonial card.
+ */
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
+/**
+ * Displays animated customer recommendations/testimonials.
+ */
 const Recommendations: React.FC = () => {
   return (
     <section className="py-16 bg-white">
@@ -64,6 +76,7 @@ const Recommendations: React.FC = () => {
                 boxShadow: "0 15px 30px rgba(0,0,0,0.1)",
               }}
             >
+              {/* User info */}
               <div className="flex items-center mb-4">
                 <img
                   src={rec.avatar}
@@ -78,6 +91,7 @@ const Recommendations: React.FC = () => {
                 </div>
               </div>
 
+              {/* Star rating */}
               <div className="flex items-center mb-4">
                 {[...Array(5)].map((_, i) => (
                   <FaStar
@@ -89,6 +103,7 @@ const Recommendations: React.FC = () => {
                 ))}
               </div>
 
+              {/* Comment */}
               <p className="text-gray-700 flex-grow">“{rec.comment}”</p>
             </motion.div>
           ))}

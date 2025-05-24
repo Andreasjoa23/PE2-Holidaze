@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X, Home, Trash, Pencil } from "lucide-react";
 import { Venue } from "../../types/api";
+import { calculateBeds } from "../ui/Beds";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
 interface HeaderListingsProps {
   listings: Partial<Venue>[];
@@ -10,6 +12,11 @@ interface HeaderListingsProps {
   onRefresh: () => void;
 }
 
+/**
+ * Displays a user's venue listings with the ability to edit, delete, or view metadata.
+ * 
+ * Shows a fallback message if there are no listings.
+ */
 const HeaderListings: React.FC<HeaderListingsProps> = ({
   listings,
   onBack,
@@ -21,6 +28,7 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
 
   return (
     <div className="w-full bg-white rounded-xl shadow p-4 space-y-4">
+      {/* Header controls */}
       <div className="flex items-center justify-between">
         <button onClick={onBack} className="text-gray-600 hover:text-gray-800">
           <ArrowLeft size={20} />
@@ -34,6 +42,7 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
         </button>
       </div>
 
+      {/* Listings list */}
       {listings.length > 0 ? (
         listings.map((venue) => (
           <div
@@ -41,7 +50,7 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
             className="border rounded-xl p-3 flex gap-4 shadow-sm"
           >
             <img
-              src={venue.media?.[0]?.url || "https://via.placeholder.com/100"}
+              src={getPlaceholderImage(venue.media?.[0]?.url, 100, 100)}
               alt={venue.name}
               className="w-24 h-24 object-cover rounded-md"
             />
@@ -53,16 +62,20 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
                 {venue.description || "No description"}
               </p>
               <div className="flex justify-between text-xs text-gray-500">
-                <span>{venue.maxGuests ? Math.floor(venue.maxGuests / 2) : 1} beds</span>
+                <span>{calculateBeds(venue.maxGuests || 1)} beds</span>
                 <span>{venue.maxGuests || 1} people</span>
                 <span>{venue.price || 0} /night</span>
               </div>
+
+              {/* Booking badge */}
               {venue.bookings?.length && venue.bookings.length > 0 && (
                 <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full mt-1">
                   {venue.bookings.length} booking
                   {venue.bookings.length > 1 ? "s" : ""}
                 </span>
               )}
+
+              {/* Edit/Delete actions */}
               <div className="flex gap-3 mt-2">
                 <button
                   onClick={() => onEdit(venue)}
@@ -89,6 +102,7 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
         <p className="text-center text-gray-500">You have no listings.</p>
       )}
 
+      {/* CTA button */}
       <button
         onClick={() => navigate("/profile")}
         className="w-full bg-[#0E1E34] text-white py-2 rounded-lg font-medium hover:bg-[#182944] transition"

@@ -4,13 +4,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import { deleteBooking } from "../../api/bookings";
 import { BookingSummary } from "../../types/api";
 import { Link } from "react-router-dom";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
 interface BookingsDropdownProps {
+  /** List of user's bookings */
   bookings: BookingSummary[];
+  /** Callback to refresh bookings after cancellation */
   onCancel: () => void;
 }
 
-const formatDate = (iso: string) => {
+/**
+ * Format an ISO string to a human-readable date.
+ * @param iso - ISO date string
+ * @returns formatted date
+ */
+const formatDate = (iso: string): string => {
   const date = new Date(iso);
   return date.toLocaleDateString(undefined, {
     year: "numeric",
@@ -19,6 +27,10 @@ const formatDate = (iso: string) => {
   });
 };
 
+/**
+ * A collapsible dropdown showing upcoming bookings.
+ * Allows users to cancel or view associated venue.
+ */
 const BookingsDropdown: React.FC<BookingsDropdownProps> = ({
   bookings,
   onCancel,
@@ -26,6 +38,9 @@ const BookingsDropdown: React.FC<BookingsDropdownProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
+  /**
+   * Cancels a booking by its ID and triggers refresh callback.
+   */
   const handleDelete = async (id: string) => {
     try {
       await deleteBooking(id);
@@ -38,6 +53,7 @@ const BookingsDropdown: React.FC<BookingsDropdownProps> = ({
 
   return (
     <div className="w-full max-w-md bg-white rounded-xl shadow p-4 relative z-10">
+      {/* Toggle button */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className="w-full flex justify-between items-center text-[#0E1E34] font-semibold"
@@ -53,6 +69,7 @@ const BookingsDropdown: React.FC<BookingsDropdownProps> = ({
         )}
       </button>
 
+      {/* Animated dropdown content */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -68,21 +85,20 @@ const BookingsDropdown: React.FC<BookingsDropdownProps> = ({
                   key={booking.id}
                   className="bg-white rounded-xl shadow border p-3 flex flex-col sm:flex-row gap-4"
                 >
+                  {/* Venue image */}
                   <img
-                    src={
-                      booking.venue?.media?.[0]?.url ||
-                      "https://via.placeholder.com/100"
-                    }
+                    src={getPlaceholderImage(booking.venue?.media?.[0]?.url, 100, 100)}
                     alt={booking.venue?.name || "Venue image"}
                     className="w-24 h-24 rounded-lg object-cover"
                   />
+
+                  {/* Booking details */}
                   <div className="flex-1 min-w-0 space-y-1">
                     <h3 className="text-base font-semibold text-[#0E1E34] truncate max-w-full">
                       {booking.venue?.name || "Unnamed venue"}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      {formatDate(booking.dateFrom)} –{" "}
-                      {formatDate(booking.dateTo)}
+                      {formatDate(booking.dateFrom)} – {formatDate(booking.dateTo)}
                     </p>
                     <div className="text-xs text-gray-500 flex justify-between">
                       <span>
@@ -97,6 +113,7 @@ const BookingsDropdown: React.FC<BookingsDropdownProps> = ({
                       </span>
                     </div>
 
+                    {/* Action buttons */}
                     <div className="mt-2 flex flex-wrap gap-2">
                       {confirmingId === booking.id ? (
                         <>

@@ -1,7 +1,13 @@
 import axios from "axios";
 
+/**
+ * Noroff API key for authentication.
+ */
 const API_KEY = "d7ec1edc-cb98-49aa-9f93-4587f665659d";
 
+/**
+ * Axios instance configured for the Noroff Holidaze API.
+ */
 const apiClient = axios.create({
   baseURL: "https://v2.api.noroff.dev",
   headers: {

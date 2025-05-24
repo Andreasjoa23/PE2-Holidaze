@@ -3,8 +3,14 @@ import { ArrowLeft, X, Calendar } from "lucide-react";
 import { deleteBooking } from "../../api/bookings";
 import { useState } from "react";
 import { HeaderBookingsProps } from "../../types/props";
+import { getPlaceholderImage } from "../../utils/missingImage";
 
-const formatDate = (iso: string) => {
+/**
+ * Formats an ISO date string into a localized readable format.
+ * @param iso ISO 8601 date string
+ * @returns Localized date string
+ */
+const formatDate = (iso: string): string => {
   const date = new Date(iso);
   return date.toLocaleDateString(undefined, {
     year: "numeric",
@@ -13,6 +19,10 @@ const formatDate = (iso: string) => {
   });
 };
 
+/**
+ * Displays a list of a user's bookings with options to cancel each one.
+ * Includes a back button, booking details, and a fallback message when empty.
+ */
 const HeaderBookings: React.FC<HeaderBookingsProps> = ({
   bookings,
   onBack,
@@ -21,6 +31,10 @@ const HeaderBookings: React.FC<HeaderBookingsProps> = ({
   const navigate = useNavigate();
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
+  /**
+   * Deletes a booking by its ID and refreshes the list.
+   * @param id Booking ID
+   */
   const handleDelete = async (id: string) => {
     try {
       await deleteBooking(id);
@@ -50,7 +64,7 @@ const HeaderBookings: React.FC<HeaderBookingsProps> = ({
         bookings.map((b) => (
           <div key={b.id} className="border rounded-xl p-3 flex gap-4 shadow-sm">
             <img
-              src={b.venue?.media?.[0]?.url || "https://via.placeholder.com/100"}
+              src={getPlaceholderImage(b.venue?.media?.[0]?.url, 100, 100)}
               alt={b.venue?.name}
               className="w-24 h-24 object-cover rounded-md"
             />

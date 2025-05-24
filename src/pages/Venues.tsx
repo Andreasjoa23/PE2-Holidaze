@@ -1,3 +1,14 @@
+/**
+ * Venues Page
+ *
+ * Allows users to explore available venues with flexible search and filtering:
+ * - Destination, date range, and guest count
+ * - Amenities: Wi-Fi, pet friendly, parking, breakfast
+ * - Sorting: most booked, price, newest
+ *
+ * Displays venue cards with booking options.
+ */
+
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { getAllVenues } from "../api/venues";
@@ -20,6 +31,7 @@ import { motion } from "framer-motion";
 import { Parallax } from "react-scroll-parallax";
 
 export default function Venues() {
+  // State setup
   const [venues, setVenues] = useState<Venue[]>([]);
   const [error, setError] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
@@ -47,20 +59,22 @@ export default function Venues() {
   });
   const [sortOption, setSortOption] = useState("most-booked");
 
-  const loadVenues = async () => {
-    try {
-      const response = await getAllVenues();
-      const result = response as ApiListResponse<Venue>;
-      setVenues(result.data);
-    } catch {
-      setError("Failed to fetch venues");
-    }
-  };
-
+  // Fetch venues on load
   useEffect(() => {
+    const loadVenues = async () => {
+      try {
+        const response = await getAllVenues();
+        const result = response as ApiListResponse<Venue>;
+        setVenues(result.data);
+      } catch {
+        setError("Failed to fetch venues");
+      }
+    };
+
     loadVenues();
   }, []);
 
+  // Sync URL params
   useEffect(() => {
     const params: Record<string, string> = {
       destination,
@@ -71,6 +85,7 @@ export default function Venues() {
     setSearchParams(params);
   }, [destination, guests, date, setSearchParams]);
 
+  // Filter + sort venues
   const filteredVenues = venues
     .filter((v) => {
       const q = destination.toLowerCase();
@@ -115,6 +130,7 @@ export default function Venues() {
       transition={{ duration: 0.6 }}
       className="pt-20 space-y-12 pb-12 bg-white px-4 md:px-8 lg:px-20"
     >
+      {/* Header Section */}
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-8">
         <motion.div
           initial={{ x: -50, opacity: 0 }}
@@ -126,8 +142,7 @@ export default function Venues() {
             Find Your Perfect Getaway
           </h1>
           <p className="text-sm md:text-base lg:text-lg text-gray-700 leading-relaxed">
-            Browse exclusive stays handpicked by our community to make your next
-            vacation truly unforgettable.
+            Browse exclusive stays handpicked by our community to make your next vacation truly unforgettable.
           </p>
         </motion.div>
         <Parallax speed={10}>
@@ -139,61 +154,60 @@ export default function Venues() {
         </Parallax>
       </div>
 
-      {/* Resten av koden for søkefilter, kalendervisning og venue cards vises her. */}
-
+      {/* Search Form */}
       <div className="max-w-4xl mx-auto bg-white rounded-3xl p-6 md:p-8 shadow-sm hover:shadow-lg transition-shadow">
         <h2 className="text-xl md:text-2xl font-bold text-[#0E1E34] mb-6 text-center">
           Refine Your Search
         </h2>
+
+        {/* Inputs */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          {/* Destination */}
           <label className="flex flex-col">
-            <span className="text-sm font-medium text-gray-600 mb-1">
-              Destination
-            </span>
-            <div className="flex items-center border border-gray-200 rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-[#0E1E34]">
+            <span className="text-sm font-medium text-gray-600 mb-1">Destination</span>
+            <div className="flex items-center border border-gray-200 rounded-full px-4 py-2">
               <FaSearch className="text-gray-400 mr-2" />
               <input
                 type="text"
-                className="outline-none w-full text-sm md:text-base"
                 placeholder="Where to go?"
+                className="outline-none w-full"
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
               />
             </div>
           </label>
 
+          {/* Dates */}
           <label className="flex flex-col">
-            <span className="text-sm font-medium text-gray-600 mb-1">
-              Dates
-            </span>
+            <span className="text-sm font-medium text-gray-600 mb-1">Dates</span>
             <div
-              className="flex items-center border border-gray-200 rounded-full px-4 py-2 cursor-pointer focus-within:ring-2 focus-within:ring-[#0E1E34]"
+              className="flex items-center border border-gray-200 rounded-full px-4 py-2 cursor-pointer"
               onClick={() => setShowCalendar(true)}
             >
               <FaCalendarAlt className="text-gray-400 mr-2" />
-              <span className="text-sm md:text-base">
+              <span>
                 {`${formatDate(date[0].startDate)} – ${formatDate(date[0].endDate)}`}
               </span>
             </div>
           </label>
 
+          {/* Guests */}
           <label className="flex flex-col">
-            <span className="text-sm font-medium text-gray-600 mb-1">
-              Guests
-            </span>
-            <div className="flex items-center border border-gray-200 rounded-full px-4 py-2 focus-within:ring-2 focus-within:ring-[#0E1E34]">
+            <span className="text-sm font-medium text-gray-600 mb-1">Guests</span>
+            <div className="flex items-center border border-gray-200 rounded-full px-4 py-2">
               <FaUser className="text-gray-400 mr-2" />
               <input
                 type="number"
                 min={1}
-                className="outline-none w-16 text-sm md:text-base"
                 value={guests}
                 onChange={(e) => setGuests(Number(e.target.value))}
+                className="outline-none w-16"
               />
             </div>
           </label>
         </div>
 
+        {/* Filters */}
         <div className="flex flex-wrap gap-3 justify-between items-center mb-4">
           <div className="flex flex-wrap gap-3">
             {[
@@ -205,10 +219,7 @@ export default function Venues() {
               <button
                 key={key}
                 onClick={() =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    [key]: !prev[key as keyof typeof prev],
-                  }))
+                  setFilters((prev) => ({ ...prev, [key]: !prev[key as keyof typeof prev] }))
                 }
                 className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition ${
                   filters[key as keyof typeof filters]
@@ -221,19 +232,20 @@ export default function Venues() {
             ))}
           </div>
 
-          <div className="mt-4 md:mt-0">
-            <select
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-              className="bg-[#0E1E34] text-white px-4 py-2 rounded-full text-sm font-medium pr-5 appearance-none focus:outline-none focus:ring-2 focus:ring-[#0E1E34] transition"
-            >
-              <option value="most-booked">Most Booked</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="newest">Newest</option>
-            </select>
-          </div>
+          {/* Sorting */}
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            className="bg-[#0E1E34] text-white px-4 py-2 rounded-full text-sm font-medium"
+          >
+            <option value="most-booked">Most Booked</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="newest">Newest</option>
+          </select>
         </div>
+
+        {/* Calendar Modal */}
         {showCalendar && (
           <div
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
@@ -264,6 +276,7 @@ export default function Venues() {
         )}
       </div>
 
+      {/* Results */}
       <div className="space-y-6">
         <h2 className="text-center text-3xl font-bold text-[#0E1E34]">
           {filteredVenues.length} stays found

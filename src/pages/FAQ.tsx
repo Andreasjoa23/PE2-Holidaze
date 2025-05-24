@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 
+/**
+ * A list of frequently asked questions.
+ */
 const faqs = [
   {
     question: "How do I book a stay?",
@@ -21,12 +24,32 @@ const faqs = [
 
 const mailtoLink = `mailto:support@holidaze.com?subject=FAQ%20Question&body=Hi%20Holidaze%2C%0A%0AI%20have%20a%20question%20regarding...`;
 
+/**
+ * FAQ component renders a list of collapsible questions and answers.
+ * Also includes a mailto link for further support.
+ *
+ * @component
+ */
 const FAQ: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
+  /**
+   * Toggles the open FAQ accordion panel.
+   * @param idx Index of the question to toggle
+   */
+  const toggleIndex = (idx: number) => {
+    setOpenIndex((current) => (current === idx ? null : idx));
+  };
+
   return (
-    <section className="max-w-3xl mx-auto py-20 px-4 bg-white">
-      <h1 className="text-4xl font-extrabold text-[#0E1E34] text-center mb-12">
+    <section
+      className="max-w-3xl mx-auto py-20 px-4 bg-white"
+      aria-labelledby="faq-heading"
+    >
+      <h1
+        id="faq-heading"
+        className="text-4xl font-extrabold text-[#0E1E34] text-center mb-12"
+      >
         Frequently Asked Questions
       </h1>
 
@@ -37,16 +60,19 @@ const FAQ: React.FC = () => {
             className="border border-gray-200 rounded-lg overflow-hidden"
           >
             <button
-              className="w-full p-4 text-left flex justify-between items-center"
-              onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
+              onClick={() => toggleIndex(idx)}
+              aria-expanded={openIndex === idx}
+              aria-controls={`faq-content-${idx}`}
+              className="w-full p-4 text-left flex justify-between items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
               <span className="font-medium text-gray-800">{faq.question}</span>
-              <span className="text-2xl text-gray-400">
+              <span className="text-2xl text-gray-400" aria-hidden="true">
                 {openIndex === idx ? "−" : "+"}
               </span>
             </button>
 
             <motion.div
+              id={`faq-content-${idx}`}
               initial={{ height: 0, opacity: 0 }}
               animate={
                 openIndex === idx
@@ -55,6 +81,8 @@ const FAQ: React.FC = () => {
               }
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="px-4 overflow-hidden text-gray-700"
+              role="region"
+              aria-labelledby={`faq-button-${idx}`}
             >
               <p className="pb-4">{faq.answer}</p>
             </motion.div>

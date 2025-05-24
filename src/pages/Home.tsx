@@ -7,18 +7,27 @@ import Trending from "../components/homepage/Trending";
 import Recommendations from "../components/homepage/Recommendations";
 import { isLoggedIn } from "../utils/isLoggedIn";
 
+// Animation variant for sections
 const sectionVariant = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },
 };
 
+/**
+ * Home Page Component
+ * 
+ * Displays hero and promotional content for guests,
+ * as well as search and featured venues for all users.
+ */
 const Home: React.FC = () => {
   const loggedIn = isLoggedIn();
 
   return (
     <>
+      {/* Scroll Progress Bar */}
       <ScrollProgress />
 
+      {/* Hero Banner for unauthenticated users */}
       {!loggedIn && (
         <motion.div
           variants={sectionVariant}
@@ -31,16 +40,7 @@ const Home: React.FC = () => {
         </motion.div>
       )}
 
-      {!loggedIn && (
-        <motion.div
-          variants={sectionVariant}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-        ></motion.div>
-      )}
-
+      {/* Search Banner */}
       <motion.div
         variants={sectionVariant}
         initial="hidden"
@@ -51,6 +51,7 @@ const Home: React.FC = () => {
         <SearchBanner />
       </motion.div>
 
+      {/* Trending Stays */}
       <motion.div
         variants={sectionVariant}
         initial="hidden"
@@ -61,6 +62,7 @@ const Home: React.FC = () => {
         <Trending />
       </motion.div>
 
+      {/* Recommendations Section */}
       <motion.div
         variants={sectionVariant}
         initial="hidden"

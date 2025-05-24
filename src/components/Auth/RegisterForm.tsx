@@ -1,8 +1,25 @@
+/**
+ * RegisterForm.tsx
+ * 
+ * A form component for user registration. Includes validation for:
+ * - username format
+ * - Noroff student email
+ * - minimum password length
+ * - optional avatar URL
+ * - venue manager registration option
+ * 
+ * On successful submission, the user is registered and redirected to login.
+ */
+
 import { useState, useEffect } from "react";
 import { registerUser } from "../../api/auth";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { RegisterFormProps } from "../../types/props";
 
+/**
+ * Form for user registration.
+ * Validates input fields and sends a registration request to the API.
+ */
 const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEmail }) => {
   const [formData, setFormData] = useState({
     name: "",
@@ -15,17 +32,23 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
   const [error, setError] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
 
+  // Extract form fields
   const { name, email, password, avatarUrl } = formData;
 
+  // Input field validations
   const validName = /^[a-zA-Z0-9_]+$/.test(name);
   const validEmail = email.toLowerCase().endsWith("@stud.noroff.no");
   const validPassword = password.length >= 8;
   const validAvatar = !avatarUrl || /^https?:\/\/.+\..+/.test(avatarUrl);
 
+  // Enable submit only when all validations pass
   useEffect(() => {
     setIsFormValid(validName && validEmail && validPassword && validAvatar);
   }, [validName, validEmail, validPassword, validAvatar]);
 
+  /**
+   * Handles input updates and toggles for form state.
+   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -34,12 +57,15 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
     }));
   };
 
+  /**
+   * Handles form submission and registers a new user.
+   */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
     const safeName = name.trim().toLowerCase().replace(/\s+/g, "_");
-
+    
     const payload = {
       name: safeName,
       email: email.toLowerCase(),
@@ -66,6 +92,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
     }
   };
 
+  /**
+   * Renders a validation icon based on field validity.
+   */
   const InputIcon = ({ isValid }: { isValid: boolean }) =>
     isValid ? (
       <FaCheckCircle className="text-green-500 absolute right-3 top-1/2 transform -translate-y-1/2" />
@@ -75,7 +104,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5 text-sm animate-slide-in">
-      <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[#0E1E34] shadow-sm transition-all duration-300 ease-in-out">
+      {/* Form instructions */}
+      <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[#0E1E34] shadow-sm">
         <p className="font-semibold mb-2">Instructions</p>
         <ul className="list-disc list-inside text-xs text-gray-600 space-y-1">
           <li><strong>Name:</strong> Only letters, numbers, and underscores (_)</li>
@@ -85,6 +115,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
         </ul>
       </div>
 
+      {/* Name field */}
       <div className="relative">
         <input
           name="name"
@@ -92,14 +123,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
           placeholder="Name"
           value={name}
           onChange={handleChange}
-          className={`w-full border ${
-            name && !validName ? "border-red-500" : "border-gray-300"
-          } px-4 py-2 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0E1E34]`}
+          className={`w-full border ${name && !validName ? "border-red-500" : "border-gray-300"} px-4 py-2 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0E1E34]`}
           required
         />
         {name && <InputIcon isValid={validName} />}
       </div>
 
+      {/* Email field */}
       <div className="relative">
         <input
           name="email"
@@ -107,14 +137,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
           placeholder="Email"
           value={email}
           onChange={handleChange}
-          className={`w-full border ${
-            email && !validEmail ? "border-red-500" : "border-gray-300"
-          } px-4 py-2 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0E1E34]`}
+          className={`w-full border ${email && !validEmail ? "border-red-500" : "border-gray-300"} px-4 py-2 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0E1E34]`}
           required
         />
         {email && <InputIcon isValid={validEmail} />}
       </div>
 
+      {/* Password field */}
       <div className="relative">
         <input
           name="password"
@@ -122,14 +151,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
           placeholder="Password"
           value={password}
           onChange={handleChange}
-          className={`w-full border ${
-            password && !validPassword ? "border-red-500" : "border-gray-300"
-          } px-4 py-2 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0E1E34]`}
+          className={`w-full border ${password && !validPassword ? "border-red-500" : "border-gray-300"} px-4 py-2 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0E1E34]`}
           required
         />
         {password && <InputIcon isValid={validPassword} />}
       </div>
 
+      {/* Avatar URL field */}
       <div className="relative">
         <input
           name="avatarUrl"
@@ -137,13 +165,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
           placeholder="Avatar URL (optional)"
           value={avatarUrl}
           onChange={handleChange}
-          className={`w-full border ${
-            avatarUrl && !validAvatar ? "border-red-500" : "border-gray-300"
-          } px-4 py-2 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0E1E34]`}
+          className={`w-full border ${avatarUrl && !validAvatar ? "border-red-500" : "border-gray-300"} px-4 py-2 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0E1E34]`}
         />
         {avatarUrl && <InputIcon isValid={validAvatar} />}
       </div>
 
+      {/* Venue manager checkbox */}
       <label className="flex items-center gap-2 text-sm">
         <input
           type="checkbox"
@@ -155,8 +182,10 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
         Register as a venue manager
       </label>
 
+      {/* Error message */}
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
+      {/* Submit button */}
       <button
         type="submit"
         disabled={!isFormValid}
@@ -172,6 +201,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
   );
 };
 
+/**
+ * Type guard to detect structured API errors with messages.
+ */
 function isApiError(error: unknown): error is {
   response: { data: { message?: string } };
 } {

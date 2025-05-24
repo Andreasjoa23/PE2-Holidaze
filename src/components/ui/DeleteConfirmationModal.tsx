@@ -2,6 +2,15 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { DeleteConfirmationModalProps } from "../../types/ui";
 
+/**
+ * A modal component to confirm the deletion of a venue.
+ *
+ * @component
+ * @param isOpen - Controls whether the modal is visible.
+ * @param onClose - Function to call when closing the modal without confirming.
+ * @param onConfirm - Function to call when confirming the deletion.
+ * @param venueName - Optional name of the venue to display in the confirmation message.
+ */
 const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
   isOpen,
   onClose,
@@ -17,6 +26,8 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
+          aria-modal="true"
+          role="dialog"
         >
           <motion.div
             className="bg-white rounded-xl shadow-lg max-w-sm w-full p-6 text-center"
@@ -33,16 +44,19 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
               <strong>{venueName || "this venue"}</strong>? This action cannot
               be undone.
             </p>
+
             <div className="flex justify-center gap-4">
               <button
                 onClick={onClose}
                 className="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded"
+                aria-label="Cancel delete"
               >
                 Cancel
               </button>
               <button
                 onClick={onConfirm}
                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+                aria-label="Confirm delete"
               >
                 Delete
               </button>
