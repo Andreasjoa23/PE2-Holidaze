@@ -27,11 +27,13 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   const navigate = useNavigate();
 
   const [user] = useState<UserProfile | null>(() => {
+  try {
     const stored = localStorage.getItem("user");
-    if (!stored) return null;
-    const parsed = JSON.parse(stored);
-    return parsed.data ?? parsed;
-  });
+    return stored ? JSON.parse(stored) as UserProfile : null;
+  } catch {
+    return null;
+  }
+});
 
   const [view, setView] = useState<"main" | "createVenue" | "listings" | "bookings">("main");
 

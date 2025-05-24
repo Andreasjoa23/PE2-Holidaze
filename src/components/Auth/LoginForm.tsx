@@ -1,10 +1,20 @@
+/**
+ * LoginForm.tsx
+ *
+ * A form component that handles user login.
+ * Accepts email and password, validates inputs,
+ * and stores authenticated user in localStorage.
+ * Shows success or error messages accordingly.
+ */
+
 import { useState, useEffect, useRef } from "react";
 import { loginUser } from "../../api/auth";
-import { UserProfile, LoginResponse } from "../../types/api";
+import { LoginResponse } from "../../types/api";
 import { LoginFormProps } from "../../types/props";
 
 /**
- * Login form component that handles user authentication.
+ * A form for logging in users with email and password.
+ * Handles form validation, API call, and storing auth state.
  */
 const LoginForm: React.FC<LoginFormProps> = ({ prefillEmail = "" }) => {
   const [email, setEmail] = useState(prefillEmail.toLowerCase());
@@ -14,6 +24,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ prefillEmail = "" }) => {
 
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
+  /**
+   * Autofocus password input if an email is prefilled.
+   */
   useEffect(() => {
     if (prefillEmail) {
       setEmail(prefillEmail.toLowerCase());
@@ -23,6 +36,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ prefillEmail = "" }) => {
 
   /**
    * Handles login form submission.
+   * On success: saves user data and token to localStorage.
+   * On error: shows message.
    */
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,17 +46,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ prefillEmail = "" }) => {
 
     try {
       const response = await loginUser({ email: email.toLowerCase(), password });
-      const data = response.data as { data: LoginResponse };
+      const user: LoginResponse = response.data.data;
 
-      const { accessToken, ...userWithoutToken } = data.data;
-
-      const user: UserProfile = {
-        ...userWithoutToken,
-        banner: userWithoutToken.banner ?? { url: "", alt: "Default banner" },
-      };
-
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("accessToken", user.accessToken);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...user,
+          banner: user.banner ?? { url: "", alt: "Default banner" },
+        })
+      );
 
       setSuccessMsg("Login successful! Reloading...");
       setTimeout(() => {

@@ -1,11 +1,24 @@
+/**
+ * RegisterForm.tsx
+ * 
+ * A form component for user registration. Includes validation for:
+ * - username format
+ * - Noroff student email
+ * - minimum password length
+ * - optional avatar URL
+ * - venue manager registration option
+ * 
+ * On successful submission, the user is registered and redirected to login.
+ */
+
 import { useState, useEffect } from "react";
 import { registerUser } from "../../api/auth";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { RegisterFormProps } from "../../types/props";
 
 /**
- * Component for user registration, including form validation and visual feedback.
- * Handles name, email, password, avatar URL, and venue manager checkbox.
+ * Form for user registration.
+ * Validates input fields and sends a registration request to the API.
  */
 const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEmail }) => {
   const [formData, setFormData] = useState({
@@ -19,21 +32,22 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
   const [error, setError] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
 
+  // Extract form fields
   const { name, email, password, avatarUrl } = formData;
 
-  // Input validations
+  // Input field validations
   const validName = /^[a-zA-Z0-9_]+$/.test(name);
   const validEmail = email.toLowerCase().endsWith("@stud.noroff.no");
   const validPassword = password.length >= 8;
   const validAvatar = !avatarUrl || /^https?:\/\/.+\..+/.test(avatarUrl);
 
-  // Enable submit only if all inputs are valid
+  // Enable submit only when all validations pass
   useEffect(() => {
     setIsFormValid(validName && validEmail && validPassword && validAvatar);
   }, [validName, validEmail, validPassword, validAvatar]);
 
   /**
-   * Handles input field changes for form values.
+   * Handles input updates and toggles for form state.
    */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -44,14 +58,14 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
   };
 
   /**
-   * Submits the registration form and registers a new user.
+   * Handles form submission and registers a new user.
    */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
     const safeName = name.trim().toLowerCase().replace(/\s+/g, "_");
-
+    
     const payload = {
       name: safeName,
       email: email.toLowerCase(),
@@ -79,7 +93,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
   };
 
   /**
-   * Displays validation icon next to form fields.
+   * Renders a validation icon based on field validity.
    */
   const InputIcon = ({ isValid }: { isValid: boolean }) =>
     isValid ? (
@@ -90,6 +104,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5 text-sm animate-slide-in">
+      {/* Form instructions */}
       <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-[#0E1E34] shadow-sm">
         <p className="font-semibold mb-2">Instructions</p>
         <ul className="list-disc list-inside text-xs text-gray-600 space-y-1">
@@ -187,7 +202,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
 };
 
 /**
- * Type guard for identifying structured API errors.
+ * Type guard to detect structured API errors with messages.
  */
 function isApiError(error: unknown): error is {
   response: { data: { message?: string } };

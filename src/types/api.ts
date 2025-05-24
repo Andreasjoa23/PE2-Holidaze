@@ -127,3 +127,16 @@ export interface ApiSingleResponse<T> {
 export interface LoginResponse extends UserProfile {
   accessToken: string;
 }
+export interface RegisterPayload {
+  name: string;
+  email: string;
+  password: string;
+  bio?: string;
+  avatar?: { url: string; alt: string };
+  banner?: { url: string; alt: string };
+  venueManager?: boolean;
+}
+
+export interface RegisterResponse {
+  data: UserProfile;
+}

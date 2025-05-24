@@ -1,5 +1,5 @@
 import apiClient from "./apiClient";
-import { UserProfile } from "../types/api";
+import { UserProfile, LoginResponse, RegisterPayload, RegisterResponse } from "../types/api";
 
 /**
  * Logs in a user with their email and password.
@@ -10,22 +10,8 @@ export const loginUser = (credentials: {
   email: string;
   password: string;
 }) => {
-  return apiClient.post("/auth/login", credentials);
+  return apiClient.post<{ data: LoginResponse }>("/auth/login?_holidaze=true", credentials);
 };
-
-interface RegisterPayload {
-  name: string;
-  email: string;
-  password: string;
-  bio?: string;
-  avatar?: { url: string; alt: string };
-  banner?: { url: string; alt: string };
-  venueManager?: boolean;
-}
-
-interface RegisterResponse {
-  data: UserProfile;
-}
 
 /**
  * Registers a new user.
