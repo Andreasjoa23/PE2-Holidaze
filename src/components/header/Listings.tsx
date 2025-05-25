@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, X, Home, Trash, Pencil } from "lucide-react";
 import { Venue } from "../../types/api";
 import { calculateBeds } from "../ui/Beds";
-import { getPlaceholderImage } from "../../utils/missingImage";
+import { getPlaceholderImage } from "../../utils/image/missingImage";
 import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
 import { AnimatePresence, motion } from "framer-motion";
 

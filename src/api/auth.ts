@@ -1,4 +1,4 @@
-import apiClient from "./apiClient";
+import apiClient from "./client";
 import { UserProfile, LoginResponse, RegisterPayload, RegisterResponse } from "../types/api";
 
 /**

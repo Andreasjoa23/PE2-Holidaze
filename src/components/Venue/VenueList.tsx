@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Venue } from "../../types/api";
 import { calculateBeds } from "../ui/Beds";
-import { getPlaceholderImage } from "../../utils/missingImage";
+import { getPlaceholderImage } from "../../utils/image/missingImage";
 
 type Props = {
   listings: Venue[];

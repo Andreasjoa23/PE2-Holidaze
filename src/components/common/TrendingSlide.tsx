@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { TrendingSlideProps } from "../../types/props";
-import { getPlaceholderImage } from "../../utils/missingImage";
+import { getPlaceholderImage } from "../../utils/image/missingImage";
 
 // Animation variants for overlay and text reveal
 const overlayVariants = {

@@ -8,8 +8,8 @@ import {
   User as UserIcon,
   X,
 } from "lucide-react";
-import apiClient from "../../api/apiClient";
-import { logout } from "../../utils/logout";
+import apiClient from "../../api/client";
+import { logout } from "../../utils/auth/logout";
 import VenueForm from "../Venue/VenueForm";
 import HeaderBookings from "./Bookings";
 import HeaderListings from "./Listings";
@@ -17,7 +17,7 @@ import HeaderFavorites from "./Favorites";
 import { fetchUserBookings, fetchUserListings } from "../../api/profile";
 import { UserProfile, Venue, Booking } from "../../types/api";
 import { UserDropdownProps } from "../../types/props";
-import { getPlaceholderImage } from "../../utils/missingImage";
+import { getPlaceholderImage } from "../../utils/image/missingImage";
 
 const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);

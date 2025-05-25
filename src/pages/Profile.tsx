@@ -10,7 +10,7 @@ import { fetchUserBookings, fetchUserListings } from "../api/profile";
 import { deleteVenue } from "../api/venues";
 import { AnimatePresence } from "framer-motion";
 import { BookingSummary, Venue, UserProfile } from "../types/api";
-import { getPlaceholderImage } from "../utils/missingImage";
+import { getPlaceholderImage } from "../utils/image/missingImage";
 
 /**
  * Profile page displaying user-specific content such as:

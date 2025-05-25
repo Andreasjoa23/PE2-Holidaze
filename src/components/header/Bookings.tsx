@@ -3,7 +3,7 @@ import { ArrowLeft, X, Calendar } from "lucide-react";
 import { deleteBooking } from "../../api/bookings";
 import { useState } from "react";
 import { HeaderBookingsProps } from "../../types/props";
-import { getPlaceholderImage } from "../../utils/missingImage";
+import { getPlaceholderImage } from "../../utils/image/missingImage";
 
 /**
  * Formats an ISO date string into a localized readable format.

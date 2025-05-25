@@ -5,9 +5,9 @@ import { getAllVenues } from "../../api/venues";
 import {
   getFavoriteVenueIds,
   toggleFavoriteVenue,
-} from "../Venue/favoritesHelpers";
+} from "../Venue/helpers/favoritesHelpers";
 import { Venue, ApiListResponse } from "../../types/api";
-import { getPlaceholderImage } from "../../utils/missingImage";
+import { getPlaceholderImage } from "../../utils/image/missingImage";
 
 /**
  * View-style version of user's favorited venues shown in the header dropdown.

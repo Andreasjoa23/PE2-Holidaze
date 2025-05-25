@@ -4,7 +4,7 @@ import holidazeLogo from "../../assets/holidazeLogo.png";
 import { User } from "lucide-react";
 import AuthDropdown from "../Auth/AuthDropdown";
 import UserDropdown from "./UserDropDown";
-import { isLoggedIn } from "../../utils/isLoggedIn";
+import { isLoggedIn } from "../../utils/auth/isLoggedIn";
 
 /**
  * The site-wide top navigation bar.

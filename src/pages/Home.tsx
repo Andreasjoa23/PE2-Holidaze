@@ -1,11 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
-import ScrollProgress from "../components/ui/ScrollProgress";
+import ScrollProgress from "../components/common/ScrollProgress";
 import HeroBanner from "../components/homepage/HeroBanner";
 import SearchBanner from "../components/homepage/SearchBanner";
 import Trending from "../components/homepage/Trending";
 import Recommendations from "../components/homepage/Recommendations";
-import { isLoggedIn } from "../utils/isLoggedIn";
+import { isLoggedIn } from "../utils/auth/isLoggedIn";
 
 // Animation variant for sections
 const sectionVariant = {

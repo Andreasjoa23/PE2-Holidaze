@@ -5,8 +5,8 @@ import EditVenueModal from "../Venue/EditVenueModal";
 import { Venue } from "../../types/api";
 import { ListingsDropdownProps } from "../../types/props";
 import { calculateBeds } from "../ui/Beds";
-import { getPlaceholderImage } from "../../utils/missingImage";
-import DropdownCard from "../ui/DropdownCard";
+import { getPlaceholderImage } from "../../utils/image/missingImage";
+import DropdownCard from "../common/DropdownCard";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 

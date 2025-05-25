@@ -1,4 +1,4 @@
-import Navbar from "./Navbar";
+import Navbar from "../header/Navbar";
 
 /**
  * Header component that renders the site-wide navigation bar.

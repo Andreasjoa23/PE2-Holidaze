@@ -5,22 +5,22 @@ import {
   FaWifi, FaParking, FaCoffee, FaDog,
   FaUsers, FaBed, FaHeart, FaRegHeart
 } from "react-icons/fa";
-import apiClient from "../api/apiClient";
+import apiClient from "../api/client";
 import { createBooking } from "../api/bookings";
 import Lightbox from "yet-another-react-lightbox";
 import {
   isFavorite,
   toggleFavoriteVenue
-} from "../components/Venue/favoritesHelpers";
+} from "../components/Venue/helpers/favoritesHelpers";
 import toast, { Toaster } from "react-hot-toast";
 import { Venue, BookingSummary } from "../types/api";
-import { isLoggedIn } from "../utils/isLoggedIn";
+import { isLoggedIn } from "../utils/auth/isLoggedIn";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import "yet-another-react-lightbox/styles.css";
-import Loader from "../components/ui/Loader";
+import Loader from "../components/common/Loader";
 import { calculateBeds } from "../components/ui/Beds";
-import { getPlaceholderImage } from "../utils/missingImage";
+import { getPlaceholderImage } from "../utils/image/missingImage";
 
 /**
  * Renders detailed view of a single venue.

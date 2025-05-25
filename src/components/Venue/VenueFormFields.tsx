@@ -20,7 +20,6 @@ const VenueFormFields: React.FC<VenueFormFieldsProps> = ({
 }) => {
   return (
     <form onSubmit={onSubmit} className="space-y-4 text-sm">
-      {/* Removed: Duplicate heading */}
       <div>
         <label className="block font-medium mb-1">Title</label>
         <input

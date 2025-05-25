@@ -1,8 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import Navbar from "../header/Header";
+import Navbar from "./Header";
 import Footer from "./Footer";
-import { isLoggedIn } from "../../utils/isLoggedIn";
+import { isLoggedIn } from "../../utils/auth/isLoggedIn";
 
 /**
  * The main layout component for the application.
