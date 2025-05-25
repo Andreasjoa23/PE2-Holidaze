@@ -21,7 +21,7 @@ const VenueFormFields: React.FC<VenueFormFieldsProps> = ({
   return (
     <form onSubmit={onSubmit} className="space-y-4 text-sm">
       <div>
-        <label className="block font-medium mb-1">Title</label>
+        <label className="block text-base font-semibold mb-1">Title</label>
         <input
           type="text"
           name="title"
@@ -34,7 +34,7 @@ const VenueFormFields: React.FC<VenueFormFieldsProps> = ({
       </div>
 
       <div>
-        <label className="block font-medium mb-1">Description</label>
+        <label className="block text-base font-semibold mb-1">Description</label>
         <textarea
           name="description"
           placeholder="Describe your place..."
@@ -48,7 +48,7 @@ const VenueFormFields: React.FC<VenueFormFieldsProps> = ({
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block font-medium mb-1">Country</label>
+          <label className="block text-base font-semibold mb-1">Country</label>
           <input
             name="location.country"
             placeholder="Norway"
@@ -58,7 +58,7 @@ const VenueFormFields: React.FC<VenueFormFieldsProps> = ({
           />
         </div>
         <div>
-          <label className="block font-medium mb-1">City</label>
+          <label className="block text-base font-semibold mb-1">City</label>
           <input
             name="location.city"
             placeholder="Oslo"
@@ -70,7 +70,7 @@ const VenueFormFields: React.FC<VenueFormFieldsProps> = ({
       </div>
 
       <div>
-        <label className="block font-medium mb-1">Street address</label>
+        <label className="block text-base font-semibold mb-1">Street address</label>
         <input
           name="location.address"
           placeholder="Storgata 23B"
@@ -104,7 +104,7 @@ const VenueFormFields: React.FC<VenueFormFieldsProps> = ({
       </div>
 
       <div>
-        <label className="block font-medium mb-1">Cover image URL</label>
+        <label className="block text-base font-semibold mb-1">Cover image URL</label>
         <input
           type="url"
           placeholder="https://example.com/cover.jpg"
@@ -144,7 +144,7 @@ const VenueFormFields: React.FC<VenueFormFieldsProps> = ({
       </div>
 
       <div>
-        <label className="block font-medium mb-1">Price per night (USD)</label>
+        <label className="block text-base font-semibold mb-1">Price per night (USD)</label>
         <input
           type="number"
           name="price"
