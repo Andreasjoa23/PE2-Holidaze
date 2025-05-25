@@ -35,3 +35,11 @@ Ensure you have the following installed:
 ```bash
 git clone https://github.com/your-username/PE2-Holidaze.git
 cd PE2-Holidaze
+
+2. Install dependencies:
+```bash
+npm install
+
+3. Create a production build:
+```bash
+npm run build
