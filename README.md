@@ -1,54 +1,37 @@
-# React + TypeScript + Vite
+# 🏝️ Holidaze - Booking Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React + TypeScript web application where users can explore, book, and manage holiday accommodations.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📖 Description
 
-## Expanding the ESLint configuration
+**Holidaze** is a feature-rich vacation rental platform built with React, TypeScript, and Vite, hosted on [Netlify](https://holidazer.netlify.app/). It allows users to browse listings, book venues with real-time availability, manage bookings, and interact with favorites — all with a clean, responsive, and dynamic UI.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Key features include:
+- Venue search with filters and sorting
+- User login and profile dashboard
+- Booking calendar with date validation
+- Favorites management
+- Host tools for managing listings and bookings
+- Smooth UI animations and mobile responsiveness
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### ✅ Dependencies
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+Ensure you have the following installed:
+
+- Node.js (v18+ recommended)
+- npm (v9+)
+- Modern browser
+
+### 🛠 Installing
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/your-username/PE2-Holidaze.git
+cd PE2-Holidaze
