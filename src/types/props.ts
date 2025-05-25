@@ -77,6 +77,7 @@ export interface ListingsDropdownProps {
   listings: Venue[];
   onDelete: (id: string) => void;
   onUpdate: () => void;
+  onCreate?: () => void;
 }
 
 /**

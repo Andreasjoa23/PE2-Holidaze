@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, X, Home, Trash, Pencil } from "lucide-react";
 import { Venue } from "../../types/api";
 import { calculateBeds } from "../ui/Beds";
 import { getPlaceholderImage } from "../../utils/missingImage";
+import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
 
 interface HeaderListingsProps {
   listings: Partial<Venue>[];
@@ -13,9 +15,8 @@ interface HeaderListingsProps {
 }
 
 /**
- * Displays a user's venue listings with the ability to edit, delete, or view metadata.
- * 
- * Shows a fallback message if there are no listings.
+ * Displays a user's venue listings with the ability to edit, delete (with confirmation), or view metadata.
+ * Used inside the site header as a quick-access dropdown view.
  */
 const HeaderListings: React.FC<HeaderListingsProps> = ({
   listings,
@@ -25,6 +26,18 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
   onRefresh,
 }) => {
   const navigate = useNavigate();
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedVenue, setSelectedVenue] = useState<Partial<Venue> | null>(null);
+
+  const handleConfirmDelete = () => {
+    if (selectedVenue?.id) {
+      onDelete(selectedVenue.id);
+      onRefresh();
+    }
+    setSelectedVenue(null);
+    setShowDeleteModal(false);
+  };
 
   return (
     <div className="w-full bg-white rounded-xl shadow p-4 space-y-4">
@@ -67,7 +80,6 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
                 <span>{venue.price || 0} /night</span>
               </div>
 
-              {/* Booking badge */}
               {venue.bookings?.length && venue.bookings.length > 0 && (
                 <span className="inline-block bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full mt-1">
                   {venue.bookings.length} booking
@@ -75,7 +87,6 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
                 </span>
               )}
 
-              {/* Edit/Delete actions */}
               <div className="flex gap-3 mt-2">
                 <button
                   onClick={() => onEdit(venue)}
@@ -85,10 +96,8 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
                 </button>
                 <button
                   onClick={() => {
-                    if (venue.id) {
-                      onDelete(venue.id);
-                      onRefresh();
-                    }
+                    setSelectedVenue(venue);
+                    setShowDeleteModal(true);
                   }}
                   className="text-sm text-red-500 hover:text-red-700 flex items-center gap-1"
                 >
@@ -102,13 +111,23 @@ const HeaderListings: React.FC<HeaderListingsProps> = ({
         <p className="text-center text-gray-500">You have no listings.</p>
       )}
 
-      {/* CTA button */}
       <button
         onClick={() => navigate("/profile")}
         className="w-full bg-[#0E1E34] text-white py-2 rounded-lg font-medium hover:bg-[#182944] transition"
       >
         View all
       </button>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setSelectedVenue(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        venueName={selectedVenue?.name}
+      />
     </div>
   );
 };

@@ -16,9 +16,9 @@ import { getPlaceholderImage } from "../utils/missingImage";
  * Profile page displaying user-specific content such as:
  * - Bookings
  * - Listings
- * - Favorite venues
+ * - Favorites
  * - Profile editing
- * - Venue creation (if manager)
+ * - Venue creation
  */
 const Profile: React.FC = () => {
   const navigate = useNavigate();
@@ -79,8 +79,7 @@ const Profile: React.FC = () => {
   const income = bookings.reduce((sum, booking) => {
     const price = booking.venue?.price || 0;
     const nights =
-      (new Date(booking.dateTo).getTime() -
-        new Date(booking.dateFrom).getTime()) /
+      (new Date(booking.dateTo).getTime() - new Date(booking.dateFrom).getTime()) /
       (1000 * 60 * 60 * 24);
     return sum + price * nights;
   }, 0);
@@ -116,7 +115,7 @@ const Profile: React.FC = () => {
           className="w-full h-48 md:h-64 lg:h-80 object-cover rounded-2xl"
         />
 
-        {/* Header Section */}
+        {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
           <div className="flex items-center gap-6">
             <img
@@ -130,7 +129,7 @@ const Profile: React.FC = () => {
             </div>
           </div>
 
-          {/* Actions */}
+          {/* Action buttons */}
           <div className="flex flex-col sm:flex-row gap-3 mt-4 lg:mt-0">
             {user.venueManager && (
               <button
@@ -189,12 +188,17 @@ const Profile: React.FC = () => {
                 setBookings(refreshed.data);
               }}
             />
+
             <ListingsDropdown
               listings={listings}
               onDelete={handleVenueDeleted}
               onUpdate={async () => {
                 const refreshed = await fetchUserListings(user.name);
                 setListings(refreshed);
+              }}
+              onCreate={() => {
+                setShowCreateForm(true);
+                setShowEditor(false);
               }}
             />
             <FavoritesDropdown />
