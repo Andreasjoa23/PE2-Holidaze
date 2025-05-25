@@ -3,7 +3,7 @@ import { getAllVenues } from "../../api/venues";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Venue } from "../../types/api";
-import { getPlaceholderImage } from "../../utils/missingImage";
+import { getPlaceholderImage } from "../../utils/image/missingImage";
 
 /**
  * Trending component fetches and displays the top 8 venues

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaBed, FaUserFriends, FaHeart, FaRegHeart } from "react-icons/fa";
-import { isFavorite, toggleFavoriteVenue } from "./favoritesHelpers";
-import { isLoggedIn } from "../../utils/isLoggedIn";
+import { isFavorite, toggleFavoriteVenue } from "./helpers/favoritesHelpers";
+import { isLoggedIn } from "../../utils/auth/isLoggedIn";
 import { VenueCardProps } from "../../types/props";
 import { calculateBeds } from "../ui/Beds";
-import { getPlaceholderImage } from "../../utils/missingImage";
+import { getPlaceholderImage } from "../../utils/image/missingImage";
 
 /**
  * Renders a card UI for a single venue including image, name, description,

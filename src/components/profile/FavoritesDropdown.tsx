@@ -4,13 +4,13 @@ import { getAllVenues } from "../../api/venues";
 import {
   getFavoriteVenueIds,
   toggleFavoriteVenue,
-} from "../Venue/favoritesHelpers";
+} from "../Venue/helpers/favoritesHelpers";
 import { useNavigate } from "react-router-dom";
 import { FaBed, FaUserFriends } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { Venue, ApiListResponse } from "../../types/api";
 import { calculateBeds } from "../ui/Beds";
-import { getPlaceholderImage } from "../../utils/missingImage";
+import { getPlaceholderImage } from "../../utils/image/missingImage";
 
 /**
  * Dropdown component that displays the user's favorited venues.

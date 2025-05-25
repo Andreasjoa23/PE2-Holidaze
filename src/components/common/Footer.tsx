@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { logout } from "../../utils/logout";
+import { logout } from "../../utils/auth/logout";
 import logoHolidaze from "../../assets/logoHolidazeBlue.png";
 import LoginForm from "../Auth/LoginForm";
 import RegisterForm from "../Auth/RegisterForm";

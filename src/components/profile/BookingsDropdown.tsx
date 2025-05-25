@@ -3,8 +3,8 @@ import { Calendar } from "lucide-react";
 import { deleteBooking } from "../../api/bookings";
 import { BookingSummary } from "../../types/api";
 import { Link } from "react-router-dom";
-import { getPlaceholderImage } from "../../utils/missingImage";
-import DropdownCard from "../ui/DropdownCard";
+import { getPlaceholderImage } from "../../utils/image/missingImage";
+import DropdownCard from "../common/DropdownCard";
 
 interface BookingsDropdownProps {
   /** List of user's bookings */

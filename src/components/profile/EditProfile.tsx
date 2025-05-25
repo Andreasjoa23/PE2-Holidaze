@@ -3,7 +3,7 @@ import { updateProfile } from "../../api/profile";
 import { X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { UserProfile } from "../../types/api";
-import { getPlaceholderImage } from "../../utils/missingImage";
+import { getPlaceholderImage } from "../../utils/image/missingImage";
 
 interface EditProfileProps {
   /** Called when the profile is successfully updated */
