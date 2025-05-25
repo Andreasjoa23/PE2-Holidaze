@@ -23,6 +23,19 @@ Key features include:
 
 * Andreas Abrahamsen
 
+🙌 Acknowledgments
+Thanks to:
+
+Awesome-README
+
+Lucide Icons
+
+Framer Motion
+
+React Date Range
+
+Netlify
+
 ### ✅ Dependencies
 
 Ensure you have the following installed:
