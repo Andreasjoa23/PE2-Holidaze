@@ -18,25 +18,26 @@ Key features include:
 
 ---
 
-👥 Authors
-* Andreas S. Joakimsen
+## 👥 Authors
 
-* Andreas Abrahamsen
+- **Andreas S. Joakimsen**
+- **Andreas Abrahamsen**
 
-🙌 Acknowledgments
+---
+
+## 🙌 Acknowledgments
+
 Thanks to:
 
-Awesome-README
+- [Awesome-README](https://github.com/matiassingers/awesome-readme)
+- [Lucide Icons](https://lucide.dev/)
+- [Framer Motion](https://www.framer.com/motion/)
+- [React Date Range](https://github.com/hypeserver/react-date-range)
+- [Netlify](https://www.netlify.com/)
 
-Lucide Icons
+---
 
-Framer Motion
-
-React Date Range
-
-Netlify
-
-### ✅ Dependencies
+## ✅ Dependencies
 
 Ensure you have the following installed:
 
@@ -44,9 +45,15 @@ Ensure you have the following installed:
 - npm (v9+)
 - Modern browser
 
-### 🛠 Installing
+---
+
+## 🛠 Installing
 
 1. Clone the repository:
+
+```bash
+git clone https://github.com/your-username/PE2-Holidaze.git
+cd PE2-Holidaze
 
 ```bash
 git clone https://github.com/your-username/PE2-Holidaze.git
