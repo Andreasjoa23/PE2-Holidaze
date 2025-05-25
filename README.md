@@ -18,7 +18,10 @@ Key features include:
 
 ---
 
-## 🚀 Getting Started
+👥 Authors
+* Andreas S. Joakimsen
+
+* Andreas Abrahamsen
 
 ### ✅ Dependencies
 
