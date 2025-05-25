@@ -1,42 +1,102 @@
 import React from "react";
-import VenueForm from "./VenueForm";
-import { Venue } from "../../types/api";
-
-interface CreateVenueProps {
-  /** Mode of the form - either creating a new venue or editing an existing one */
-  mode: "create" | "edit";
-
-  /** Optional initial data used to pre-fill the form during edit mode */
-  initialData?: Partial<Venue>;
-
-  /** Callback to close the form/modal */
-  onClose: () => void;
-
-  /** Callback triggered after successful submission; optional venue ID can be returned */
-  onSuccess: (id?: string) => void;
-}
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import useVenueForm from "./useVenueForm";
+import VenueFormFields from "./VenueFormFields";
+import { VenueFormProps } from "../../types/forms";
 
 /**
- * Wrapper component for rendering the VenueForm with mode and props.
- *
- * @param mode - Defines whether the form is for creating or editing.
- * @param initialData - Optional initial values for editing.
- * @param onClose - Handler to close the form/modal.
- * @param onSuccess - Callback when venue creation/editing is successful.
+ * Modal wrapper for creating a new venue listing.
+ * Uses shared form logic and UI via `useVenueForm` and `VenueFormFields`.
  */
-const CreateVenue: React.FC<CreateVenueProps> = ({
+const CreateVenue: React.FC<VenueFormProps> = ({
   mode,
   initialData,
-  onClose,
   onSuccess,
+  onClose,
 }) => {
+  const navigate = useNavigate();
+
+  const {
+    formData,
+    error,
+    newVenueId,
+    showImageLimitWarning,
+    handleChange,
+    handleCheckbox,
+    handleAddImage,
+    handleMediaChange,
+    handleSubmit,
+  } = useVenueForm(mode, initialData, (id) => {
+    onClose();
+    if (mode === "create" && id) {
+      navigate(`/venue/${id}`);
+    } else {
+      onSuccess(id);
+    }
+  });
+
   return (
-    <VenueForm
-      mode={mode}
-      initialData={initialData}
-      onClose={onClose}
-      onSuccess={onSuccess}
-    />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.2 }}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white max-w-lg w-full p-6 rounded-2xl shadow-xl relative overflow-y-auto max-h-[90vh]"
+      >
+        <button
+          onClick={onClose}
+          aria-label="Close form"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 text-xl"
+        >
+          &times;
+        </button>
+
+        {newVenueId ? (
+          <div className="text-center space-y-6">
+            <h3 className="text-xl font-semibold text-green-700">
+              Venue created successfully!
+            </h3>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => {
+                  onClose();
+                  window.location.reload();
+                }}
+                className="px-4 py-2 border rounded text-sm"
+              >
+                Great, thanks!
+              </button>
+              <button
+                onClick={() => {
+                  onClose();
+                  navigate(`/venue/${newVenueId}`);
+                }}
+                className="px-4 py-2 bg-blue-900 text-white rounded text-sm"
+              >
+                View Venue Page
+              </button>
+            </div>
+          </div>
+        ) : (
+          <VenueFormFields
+            mode={mode}
+            formData={formData}
+            error={error}
+            showImageLimitWarning={showImageLimitWarning}
+            onChange={handleChange}
+            onCheckbox={handleCheckbox}
+            onAddImage={handleAddImage}
+            onMediaChange={handleMediaChange}
+            onSubmit={handleSubmit}
+            onCancel={onClose}
+          />
+        )}
+      </motion.div>
+    </div>
   );
 };
 

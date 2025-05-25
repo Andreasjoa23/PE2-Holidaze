@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Home, Trash2, Pencil } from "lucide-react";
 import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
-import EditVenueModal from "./EditVenueModal";
+import EditVenueModal from "../Venue/EditVenueModal";
 import { Venue } from "../../types/api";
 import { ListingsDropdownProps } from "../../types/props";
 import { calculateBeds } from "../ui/Beds";

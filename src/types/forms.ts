@@ -12,7 +12,7 @@ export interface VenueFormData {
   title: string;
   description: string;
   location: VenueFormLocation;
-  media: string[]; // Array of image URLs
+  media: string[];
   price: number;
   maxGuests: number;
   meta: MetaInfo;
@@ -23,9 +23,9 @@ export interface VenueFormData {
  */
 export interface VenueFormProps {
   mode: "create" | "edit";
-  initialData?: Partial<Venue>; // Optional initial data for editing
-  onSuccess: (id?: string) => void; // Callback on successful form submission
-  onClose: () => void; // Callback to close the form
+  initialData?: Partial<Venue>;
+  onSuccess: (id?: string) => void; 
+  onClose: () => void; 
 }
 
 /**

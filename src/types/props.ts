@@ -1,5 +1,5 @@
 import { Venue } from "./api";
-
+import { VenueFormData } from "./forms";
 /**
  * Props for the Footer component, indicates login state.
  */
@@ -100,6 +100,19 @@ export interface Recommendation {
   location: string;
   rating: number;
   comment: string;
+}
+
+export interface VenueFormFieldsProps {
+  formData: VenueFormData;
+  error: string;
+  mode: "create" | "edit";
+  showImageLimitWarning: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  onCheckbox: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onMediaChange: (index: number, value: string) => void;
+  onAddImage: () => void;
+  onSubmit: (e: React.FormEvent) => void;
+  onCancel: () => void;
 }
 
 /**
