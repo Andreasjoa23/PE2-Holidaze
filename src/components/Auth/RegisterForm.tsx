@@ -16,10 +16,6 @@ import { registerUser } from "../../api/auth";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { RegisterFormProps } from "../../types/props";
 
-/**
- * Form for user registration.
- * Validates input fields and sends a registration request to the API.
- */
 const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEmail }) => {
   const [formData, setFormData] = useState({
     name: "",
@@ -32,40 +28,31 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
   const [error, setError] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
 
-  // Extract form fields
   const { name, email, password, avatarUrl } = formData;
 
-  // Input field validations
   const validName = /^[a-zA-Z0-9_]+$/.test(name);
   const validEmail = email.toLowerCase().endsWith("@stud.noroff.no");
   const validPassword = password.length >= 8;
   const validAvatar = !avatarUrl || /^https?:\/\/.+\..+/.test(avatarUrl);
 
-  // Enable submit only when all validations pass
   useEffect(() => {
     setIsFormValid(validName && validEmail && validPassword && validAvatar);
   }, [validName, validEmail, validPassword, validAvatar]);
 
-  /**
-   * Handles input updates and toggles for form state.
-   */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === "checkbox" ? checked : (name === "email" || name === "name" ? value.toLowerCase() : value),
     }));
   };
 
-  /**
-   * Handles form submission and registers a new user.
-   */
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
     const safeName = name.trim().toLowerCase().replace(/\s+/g, "_");
-    
+
     const payload = {
       name: safeName,
       email: email.toLowerCase(),
@@ -92,9 +79,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
     }
   };
 
-  /**
-   * Renders a validation icon based on field validity.
-   */
   const InputIcon = ({ isValid }: { isValid: boolean }) =>
     isValid ? (
       <FaCheckCircle className="text-green-500 absolute right-3 top-1/2 transform -translate-y-1/2" />
@@ -112,6 +96,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
           <li><strong>Email:</strong> Must end with <code>@stud.noroff.no</code></li>
           <li><strong>Password:</strong> At least 8 characters</li>
           <li><strong>Avatar URL:</strong> Optional, must be a valid image link</li>
+          <li><strong>Note:</strong> Name and email will be stored in lowercase. Avoid capital letters.</li>
         </ul>
       </div>
 
@@ -123,6 +108,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
           placeholder="Name"
           value={name}
           onChange={handleChange}
+          style={{ textTransform: "lowercase" }}
           className={`w-full border ${name && !validName ? "border-red-500" : "border-gray-300"} px-4 py-2 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0E1E34]`}
           required
         />
@@ -137,6 +123,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
           placeholder="Email"
           value={email}
           onChange={handleChange}
+          style={{ textTransform: "lowercase" }}
           className={`w-full border ${email && !validEmail ? "border-red-500" : "border-gray-300"} px-4 py-2 pr-10 rounded-full focus:outline-none focus:ring-2 focus:ring-[#0E1E34]`}
           required
         />
@@ -201,9 +188,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ switchToLogin, setPrefillEm
   );
 };
 
-/**
- * Type guard to detect structured API errors with messages.
- */
 function isApiError(error: unknown): error is {
   response: { data: { message?: string } };
 } {

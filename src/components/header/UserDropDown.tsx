@@ -13,38 +13,31 @@ import { logout } from "../../utils/logout";
 import VenueForm from "../Venue/VenueForm";
 import HeaderBookings from "./Bookings";
 import HeaderListings from "./Listings";
+import HeaderFavorites from "./Favorites";
 import { fetchUserBookings, fetchUserListings } from "../../api/profile";
 import { UserProfile, Venue, Booking } from "../../types/api";
 import { UserDropdownProps } from "../../types/props";
 import { getPlaceholderImage } from "../../utils/missingImage";
 
-/**
- * Dropdown menu shown when a logged-in user clicks their profile icon.
- * Allows navigation to bookings, listings, profile, and venue creation.
- */
 const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   const [user] = useState<UserProfile | null>(() => {
-  try {
-    const stored = localStorage.getItem("user");
-    return stored ? JSON.parse(stored) as UserProfile : null;
-  } catch {
-    return null;
-  }
-});
+    try {
+      const stored = localStorage.getItem("user");
+      return stored ? (JSON.parse(stored) as UserProfile) : null;
+    } catch {
+      return null;
+    }
+  });
 
-  const [view, setView] = useState<"main" | "createVenue" | "listings" | "bookings">("main");
-
+  const [view, setView] = useState<"main" | "createVenue" | "listings" | "bookings" | "favorites">("main");
   const [listings, setListings] = useState<Venue[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [editVenue, setEditVenue] = useState<Partial<Venue> | null>(null);
   const [error, setError] = useState("");
 
-  /**
-   * Close the dropdown if user clicks outside.
-   */
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
@@ -55,9 +48,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [onClose]);
 
-  /**
-   * Fetch user's listings from API.
-   */
   const fetchListings = useCallback(async () => {
     if (!user?.name) return;
     try {
@@ -69,9 +59,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
     }
   }, [user?.name]);
 
-  /**
-   * Fetch user's bookings from API.
-   */
   const fetchBookings = useCallback(async () => {
     if (!user?.name) return;
     try {
@@ -88,9 +75,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
     fetchBookings();
   }, [fetchListings, fetchBookings]);
 
-  /**
-   * Deletes a venue by ID and refreshes listings.
-   */
   const handleDelete = async (id: string) => {
     try {
       await apiClient.delete(`/holidaze/venues/${id}`);
@@ -105,7 +89,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
       ref={dropdownRef}
       className="fixed top-4 left-0 right-0 mx-auto w-[95%] sm:right-4 sm:left-auto sm:w-[420px] md:w-[620px] z-50 bg-white rounded-xl shadow-xl p-6 max-h-[90vh] overflow-y-auto"
     >
-      {/* Close button */}
       <button
         onClick={onClose}
         className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
@@ -114,7 +97,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
         <X size={20} />
       </button>
 
-      {/* Main view: user info & actions */}
       {view === "main" && user && (
         <>
           <div className="flex flex-col items-center text-center mb-4">
@@ -150,6 +132,25 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
                   <Home size={18} /> My listings
                 </button>
                 <button
+                  onClick={() => setView("favorites")}
+                  className="flex items-center gap-2 text-base py-2 hover:text-[#0E1E34] transition"
+                >
+                  <svg
+                    className="w-5 h-5 text-red-500"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
+                      2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 
+                      4.5 2.09C13.09 3.81 14.76 3 
+                      16.5 3 19.58 3 22 5.42 22 
+                      8.5c0 3.78-3.4 6.86-8.55 
+                      11.54L12 21.35z"
+                    />
+                  </svg>
+                  My favorites
+                </button>
+                <button
                   onClick={() => {
                     setEditVenue(null);
                     setView("createVenue");
@@ -159,6 +160,27 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
                   <Plus size={18} /> List a property
                 </button>
               </>
+            )}
+            {!user?.venueManager && (
+              <button
+                onClick={() => setView("favorites")}
+                className="flex items-center gap-2 text-base py-2 hover:text-[#0E1E34] transition"
+              >
+                <svg
+                  className="w-5 h-5 text-red-500"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
+                    2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 
+                    4.5 2.09C13.09 3.81 14.76 3 
+                    16.5 3 19.58 3 22 5.42 22 
+                    8.5c0 3.78-3.4 6.86-8.55 
+                    11.54L12 21.35z"
+                  />
+                </svg>
+                My favorites
+              </button>
             )}
           </nav>
 
@@ -177,7 +199,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
         </>
       )}
 
-      {/* Create/edit venue view */}
       {view === "createVenue" && (
         <VenueForm
           mode={editVenue ? "edit" : "create"}
@@ -194,7 +215,6 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
         />
       )}
 
-      {/* Listings view */}
       {view === "listings" && (
         <HeaderListings
           listings={listings}
@@ -208,13 +228,16 @@ const UserDropdown: React.FC<UserDropdownProps> = ({ onClose }) => {
         />
       )}
 
-      {/* Bookings view */}
       {view === "bookings" && (
         <HeaderBookings
           bookings={bookings}
           onBack={() => setView("main")}
           onRefresh={fetchBookings}
         />
+      )}
+
+      {view === "favorites" && (
+        <HeaderFavorites onBack={() => setView("main")} />
       )}
     </div>
   );

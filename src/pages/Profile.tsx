@@ -189,18 +189,21 @@ const Profile: React.FC = () => {
               }}
             />
 
-            <ListingsDropdown
-              listings={listings}
-              onDelete={handleVenueDeleted}
-              onUpdate={async () => {
-                const refreshed = await fetchUserListings(user.name);
-                setListings(refreshed);
-              }}
-              onCreate={() => {
-                setShowCreateForm(true);
-                setShowEditor(false);
-              }}
-            />
+            {user.venueManager && (
+              <ListingsDropdown
+                listings={listings}
+                onDelete={handleVenueDeleted}
+                onUpdate={async () => {
+                  const refreshed = await fetchUserListings(user.name);
+                  setListings(refreshed);
+                }}
+                onCreate={() => {
+                  setShowCreateForm(true);
+                  setShowEditor(false);
+                }}
+              />
+            )}
+
             <FavoritesDropdown />
           </div>
 
