@@ -181,11 +181,15 @@ const VenueForm: React.FC<VenueFormProps> = ({
                 Great, thanks!
               </button>
               <button
-                onClick={() => navigate(`/venue/${newVenueId}`)}
+                onClick={() => {
+                  onClose();
+                  navigate(`/venue/${newVenueId}`);
+                }}
                 className="px-4 py-2 bg-blue-900 text-white rounded text-sm"
               >
                 View Venue Page
               </button>
+
             </div>
           </div>
         ) : (

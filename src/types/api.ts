@@ -69,13 +69,20 @@ export interface Venue {
 }
 
 /**
- * A brief summary of a booking with optional venue information.
+ * A summary of a booking with optional venue information.
  */
 export interface BookingSummary {
   id: string;
   dateFrom: string;
   dateTo: string;
-  venue?: Venue;
+  venue?: {
+    id: string;
+    name: string;
+    price: number;
+    maxGuests: number;
+    media?: { url: string; alt?: string }[];
+  };
+  guests: number;
 }
 
 /**

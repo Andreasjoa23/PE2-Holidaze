@@ -1,47 +1,44 @@
 import React, { useState } from "react";
-import { Home, ChevronDown, ChevronUp, Trash2, Pencil } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Home, Trash2, Pencil } from "lucide-react";
 import DeleteConfirmationModal from "../ui/DeleteConfirmationModal";
 import EditVenueModal from "./EditVenueModal";
 import { Venue } from "../../types/api";
 import { ListingsDropdownProps } from "../../types/props";
 import { calculateBeds } from "../ui/Beds";
 import { getPlaceholderImage } from "../../utils/missingImage";
+import DropdownCard from "../ui/DropdownCard";
+import { Link } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 
 /**
- * Dropdown component to manage a user's venue listings.
- * Allows editing, deleting, and viewing upcoming bookings.
+ * Dropdown section displaying user's listed venues.
+ * Supports editing, deletion, viewing, and booking details.
  */
 const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   listings,
   onDelete,
   onUpdate,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showBookingsModal, setShowBookingsModal] = useState(false);
 
-  /** Opens the delete confirmation modal for the selected venue */
   const handleDeleteClick = (venue: Venue) => {
     setSelectedVenue(venue);
     setShowDeleteModal(true);
   };
 
-  /** Opens the edit modal for the selected venue */
   const handleEditClick = (venue: Venue) => {
     setSelectedVenue(venue);
     setShowEditModal(true);
   };
 
-  /** Opens the bookings list for the selected venue */
   const handleShowBookings = (venue: Venue) => {
     setSelectedVenue(venue);
     setShowBookingsModal(true);
   };
 
-  /** Confirms deletion and triggers the parent callback */
   const confirmDelete = () => {
     if (selectedVenue) {
       onDelete(selectedVenue.id);
@@ -51,87 +48,73 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
   };
 
   return (
-    <div className="w-full max-w-md bg-white rounded-xl shadow p-4 relative z-10">
-      {/* Header button */}
-      <button
-        onClick={() => setIsOpen((o) => !o)}
-        className="w-full flex justify-between items-center text-[#0E1E34] font-semibold"
-      >
-        <span className="flex items-center space-x-2">
-          <Home className="w-6 h-6" />
-          <span className="text-lg">My listings ({listings.length})</span>
-        </span>
-        {isOpen ? (
-          <ChevronUp className="w-6 h-6 text-gray-500" />
-        ) : (
-          <ChevronDown className="w-6 h-6 text-gray-500" />
-        )}
-      </button>
-
-      {/* Listings content */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="mt-4 space-y-4"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25 }}
+    <DropdownCard
+      icon={<Home className="w-6 h-6" />}
+      title="My listings"
+      itemCount={listings.length}
+    >
+      {listings.length > 0 ? (
+        listings.map((venue) => (
+          <div
+            key={venue.id}
+            className="bg-white rounded-xl shadow border p-3 flex items-center gap-4"
           >
-            {listings.length > 0 ? (
-              listings.map((venue) => (
-                <div
-                  key={venue.id}
-                  className="bg-white rounded-xl shadow border p-3 flex items-center gap-4"
-                >
-                  <img
-                    src={getPlaceholderImage(venue.media?.[0]?.url, 100, 100)}
-                    alt={venue.name}
-                    className="w-24 h-24 rounded-lg object-cover"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start gap-2">
-                      <h3 className="text-base font-semibold text-[#0E1E34] truncate max-w-full pr-2">
-                        {venue.name}
-                      </h3>
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => handleDeleteClick(venue)}>
-                          <Trash2 className="w-4 h-4 text-red-600 hover:text-red-800" />
-                        </button>
-                        <button onClick={() => handleEditClick(venue)}>
-                          <Pencil className="w-4 h-4 text-gray-500 hover:text-gray-800" />
-                        </button>
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-600 line-clamp-2 overflow-hidden">
-                      {venue.description}
-                    </p>
-                    <div className="text-xs text-gray-500 mt-1 flex gap-4">
-                      <span>{calculateBeds(venue.maxGuests || 1)} beds</span>
-                      <span>{venue.maxGuests} people</span>
-                      <span className="ml-auto">{venue.price} /night</span>
-                    </div>
-
-                    {venue.bookings && venue.bookings.length > 0 && (
-                      <button
-                        onClick={() => handleShowBookings(venue)}
-                        className="mt-2 inline-block bg-green-600 hover:bg-green-700 text-white text-xs font-medium px-3 py-1 rounded-full transition"
-                      >
-                        {venue.bookings.length} booking
-                        {venue.bookings.length > 1 ? "s" : ""}
-                      </button>
-                    )}
-                  </div>
+            <img
+              src={getPlaceholderImage(venue.media?.[0]?.url, 100, 100)}
+              alt={venue.name}
+              className="w-24 h-24 rounded-lg object-cover"
+            />
+            <div className="flex-1 min-w-0 space-y-1">
+              <div className="flex justify-between items-start gap-2">
+                <h3 className="text-base font-semibold text-[#0E1E34] truncate max-w-full">
+                  {venue.name}
+                </h3>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => handleDeleteClick(venue)}>
+                    <Trash2 className="w-4 h-4 text-red-600 hover:text-red-800" />
+                  </button>
+                  <button onClick={() => handleEditClick(venue)}>
+                    <Pencil className="w-4 h-4 text-gray-500 hover:text-gray-800" />
+                  </button>
                 </div>
-              ))
-            ) : (
-              <p className="text-center text-gray-500">You have no listings.</p>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+              </div>
 
-      {/* Delete confirmation modal */}
+              <p className="text-sm text-gray-600 line-clamp-2">
+                {venue.description || "No description provided."}
+              </p>
+
+              <div className="text-xs text-gray-500 mt-1 flex justify-between">
+                <span>{calculateBeds(venue.maxGuests || 1)} beds</span>
+                <span>{venue.maxGuests} people</span>
+                <span>{venue.price} /night</span>
+              </div>
+
+              {venue.bookings?.length && venue.bookings.length > 0 && (
+                <button
+                  onClick={() => handleShowBookings(venue)}
+                  className="mt-1 inline-block bg-green-600 hover:bg-green-700 text-white text-xs font-medium px-3 py-1 rounded-full transition"
+                >
+                  {venue.bookings.length} booking
+                  {venue.bookings.length > 1 ? "s" : ""}
+                </button>
+              )}
+
+              <div className="mt-2">
+                <Link
+                  to={`/venue/${venue.id}`}
+                  className="bg-[#0E1E34] hover:bg-[#1a2c4f] text-white text-xs px-4 py-1 rounded-full"
+                >
+                  See Venue
+                </Link>
+              </div>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p className="text-center text-gray-500">You have no listings.</p>
+      )}
+
+      {/* Delete Confirmation */}
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
@@ -139,7 +122,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
         venueName={selectedVenue?.name}
       />
 
-      {/* Edit modal */}
+      {/* Edit Venue Modal */}
       <EditVenueModal
         isOpen={showEditModal && !!selectedVenue}
         onClose={() => {
@@ -154,7 +137,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
         }}
       />
 
-      {/* Bookings modal */}
+      {/* Bookings Popup */}
       <AnimatePresence>
         {showBookingsModal && selectedVenue?.bookings && (
           <motion.div
@@ -220,7 +203,7 @@ const ListingsDropdown: React.FC<ListingsDropdownProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </DropdownCard>
   );
 };
 
